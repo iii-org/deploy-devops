@@ -17,5 +17,8 @@
 
 >> Generate root personal access tokens  
 >> User/Administrator/User seetings, gernerate root perionsal accesss token  
->>![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
+>> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 >> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
+>> Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk
+>> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png
+?raw=true)
