@@ -1,0 +1,1 @@
+sudo docker run --env GITLAB_OMNIBUS_CONFIG="external_url 'http://140.92.4.3';"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $HOME/gitlab/config:/etc/gitlab --volume $HOME/gitlab/logs:/var/log/gitlab --volume $HOME/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0
