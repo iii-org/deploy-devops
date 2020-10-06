@@ -16,4 +16,6 @@
 ##### User/Administrator/User seetings, gernerate root perionsal accesss token
 ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)
 ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
+##### GO to Admin/Settings/Network/"Outbound reuests"，tick "allow request to the local netowrk"
+![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)
 
