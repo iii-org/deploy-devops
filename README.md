@@ -20,4 +20,7 @@
 > #### ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 > #### ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 > ### Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk  service
-> #### ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)
+> #### ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
+
+# install rancher on VM2
+> <code> sudo deploy-devops/bin/ubuntu20lts_install_rancher.sh </code>
