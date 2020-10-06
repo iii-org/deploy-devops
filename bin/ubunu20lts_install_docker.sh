@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WORK_DIR=/home/$USER
+WORK_DIR=$HOME
 LOGFILE=$WORK_DIR/log/docker_install.log
 mkdir $WORK_DIR/log
 touch $LOGFILE
