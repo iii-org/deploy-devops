@@ -89,3 +89,6 @@
 > * Create issue status  
 >   *  Administratoe/ Issues statuses  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
+> * Create Trackers  
+>   *  Administratoe/ Trackers  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-trackers.png?raw=true)  
