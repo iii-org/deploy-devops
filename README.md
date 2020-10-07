@@ -83,3 +83,9 @@
 # Set Redmine
 > * login by admin/ admin, and reset administrator password
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
+> * Enable REST API
+>   * Administratoe/ Settings/ API/ Enable REST web service
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/enable-redmine-rest.png?raw=true)  
+> * Create issue status  
+>   *  Administratoe/ Issues statuses  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  

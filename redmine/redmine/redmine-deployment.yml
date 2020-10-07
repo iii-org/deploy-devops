@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: redmine
-        image: redmine
+        image: redmine:4.1.1
         env:
         - name: REDMINE_DB_POSTGRES
           value: redmine-postgresql-service
