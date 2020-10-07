@@ -2,8 +2,14 @@
 
 WORK_DIR=$HOME
 LOGFILE=$WORK_DIR/log/rancher_install.log
-mkdir $WORK_DIR/log
-touch $LOGFILE
+echo $LOGFILE
+if [ ! -d $WORK_DIR/log ]; then
+  mkdir $WORK_DIR/log
+fi
+
+if [ ! -f $LOGFILE ]; then
+  touch $LOGFILE
+fi
 
 mkdir $WORK_DIR/rancher &>> $LOGFILE
 chmod 755 $WORK_DIR/rancher &>> $LOGFILE
