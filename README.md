@@ -62,6 +62,9 @@
 > * Create redmine-postgresql folder for redmine-postgresql  
 > <code> sudo mkdir /iiidevopsNFS/redmine-postgresql </code>  
 > <code> sudo chmod 777 /iiidevopsNFS/redmine-postgresql </code>  
+> * Create devopsdb folder for System DB  
+> <code> sudo mkdir /iiidevopsNFS/devopsdb </code>  
+> <code> sudo chmod 777 /iiidevopsNFS/devopsdb </code>  
 
 > ## VM3, VM4 (NFS Client, Kubernetes worker node)  
 > * Install on VM2  

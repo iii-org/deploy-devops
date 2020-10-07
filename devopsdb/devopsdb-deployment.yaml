@@ -1,0 +1,32 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: devopsdb-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devopsdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: devopsdb
+    spec:
+      containers:
+      - name: devopsdb
+        image: postgres:12
+        env:
+        - name: POSTGRES_PASSWORD
+          value: xxxxxxxx
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: db-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: db-data
+        nfs:
+          server: 140.92.4.4
+          path: /iiidevopsNFS/devopsdb
