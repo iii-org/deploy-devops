@@ -86,9 +86,18 @@
 > * Enable REST API
 >   * Administratoe/ Settings/ API/ Enable REST web service
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/enable-redmine-rest.png?raw=true)  
+> * wiki set markdown  
+>   * Administrator/ Setting/ Gereral/ Text formatting  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
 > * Create issue status  
 >   *  Administratoe/ Issues statuses  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
 > * Create Trackers  
 >   *  Administratoe/ Trackers  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-trackers.png?raw=true)  
+> * Create roles
+>   * Administrator/ Roles and permissions
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
+> * Create priority
+>   * Administrator/ Enumerations/ Issue priorities
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
