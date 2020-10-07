@@ -1,0 +1,19 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: devopsapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devopsapi
+  template:
+    metadata:
+      labels:
+        app: devopsapi
+    spec:
+      containers:
+      - name: devopsapi
+        image: iiiorg/devops-api:821335f-10070904
+        ports:
+        - containerPort: 10009
