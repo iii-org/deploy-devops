@@ -1,0 +1,27 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redmine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redmine
+  template:
+    metadata:
+      labels:
+        app: redmine
+    spec:
+      containers:
+      - name: redmine
+        image: redmine
+        env:
+        - name: REDMINE_DB_POSTGRES
+          value: redmine-postgres-service
+        - name: REDMINE_DB_PASSWORD
+          value: xxxxxxxx
+        - name: REDMINE_DB_DATABASE
+          value: redmine
+        ports:
+        - containerPort: 3000
+          name: ui
