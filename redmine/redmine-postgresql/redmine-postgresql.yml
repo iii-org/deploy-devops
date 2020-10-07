@@ -1,19 +1,19 @@
 apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
 metadata:
-  name: redmine-postgres
+  name: redmine-postgresql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redmine-postgres
+      app: redmine-postgresql
   template:
     metadata:
       labels:
-        app: redmine-postgres
+        app: redmine-postgresql
     spec:
       containers:
-      - name: redmine-postgres
+      - name: redmine-postgresql
         image: postgres:12
         env:
         - name: POSTGRES_PASSWORD
@@ -30,4 +30,4 @@ spec:
       - name: redmine-db-data
         nfs:
           server: 140.92.4.4
-          path: /iiidevopsNFS
+          path: /iiidevopsNFS/redmine-postgresql

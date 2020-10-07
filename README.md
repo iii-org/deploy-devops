@@ -40,11 +40,41 @@
 > Node Options: Chose etcd, Control plane, worker
 > Copy command to run on VM3, VM4  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
-> ## Get Kubeconfig Files
+
+> # Get Kubeconfig Files
 > Put on kubeconfig to ~/.kube/config
 
-## Install kubectl  
+> # Prepare storage (Use NFS below)
+> ## VM2 (NFS Server)  
+> Install NFS service  
+> <code> sudo apt install nfs-kernel-server -y </code>  
+> Edit /etc/exports, add  
+>> <code>/iiidevopsNFS *(no_root_squash,rw,sync,no_subtree_check) </code>  
+
+> Create folder /iiidevopsNFS for NFS service  
+> <code> sudo mkdir /iiidevopsNFS </code>  
+> <code> sudo chmod 777 /iiidevopsNFS </code>  
+> Restart NFS service  
+> <code> sudo systemctl restart nfs-kernel-server </code>  
+> Check NFS service  
+> <code> sudo showmount -e localhost  </code>  
+> create redmine-postgresql folder for redmine-postgresql  
+> <code> sudo mkdir /iiidevopsNFS/redmine-postgresql </code>  
+> <code> sudo chmod 777 /iiidevopsNFS/redmine-postgresql </code>  
+
+> ## VM3, VM4 (NFS Client, Kubernetes worker node)  
+> Install on VM2  
+> <code>sudo apt install nfs-common </code>  
+> Check NFS Service  
+> <code> showmount -e {NFS server IP} </code>
+
+# Install kubectl  
 > https://kubernetes.io/docs/tasks/tools/install-kubectl/  
 
-## Deploy Redmine  
-> <code> kubectl apply -k redmine/ </code>  
+# Deploy Redmine  
+> ## deploy redmine postgresql  
+> <code> kubectl apply -f redmine/redmine-postgresql/ </code>  
+> ## deploy redmine  
+> <code> kubectl apply -f redmine/redmine/ </code>  
+
+# Set Redmine

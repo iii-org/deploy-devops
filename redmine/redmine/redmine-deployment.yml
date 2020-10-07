@@ -17,7 +17,7 @@ spec:
         image: redmine
         env:
         - name: REDMINE_DB_POSTGRES
-          value: redmine-postgres-service
+          value: redmine-postgresql-service
         - name: REDMINE_DB_PASSWORD
           value: xxxxxxxx
         - name: REDMINE_DB_DATABASE
