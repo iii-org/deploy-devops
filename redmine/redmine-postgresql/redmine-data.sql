@@ -224,7 +224,7 @@ COPY public.issue_statuses (id, name, is_closed, "position", default_done_ratio)
 3	Solved	f	3	\N
 4	Responsed	f	4	\N
 5	Finished	f	5	\N
-6	Closed	t	6	\N
+6	Closed	f	6	\N
 \.
 
 
@@ -693,7 +693,8 @@ COPY public.time_entries (id, project_id, user_id, issue_id, hours, comments, ac
 
 COPY public.tokens (id, user_id, action, value, created_on, updated_on) FROM stdin;
 3	1	feeds	ff87b9a4dd26eb390ba24ad08c6c6681c4b2ec4e	2020-10-08 01:50:24.064199	2020-10-08 01:50:24.064199
-2	1	session	5d8027d2fed6bd6c2bffb040e2777bb640a8ce3f	2020-10-07 08:37:48.561477	2020-10-08 02:12:01.373846
+4	1	api	6f1bcd77154abdd0ffaeb32221f255e4ff838070	2020-10-12 02:56:18.152204	2020-10-12 02:56:18.152204
+2	1	session	5d8027d2fed6bd6c2bffb040e2777bb640a8ce3f	2020-10-07 08:37:48.561477	2020-10-12 08:13:42.582121
 \.
 
 
@@ -726,7 +727,7 @@ COPY public.users (id, login, hashed_password, firstname, lastname, admin, statu
 2				Anonymous users	f	1	\N		\N	2020-10-07 07:19:25.006306	2020-10-07 07:19:25.006306	GroupAnonymous	\N		\N	f	\N
 3				Non member users	f	1	\N		\N	2020-10-07 07:19:25.058316	2020-10-07 07:19:25.058316	GroupNonMember	\N		\N	f	\N
 4				Anonymous	f	0	\N		\N	2020-10-07 07:19:32.967814	2020-10-07 07:19:32.967814	AnonymousUser	\N	only_my_events	\N	f	\N
-1	admin	0eb75d0319dd60f14797d9cc5d0eb4f1451a95ae	Redmine	Admin	t	1	2020-10-07 08:30:19.864014	en	\N	2020-10-07 07:19:18.33528	2020-10-07 08:38:37.488344	User	\N	all	29f928452d6e77c5ef2449e41d90ea8a	f	2020-10-07 08:37:48
+1	admin	0eb75d0319dd60f14797d9cc5d0eb4f1451a95ae	Redmine	Admin	t	1	2020-10-12 06:50:05.926599	en	\N	2020-10-07 07:19:18.33528	2020-10-07 08:38:37.488344	User	\N	all	29f928452d6e77c5ef2449e41d90ea8a	f	2020-10-07 08:37:48
 \.
 
 
@@ -1029,7 +1030,7 @@ SELECT pg_catalog.setval('public.time_entries_id_seq', 1, false);
 -- Name: tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.tokens_id_seq', 3, true);
+SELECT pg_catalog.setval('public.tokens_id_seq', 4, true);
 
 
 --
