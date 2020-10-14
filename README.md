@@ -126,3 +126,6 @@
 > * Create priority
 >   * Administrator/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
+
+# Finish deploy. Go to UI to login
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
