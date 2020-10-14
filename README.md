@@ -46,10 +46,24 @@
 > Put on kubeconfig to ~/.kube/config  
 
 # Gitlab and Rancher pipline hook  
+> ## Rancher  
 >  Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
 > Choose Tools/Pipline, select Gitlab  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
+> Get the "Redirect URI"  
+> ## Gitlab  
+> Use root account/ settings/ Applications
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
+> Setting Applications  
+> insert name, redirect url and chose all optional, and save application.
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
+> Take the "Application ID" and "Secret", go to rancher.  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true)  
+> Authorize  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true)  
 
 # Prepare storage (Use NFS below)
 > ## VM2 (NFS Server)  
