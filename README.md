@@ -127,5 +127,19 @@
 >   * Administrator/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
+# Deploy System DB (Postgresql)  
+> <code> docker build devops-db --tag devops-db:version  
+> docker push  devops-db:version  
+> kubectl apply -f devops-db/devopsdb-deployment.yaml  
+> kubectl apply -f devops-db/devopsdb-service.yaml</code>  
+
+# Deploy System API (Python Flask)  
+> <code> kubectl apply -f devops-db/devopsapi-deployment.yaml  
+> kubectl apply -f devops-db/devopsapi-service.yaml</code>  
+
+# Deploy System UI (VueJS)  
+> <code> kubectl apply -f devops-db/devopsui-deployment.yaml  
+> kubectl apply -f devops-db/devopsui-service.yaml</code>  
+
 # Finish deploy. Go to UI to login
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
