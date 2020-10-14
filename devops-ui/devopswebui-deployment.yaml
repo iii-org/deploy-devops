@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: devopswebui
-        image: iiiorg/devops-ui:059aff5-10060857
+        image: iiiorg/devops-ui:prod-0cb6e72
         ports:
         - containerPort: 80
    
