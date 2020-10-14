@@ -43,7 +43,13 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 # Get Kubeconfig Files
-> Put on kubeconfig to ~/.kube/config
+> Put on kubeconfig to ~/.kube/config  
+
+# Gitlab and Rancher pipline hook  
+>  Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
+> Choose Tools/Pipline, select Gitlab  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
 
 # Prepare storage (Use NFS below)
 > ## VM2 (NFS Server)  
