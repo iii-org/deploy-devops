@@ -85,7 +85,7 @@
 > * Create redmine-postgresql folder for redmine-postgresql  
 > <code> sudo mkdir /iiidevopsNFS/redmine-postgresql </code>  
 > <code> sudo chmod 777 /iiidevopsNFS/redmine-postgresql </code>  
-> * Create devopsdb folder for System DB  
+> * Create devopsdb folder for DevOps DB  
 > <code> sudo mkdir /iiidevopsNFS/devopsdb </code>  
 > <code> sudo chmod 777 /iiidevopsNFS/devopsdb </code>  
 
@@ -145,17 +145,17 @@
 >   * Administration/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
-# Deploy System DB (Postgresql) on kubernetes cluster  
+# Deploy DevOps DB (Postgresql) on kubernetes cluster  
 > <code> docker build devops-db --tag devops-db:version </code>  
 > <code> docker push  devops-db:version </code>  
 > <code> kubectl apply -f devops-db/devopsdb-deployment.yaml </code>  
 > <code> kubectl apply -f devops-db/devopsdb-service.yaml </code>  
 
-# Deploy System API (Python Flask) on kubernetes cluster  
+# Deploy DevOps API (Python Flask) on kubernetes cluster  
 > <code> kubectl apply -f devops-api/devopsapi-deployment.yaml </code>  
 > <code> kubectl apply -f devops-api/devopsapi-service.yaml</code>  
 
-# Deploy System UI (VueJS) on kubernetes cluster  
+# Deploy DevOps UI (VueJS) on kubernetes cluster  
 > Install Node jS  
 > <code> cd ../ </code>  
 > <code> git clone -b develop https://github.com/iii-org/devops-ui.git </code>  
