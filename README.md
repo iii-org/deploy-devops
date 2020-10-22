@@ -94,8 +94,22 @@
 > * Check NFS Service  
 > <code> showmount -e {NFS server IP} </code>
 
-# Install kubectl  
+# Install kubectl (On user client)
 > https://kubernetes.io/docs/tasks/tools/install-kubectl/  
+> Used Mac 
+>> Example: Mac install kubectl by brew  
+>> <code> brew install kubectl </code>  
+>> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/mac-brew-install-kubectl.png?raw=true)  
+>> <code> kubectl version --client </code>  
+>> Example: Mac install kubectl by curl  
+>> <code> curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" </code>  
+>> <code> chmod +x ./kubectl </code>  
+>> <code> sudo mv ./kubectl /usr/local/bin/kubectl </code>  
+>> <code> kubectl version --client </code>  
+
+> Used Windows, install kubectl by curl 
+>> <code> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/windows/amd64/kubectl.exe </code>  
+>> Execute kubectl.exe
 
 # Deploy Redmine  
 > * deploy redmine postgresql  
