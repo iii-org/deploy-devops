@@ -155,5 +155,5 @@
 > <code> kubectl apply -f devops-ui/devopsui-deployment.yaml </code>  
 > <code> kubectl apply -f devops-ui/devopsui-service.yaml </code>  
 
-# Finish. Go to Web UI to login, Account: admin, Password: admin
+# Finish. Go to Web UI to login, Account: admin, Password: administrator
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
