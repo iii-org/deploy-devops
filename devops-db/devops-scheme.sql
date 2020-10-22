@@ -982,7 +982,7 @@ INSERT INTO public.roles_plugin_relation (role_id,plan_role_id) VALUES
 ;
 
 INSERT INTO public.user (name, email, phone, login, password) VALUES
-('admin', 'admin@devops.org', '00000000', 'admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918')
+('admin', 'admin@devops.org', '00000000', 'admin', '4194d1706ed1f408d5e02d672777019f4d5385c766a8c6ca8acba3167d36a7b9')
 ;
 
 INSERT INTO public.project_user_role
