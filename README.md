@@ -156,6 +156,18 @@
 > <code> kubectl apply -f devops-api/devopsapi-service.yaml</code>  
 
 # Deploy System UI (VueJS) on kubernetes cluster  
+> Install Node jS  
+> <code> cd ../ </code>  
+> <code> git clone -b develop https://github.com/iii-org/devops-ui.git </code>  
+> <code> cd devops-ui </code>  
+> Edit  .env.staging, replace VUE_APP_BASE_API = '/stage-api' to be VUE_APP_BASE_API = 'http://{{VM3_IP}}:31850'  
+> <code> npm install </code>  
+> <code> npm run build:stage </code>  
+> <code> docker build . --tag {{DockerHub_account}}/devopsui:{{version}} </code>  
+> <code> docker push {{DockerHub_account}}/devopsui:{{version}} </code>  
+> <code> docker login </code>  
+> <code> cd ../deploy-devops </code>  
+> Edit devops-ui/devopsui-deployment.yaml, replace image name. From iiiorg/devops-ui:prod-0cb6e72, to {{DockerHub_account}}/devopsui:{{version}}.  
 > <code> kubectl apply -f devops-ui/devopsui-deployment.yaml </code>  
 > <code> kubectl apply -f devops-ui/devopsui-service.yaml </code>  
 
