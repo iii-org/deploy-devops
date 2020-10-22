@@ -21,6 +21,7 @@
 >   * User/Administrator/User seetings, gernerate root perionsal accesss token, and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
 > * Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk  service
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 
@@ -59,7 +60,6 @@
 > Setting Applications  
 > insert name, redirect url and chose all optional, and save application.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
 > Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true)  
