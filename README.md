@@ -18,7 +18,7 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 
 > * Generate root personal access tokens  
->   * User/Administrator/User seetings, gernerate root perionsal accesss token  
+>   * User/Administrator/User seetings, gernerate root perionsal accesss token, and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 > * Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk  service
@@ -59,6 +59,7 @@
 > Setting Applications  
 > insert name, redirect url and chose all optional, and save application.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
 > Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true)  
@@ -123,22 +124,25 @@
 > * login by admin/ admin, and reset administrator password
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
 > * Enable REST API
->   * Administratoe/ Settings/ API/ Enable REST web service
+>   * Administration/ Settings/ API/ Enable REST web service
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/enable-redmine-rest.png?raw=true)  
+> * Generate redmine admin token
+>   * My account/ API access key/ Show
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-admin-apikey.png?raw=true)  
 > * wiki set markdown  
->   * Administrator/ Setting/ Gereral/ Text formatting  
+>   * Administration/ Setting/ Gereral/ Text formatting  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
 > * Create issue status  
->   *  Administratoe/ Issues statuses  
+>   *  Administration/ Issues statuses  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
 > * Create Trackers  
->   *  Administratoe/ Trackers  
+>   *  Administration/ Trackers  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-trackers.png?raw=true)  
 > * Create roles
->   * Administrator/ Roles and permissions
+>   * Administration/ Roles and permissions
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
 > * Create priority
->   * Administrator/ Enumerations/ Issue priorities
+>   * Administration/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
 # Deploy System DB (Postgresql) on kubernetes cluster  
