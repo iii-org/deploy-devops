@@ -44,6 +44,7 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 # Get Kubeconfig Files
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig to ~/.kube/config  
 
 # Gitlab and Rancher pipline hook  
