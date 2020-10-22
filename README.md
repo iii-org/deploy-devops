@@ -162,7 +162,7 @@
 > <code> docker login </code>  
 > <code> cd ../deploy-devops </code>  
 > <code> cp devops-api/_devopsapi-deployment.yaml devops-api/devopsapi-deployment.yaml </code>  
-> Edit devops-ui/devopsapi-deployment.yaml, replace image name. From iiiorg/devops-api:0cb6e72-10121141, to {{DockerHub_account}}/devopsapi:{{version}}.  
+> Edit devops-api/devopsapi-deployment.yaml, replace image name. From iiiorg/devops-api:0cb6e72-10121141, to {{DockerHub_account}}/devopsapi:{{version}}.  
 > <code> kubectl apply -f devops-api/devopsapi-deployment.yaml </code>  
 > <code> kubectl apply -f devops-api/devopsapi-service.yaml</code>  
 
