@@ -148,12 +148,12 @@
 > <code> kubectl apply -f devops-db/devopsdb-service.yaml </code>  
 
 # Deploy System API (Python Flask) on kubernetes cluster  
-> <code> kubectl apply -f devops-db/devopsapi-deployment.yaml </code>  
-> <code> kubectl apply -f devops-db/devopsapi-service.yaml</code>  
+> <code> kubectl apply -f devops-api/devopsapi-deployment.yaml </code>  
+> <code> kubectl apply -f devops-api/devopsapi-service.yaml</code>  
 
 # Deploy System UI (VueJS) on kubernetes cluster  
-> <code> kubectl apply -f devops-db/devopsui-deployment.yaml </code>  
-> <code> kubectl apply -f devops-db/devopsui-service.yaml </code>  
+> <code> kubectl apply -f devops-ui/devopsui-deployment.yaml </code>  
+> <code> kubectl apply -f devops-ui/devopsui-service.yaml </code>  
 
-# Finish. Go to Web UI to login
+# Finish. Go to Web UI to login, Account: admin, Password: admin
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
