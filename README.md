@@ -111,7 +111,7 @@
 >> <code> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/windows/amd64/kubectl.exe </code>  
 >> Execute kubectl.exe
 
-# Deploy Redmine  
+# Deploy Redmine on kubernetes cluster  
 > * deploy redmine postgresql  
 > <code> kubectl apply -f redmine/redmine-postgresql/ </code>  
 > * deploy redmine  
@@ -141,19 +141,19 @@
 >   * Administrator/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
-# Deploy System DB (Postgresql)  
+# Deploy System DB (Postgresql) on kubernetes cluster  
 > <code> docker build devops-db --tag devops-db:version </code>  
 > <code> docker push  devops-db:version </code>  
 > <code> kubectl apply -f devops-db/devopsdb-deployment.yaml </code>  
 > <code> kubectl apply -f devops-db/devopsdb-service.yaml </code>  
 
-# Deploy System API (Python Flask)  
+# Deploy System API (Python Flask) on kubernetes cluster  
 > <code> kubectl apply -f devops-db/devopsapi-deployment.yaml </code>  
 > <code> kubectl apply -f devops-db/devopsapi-service.yaml</code>  
 
-# Deploy System UI (VueJS)  
+# Deploy System UI (VueJS) on kubernetes cluster  
 > <code> kubectl apply -f devops-db/devopsui-deployment.yaml </code>  
 > <code> kubectl apply -f devops-db/devopsui-service.yaml </code>  
 
-# Finish deploy. Go to UI to login
+# Finish. Go to Web UI to login
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
