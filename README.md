@@ -45,7 +45,7 @@
 
 # Get Kubeconfig Files
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
-> Put on kubeconfig to ~/.kube/config  
+> Put on kubeconfig file to $HOME/.kube/config, and also keep it.  
 
 # Gitlab and Rancher pipline hook  
 > ## Rancher  
@@ -153,6 +153,15 @@
 > <code> kubectl apply -f devops-db/devopsdb-service.yaml </code>  
 
 # Deploy DevOps API (Python Flask) on kubernetes cluster  
+> <code> cd ../ </code>  
+> <code> git clone -b develope https://github.com/iii-org/devops-system.git </code>  
+> <code> cd devops-system </code>  
+> <code> cp $HOME/.kube/config k8s_config</code>  
+> <code> docker build . --tag {{DockerHub_account}}/devopsapi:{{version}} </code>  
+> <code> docker push {{DockerHub_account}}/devopsapi:{{version}} </code>  
+> <code> docker login </code>  
+> <code> cd ../deploy-devops </code>  
+> Edit devops-ui/devopsapi-deployment.yaml, replace image name. From iiiorg/devops-api:0cb6e72-10121141, to {{DockerHub_account}}/devopsapi:{{version}}.  
 > <code> kubectl apply -f devops-api/devopsapi-deployment.yaml </code>  
 > <code> kubectl apply -f devops-api/devopsapi-service.yaml</code>  
 
