@@ -13,3 +13,4 @@ sudo add-apt-repository    "deb [arch=amd64] https://download.docker.com/linux/u
    stable" &>> $LOGFILE
 apt-get update -y &>> $LOGFILE 
 apt-get install docker-ce docker-ce-cli containerd.io -y &>> $LOGFILE
+usermod -aG docker $SUDO_USER &>> $LOGFILE
