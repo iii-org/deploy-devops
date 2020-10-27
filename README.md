@@ -89,6 +89,9 @@
 > * Create devopsdb folder for DevOps DB  
 > <code> sudo mkdir /iiidevopsNFS/devopsdb </code>  
 > <code> sudo chmod 777 /iiidevopsNFS/devopsdb </code>  
+> * Create sonarqube folder for SonarQube Server  
+> <code> sudo mkdir /iiidevopsNFS/sonarqube </code>  
+> <code> sudo chmod 777 /iiidevopsNFS/sonarqube </code>  
 
 > ## VM3, VM4 (NFS Client, Kubernetes worker node)  
 > * Install on VM2  
@@ -145,6 +148,11 @@
 > * Create priority
 >   * Administration/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
+
+# Deploy SonarQube Server on kubernetes cluster  
+> <code> kubectl apply -f sonarqube/sonar-server-deployment.yaml </code>  
+> <code> kubectl apply -f sonar-server-service.yaml </code>  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/sonarqube.png?raw=true)  
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster  
 > <code> docker build devops-db --tag devops-db:version </code>  
