@@ -150,10 +150,12 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
 # Deploy SonarQube Server on kubernetes cluster  
+> * Deploy SonarQube Server Deployment  
 > <code> kubectl apply -f sonarqube/sonar-server-deployment.yaml </code>  
+> * Deploy SonarQube Server Service  
 > <code> kubectl apply -f sonar-server-service.yaml </code>  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/sonarqube.png?raw=true)  
-> Account: admin, Password: admin
+> URL: http://140.92.4.5:31910/, Account: admin, Password: admin  
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster  
 > <code> docker build devops-db --tag devops-db:version </code>  
