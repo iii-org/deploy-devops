@@ -153,6 +153,7 @@
 > <code> kubectl apply -f sonarqube/sonar-server-deployment.yaml </code>  
 > <code> kubectl apply -f sonar-server-service.yaml </code>  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/sonarqube.png?raw=true)  
+> Account: admin, Password: admin
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster  
 > <code> docker build devops-db --tag devops-db:version </code>  
