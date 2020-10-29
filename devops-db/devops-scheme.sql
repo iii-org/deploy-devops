@@ -989,3 +989,18 @@ INSERT INTO public.project_user_role
 (project_id, user_id, role_id)
 VALUES(-1, 1, 5);
 
+
+--
+-- Insert test_case_type database dump complete
+--
+INSERT INTO public.test_cases_type ("name") VALUES
+	 ('API');
+
+--
+-- Insert parameter_types database dump complete
+--
+INSERT INTO public.parameter_types ("type") VALUES
+	 ('文字'),
+	 ('英數字'),
+	 ('英文字'),
+	 ('數字');
