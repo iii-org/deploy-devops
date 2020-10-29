@@ -145,6 +145,10 @@
 > * Create roles
 >   * Administration/ Roles and permissions
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
+> * Set Workflow  
+>   * Administration/ Workflow  
+>   * Set Role: all, Tracker: all
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-workflow.png?raw=true)  
 > * Create priority
 >   * Administration/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
