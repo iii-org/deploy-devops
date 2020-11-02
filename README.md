@@ -29,9 +29,9 @@
 * Install Prereqs
 | Software | Version  | Description |
 | -------- | -------- | -------- |
-|Docker engine|	Version 17.06.0-ce+ or higher|	For installation instructions, see Docker Engine documentation|
-|Docker Compose|	Version 1.18.0 or higher|	For installation instructions, see Docker Compose documentation|
-|Openssl|	Latest is preferred	Used to generate| certificate and keys for Harbor|
+| Docker engine |	Version 17.06.0-ce+ or higher |	For installation instructions, see Docker Engine documentation |
+| Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
+| Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
 
  * Install Docker Compose with
  <code>sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname​​​​​​​ -s)-$(uname -m)" -o /usr/local/bin/docker-compose</code>
