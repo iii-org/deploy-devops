@@ -25,6 +25,86 @@
 > * Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk  service
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 
+# Deploy and Setting harbor server on VM1 
+* Install Prereqs
+
+|Software | Version| Description|
+|Docker engine|	Version 17.06.0-ce+ or higher|	For installation instructions, see Docker Engine documentation|
+|Docker Compose|	Version 1.18.0 or higher|	For installation instructions, see Docker Compose documentation|
+|Openssl|	Latest is preferred	Used to generate| certificate and keys for Harbor|
+
+ * Install Docker Compose with
+ <code>sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname​​​​​​​ -s)-$(uname -m)" -o /usr/local/bin/docker-compose</code>
+ <code>sudo chmod  +x /usr/local/bin/docker-compose </code>
+
+* Download and Unpack the Installer (V2.1)
+
+  * Generate Directory for docker harbor data
+  <code>sudo mkdir /data</code>
+  <code>sudo mkdir /data/harbor</code>
+  * Download Insaller 
+  <code>  wget https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz </code>
+  * Unpack Installer packace
+  <code> tar xvf harbor-offline-installer-v2.1.0.tgz </code>
+  
+* Configure HTTPS Access to Harbor-offline
+  * Generate Directory for Certificate 
+    <code>mkdir ~/harbor/certs</code>
+  * Switch Certificate  working directory
+    <code>cd ~/harbor/certs</code>
+  * Generate a Certificate Authority Certificate
+    * Generate a CA certificate private key.
+    <code>openssl genrsa -out ca.key 4096</code>
+    * Generate the CA certificate.
+    <code>openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3"  -key ca.key  -out ca.crt</code>
+  * Generate a Server Certificate
+    * Generate a private key.  
+    <code>openssl genrsa -out 150.92.4.3.key 4096</code>
+    * Generate a certificate signing request (CSR).  
+    <code>openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3" -key 140.92.4.3.key -out 140.92.4.3.csr</code>
+    * Generate an x509 v3 extension file.
+    <code>
+    cat > 140.92.4.3.v3.ext <<-EOF
+    authorityKeyIdentifier=keyid,issuer
+    basicConstraints=CA:FALSE
+    keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+    extendedKeyUsage = serverAuth
+    subjectAltName = @alt_names
+    [alt_names]
+    DNS.1=140.92.4.3
+    DNS.2=140.92.4.3.xip.io
+    DNS.3=iiidevops1
+    EOF
+    </code>
+    * Use the 140.92.4.3.v3.ext file to generate a certificate for your Harbor host.
+    <code>openssl x509 -req -sha512 -days 3650 -extfile 140.92.4.3.v3.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in 140.92.4.3.csr -out 140.92.4.3.crt </code>
+    * Convert 140.92.4.3.crt to 140.92.4.3.cert, for use by Docker.
+    <code>openssl x509 -inform PEM -in 140.92.4.3.crt -out 140.92.4.3.cert</code>
+* Provide the Certificates to Harbor and Docker
+  * Copy the server certificate and key into the certficates folder on your Harbor host.
+  <code>cp 140.92.4.3.crt /data/harbor/cert</code>
+  <code>cp 140.92.4.3.key /data/harbor/cert</code>
+  * Create the appropriate folders For Docker certificates folder 
+  <code>mkdir /etc/docker/certs/140.92.4.3:5443</code>
+  * Copy the server certificate, key and CA files into the Docker certificates folder on the Harbor host 
+  <code>cp 140.92.4.3.cert /etc/docker/certs.d/140.92.4.3:5443/</code>
+  <code>cp 140.92.4.3.key /etc/docker/certs.d/140.92.4.3:5443/</code>
+  <code>cp ca.crt /etc/docker/certs.d/140.92.4.3:5443</code>
+  * Configure Internal TLS communication between Harbor Component
+  <code>docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p  /data/harbor/cert/tls/internal</code>
+
+* Configure the Harbor YML File
+  * Copy harbor temp yaml file to yaml file
+  <code>cd ~/harbor</code>
+  <code>cp harbor.yml.tmpl harbor.yml</code>
+  * Modfiy harbor parameters in harbor ymal file
+  ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor-modify-harbor.yml.png?raw=true)  
+
+* Default Harbor installation
+<code>sudo ./install.sh</code>
+
+
+
 # install rancher on VM2 
 > <code> ./bin/ubuntu20lts_install_rancher.sh  </code>  
 > * set admin password
@@ -145,10 +225,6 @@
 > * Create roles
 >   * Administration/ Roles and permissions
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
-> * Set Workflow  
->   * Administration/ Workflow  
->   * Set Role: all, Tracker: all
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-workflow.png?raw=true)  
 > * Create priority
 >   * Administration/ Enumerations/ Issue priorities
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
