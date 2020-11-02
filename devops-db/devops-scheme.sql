@@ -871,6 +871,10 @@ ALTER TABLE ONLY public."user"
     ADD CONSTRAINT user_pkey PRIMARY KEY (id);
 
 
+ALTER TABLE ONLY public.project_user_role
+    ADD CONSTRAINT project_user_role_pkey PRIMARY KEY (project_id, user_id, role_id),
+
+
 --
 -- Name: user_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
@@ -932,7 +936,7 @@ ALTER TABLE ONLY public.files
 
 ALTER TABLE ONLY public.project_user_role
     ADD CONSTRAINT role FOREIGN KEY (role_id) REFERENCES public.roles(id);
-
+    
 
 --
 -- Name: pipeline_software_config software_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
