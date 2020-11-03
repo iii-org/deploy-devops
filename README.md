@@ -51,9 +51,9 @@
   
 * Configure HTTPS Access to Harbor-offline
   * Generate Directory for Certificate 
-    <code>mkdir ~/harbor/certs</code>
+    <code>mkdir ~/harbor/data/certs</code>
   * Switch Certificate  working directory
-    <code>cd ~/harbor/certs</code>
+    <code>cd ~/harbor/data/certs</code>
   * Generate a Certificate Authority Certificate
     * Generate a CA certificate private key.
     <code>openssl genrsa -out ca.key 4096</code>
@@ -61,11 +61,11 @@
     <code>openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3"  -key ca.key  -out ca.crt</code>
   * Generate a Server Certificate
     * Generate a private key.  
-    <code>openssl genrsa -out 150.92.4.3.key 4096</code>
+    <code>openssl genrsa -out 140.92.4.3.key 4096</code>
     * Generate a certificate signing request (CSR).  
     <code>openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3" -key 140.92.4.3.key -out 140.92.4.3.csr</code>
     * Generate an x509 v3 extension file.
-    <code>
+    ``` 
     cat > 140.92.4.3.v3.ext <<-EOF
     authorityKeyIdentifier=keyid,issuer
     basicConstraints=CA:FALSE
@@ -77,23 +77,25 @@
     DNS.2=140.92.4.3.xip.io
     DNS.3=iiidevops1
     EOF
-    </code>
+    ```
     * Use the 140.92.4.3.v3.ext file to generate a certificate for your Harbor host.
     <code>openssl x509 -req -sha512 -days 3650 -extfile 140.92.4.3.v3.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in 140.92.4.3.csr -out 140.92.4.3.crt </code>
     * Convert 140.92.4.3.crt to 140.92.4.3.cert, for use by Docker.
     <code>openssl x509 -inform PEM -in 140.92.4.3.crt -out 140.92.4.3.cert</code>
+    cd 
 * Provide the Certificates to Harbor and Docker
+  * Configure Internal TLS communication between Harbor Component
+  <code>docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p  /data/harbor/cert/tls/internal</code>
   * Copy the server certificate and key into the certficates folder on your Harbor host.
   <code>cp 140.92.4.3.crt /data/harbor/cert</code>
   <code>cp 140.92.4.3.key /data/harbor/cert</code>
   * Create the appropriate folders For Docker certificates folder 
   <code>mkdir /etc/docker/certs/140.92.4.3:5443</code>
-  * Copy the server certificate, key and CA files into the Docker certificates folder on the Harbor host 
+  * Copy the server certificate, key and CA files into the Docker certificates folder on the Harbor host
   <code>cp 140.92.4.3.cert /etc/docker/certs.d/140.92.4.3:5443/</code>
   <code>cp 140.92.4.3.key /etc/docker/certs.d/140.92.4.3:5443/</code>
   <code>cp ca.crt /etc/docker/certs.d/140.92.4.3:5443</code>
-  * Configure Internal TLS communication between Harbor Component
-  <code>docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p  /data/harbor/cert/tls/internal</code>
+  
 
 * Configure the Harbor YML File
   * Copy harbor temp yaml file to yaml file
