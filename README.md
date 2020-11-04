@@ -71,10 +71,10 @@
     basicConstraints=CA:FALSE
     keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
     extendedKeyUsage = serverAuth
-    subjectAltName = @alt_names
+    subjectAltName = IP:140.92.4.3
     [alt_names]
     DNS.1=140.92.4.3
-    DNS.2=140.92.4.3.xip.io
+    DNS.2=140.92.4.3
     DNS.3=iiidevops1
     EOF
     ```
