@@ -36,36 +36,60 @@
 | Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
 
  * Install Docker Compose with
- <code>sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname​​​​​​​ -s)-$(uname -m)" -o /usr/local/bin/docker-compose</code>
- <code>sudo chmod  +x /usr/local/bin/docker-compose </code>
+ ```bash
+ sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname​​​​​​​ -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+ sudo chmod  +x /usr/local/bin/docker-compose
+ ```
+
 
 * Download and Unpack the Installer (V2.1)
 
   * Generate Directory for docker harbor data
-  <code>sudo mkdir /data</code>
-  <code>sudo mkdir /data/harbor</code>
+  ```bash
+  sudo mkdir /data
+  sudo mkdir /data/harbor
+  ```
+
   * Download Insaller 
-  <code>  wget https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz </code>
+  ```bash
+  wget https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz
+  ```
+  
   * Unpack Installer packace
-  <code> tar xvf harbor-offline-installer-v2.1.0.tgz </code>
+  ```bash
+  tar xvf harbor-offline-installer-v2.1.0.tgz
+  ```
+  
   
 * Configure HTTPS Access to Harbor-offline
   * Generate Directory for Certificate 
-    <code>mkdir ~/harbor/data/certs</code>
+    ```bash
+    mkdir ~/harbor/data/certs
+    ```
   * Switch Certificate  working directory
-    <code>cd ~/harbor/data/certs</code>
+    ```bash
+    cd ~/harbor/data/certs
+    ```
   * Generate a Certificate Authority Certificate
     * Generate a CA certificate private key.
-    <code>openssl genrsa -out ca.key 4096</code>
+    ```bash
+    openssl genrsa -out ca.key 4096
+    ```
     * Generate the CA certificate.
-    <code>openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3"  -key ca.key  -out ca.crt</code>
+    ```bash
+    openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3"  -key ca.key  -out ca.crt
+    ```
   * Generate a Server Certificate
     * Generate a private key.  
-    <code>openssl genrsa -out 140.92.4.3.key 4096</code>
+    ```bash
+    openssl genrsa -out 140.92.4.3.key 4096
+    ```
     * Generate a certificate signing request (CSR).  
-    <code>openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3" -key 140.92.4.3.key -out 140.92.4.3.csr</code>
+    ```bash
+    openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3" -key 140.92.4.3.key -out 140.92.4.3.csr
+    ```    
     * Generate an x509 v3 extension file.
-    ``` 
+    ```bash
     cat > 140.92.4.3.v3.ext <<-EOF
     authorityKeyIdentifier=keyid,issuer
     basicConstraints=CA:FALSE
@@ -79,33 +103,44 @@
     EOF
     ```
     * Use the 140.92.4.3.v3.ext file to generate a certificate for your Harbor host.
-    <code>openssl x509 -req -sha512 -days 3650 -extfile 140.92.4.3.v3.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in 140.92.4.3.csr -out 140.92.4.3.crt </code>
+    ```bash
+    openssl x509 -req -sha512 -days 3650 -extfile 140.92.4.3.v3.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in 140.92.4.3.csr -out 140.92.4.3.crt 
+    ```
     * Convert 140.92.4.3.crt to 140.92.4.3.cert, for use by Docker.
-    <code>openssl x509 -inform PEM -in 140.92.4.3.crt -out 140.92.4.3.cert</code>
-    cd 
-* Provide the Certificates to Harbor and Docker
-  * Configure Internal TLS communication between Harbor Component
-  <code>docker run -v /:/hostfs goharbor/prepare:v2.1.0 gencert -p  /data/harbor/cert/tls/internal</code>
+    ```bash
+    openssl x509 -inform PEM -in 140.92.4.3.crt -out 140.92.4.3.cert
+    ```
+* Provide the Certificates to Harbor and Docker  
   * Copy the server certificate and key into the certficates folder on your Harbor host.
-  <code>cp 140.92.4.3.crt /data/harbor/cert</code>
-  <code>cp 140.92.4.3.key /data/harbor/cert</code>
+  ```bash
+  cp 140.92.4.3.crt /data/harbor/cert
+  cp 140.92.4.3.key /data/harbor/cert
+  ```
   * Create the appropriate folders For Docker certificates folder 
-  <code>mkdir /etc/docker/certs/140.92.4.3:5443</code>
+  ```bash
+  mkdir /etc/docker/certs/140.92.4.3:5443
+  ```
   * Copy the server certificate, key and CA files into the Docker certificates folder on the Harbor host
-  <code>cp 140.92.4.3.cert /etc/docker/certs.d/140.92.4.3:5443/</code>
-  <code>cp 140.92.4.3.key /etc/docker/certs.d/140.92.4.3:5443/</code>
-  <code>cp ca.crt /etc/docker/certs.d/140.92.4.3:5443</code>
+  ```bash
+  cp 140.92.4.3.cert /etc/docker/certs.d/140.92.4.3:54433
+  cp 140.92.4.3.key /etc/docker/certs.d/140.92.4.3:5443
+  cp ca.crt /etc/docker/certs.d/140.92.4.3:5443
+  ```
   
-
 * Configure the Harbor YML File
   * Copy harbor temp yaml file to yaml file
-  <code>cd ~/harbor</code>
-  <code>cp harbor.yml.tmpl harbor.yml</code>
+  ```bash
+  cd ~/harbor
+  cp harbor.yml.tmpl harbor.yml
+  ```
   * Modfiy harbor parameters in harbor ymal file
-  ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor-modify-harbor.yml.png?raw=true)  
+  ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor-modify-harbor-yml-1.png?raw=true)  
+  ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor-modify-harbor-yml-2.png?raw=true) 
 
 * Default Harbor installation
-<code>sudo ./install.sh</code>
+```bash
+sudo ./install.sh
+```
 
 
 
