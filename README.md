@@ -235,6 +235,10 @@ sudo ./install.sh
 >> <code> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/windows/amd64/kubectl.exe </code>  
 >> Execute kubectl.exe
 
+# Create Namespace account on kubernetes cluster
+> * deploy Namespace account
+> <code> kubectl apply -f kubernetes/namespaces/account.yaml
+
 # Deploy Redmine on kubernetes cluster  
 > * deploy redmine postgresql  
 > <code> kubectl apply -f redmine/redmine-postgresql/ </code>  
