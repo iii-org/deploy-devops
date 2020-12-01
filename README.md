@@ -298,6 +298,7 @@ sudo ./install.sh
 > Edit devops-api/devopsapi-deployment.yaml, replace image name. From iiiorg/devops-api:0cb6e72-10121141, to {{DockerHub_account}}/devopsapi:{{version}}.  
 > <code> kubectl apply -f devops-api/devopsapi-deployment.yaml </code>  
 > <code> kubectl apply -f devops-api/devopsapi-service.yaml</code>  
+> <code> curl -X POST http://140.92.4.5:31850/init?name=devops_admin </code> This will return the password of the initial admin user.
 
 # Deploy DevOps UI (VueJS) on kubernetes cluster  
 > Install Node jS  
