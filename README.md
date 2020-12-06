@@ -6,6 +6,15 @@
   * VM3(iiidevops3, 140.92.4.5): Kubernetes node(control plane + etcd + worker node)  
   * VM4(iiidevops4, 140.92.4.6): Kubernetes node(control plane + etcd + worker node)  
 
+## Download deploy-devops
+```bash
+wget https://github.com/iii-org/deploy-devops/archive/master.zip
+sudo apt install unzip
+unzip master.zip
+cd deploy-devops-master/
+chmod a+x bin/*.sh
+```
+ 
 ## Install docker
 > * Install docker (All VMs)  
 > <code>sudo bin/ubuntu20lts_install_docker.sh </code>  
