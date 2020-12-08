@@ -1,7 +1,7 @@
 # deploy-devops
 ## Environment  
 * 4 Ubuntu20.04 LTS VM  
-  * VM1(iiidevops1, 140.92.4.3): GitLab ce-12.10.6 Server  
+  * VM1(iiidevops1, 140.92.4.3): GitLab ce-12.10.6 Server, Harbor 2.1 Server  
   * VM2(iiidevops2, 140.92.4.4): Rancher Server, NFS Server  
   * VM3(iiidevops3, 140.92.4.5): Kubernetes node(control plane + etcd + worker node)  
   * VM4(iiidevops4, 140.92.4.6): Kubernetes node(control plane + etcd + worker node)  
