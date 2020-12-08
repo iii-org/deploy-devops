@@ -7,7 +7,7 @@ if (-e $p_config) {
 	require($p_config);
 }
 
-if (!defined($gitlab_url)) {
+if (!defined($gitlab_url) || $gitlab_url eq '') {
 	my $host = hostname();
 	$gitlab_url = inet_ntoa(scalar gethostbyname($host || 'localhost'));
 }

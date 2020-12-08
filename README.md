@@ -13,6 +13,8 @@ sudo apt install unzip
 unzip master.zip
 cd deploy-devops-master/
 chmod a+x bin/*.sh
+chmod a+x gitlab/*.pl
+chmod a+x harbor/*.pl
 ```
  
 ## Install docker
@@ -20,7 +22,7 @@ chmod a+x bin/*.sh
 > <code>sudo bin/ubuntu20lts_install_docker.sh </code>  
 
 ## Deploy Gitlab on VM1  
-> <code> sudo gitlab/create_gitlab.sh </code>  
+> <code> sudo gitlab/create_gitlab.pl </code>  
 
 ## Setting gitlab  
 > * set gitlab new password  
@@ -31,12 +33,11 @@ chmod a+x bin/*.sh
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
-> * Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk  service
+> * Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk from web hooks and service
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 
 # Deploy and Setting harbor server on VM1 
 * Install Prereqs
-
 
 | Software | Version  | Description |
 | -------- | -------- | -------- |
@@ -44,113 +45,8 @@ chmod a+x bin/*.sh
 | Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
 | Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
 
- * Install Docker Compose with
- ```bash
- sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname​​​​​​​ -s)-$(uname -m)" -o /usr/local/bin/docker-compose
- sudo chmod  +x /usr/local/bin/docker-compose
- ```
-
-
-* Download and Unpack the Installer (V2.1)
-
-  * Generate Directory for docker harbor data
-  ```bash
-  sudo mkdir /data
-  sudo mkdir /data/harbor
-  ```
-
-  * Download Insaller 
-  ```bash
-  wget https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz
-  ```
-  
-  * Unpack Installer packace
-  ```bash
-  tar xvf harbor-offline-installer-v2.1.0.tgz
-  ```
-  
-  
-* Configure HTTPS Access to Harbor-offline
-  * Generate Directory for Certificate 
-    ```bash
-    mkdir ~/harbor/data/certs
-    ```
-  * Switch Certificate  working directory
-    ```bash
-    cd ~/harbor/data/certs
-    ```
-  * Generate a Certificate Authority Certificate
-    * Generate a CA certificate private key.
-    ```bash
-    openssl genrsa -out ca.key 4096
-    ```
-    * Generate the CA certificate.
-    ```bash
-    openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3"  -key ca.key  -out ca.crt
-    ```
-  * Generate a Server Certificate
-    * Generate a private key.  
-    ```bash
-    openssl genrsa -out 140.92.4.3.key 4096
-    ```
-    * Generate a certificate signing request (CSR).  
-    ```bash
-    openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=140.92.4.3" -key 140.92.4.3.key -out 140.92.4.3.csr
-    ```    
-    * Generate an x509 v3 extension file.
-    ```bash
-    cat > 140.92.4.3.v3.ext <<-EOF
-    authorityKeyIdentifier=keyid,issuer
-    basicConstraints=CA:FALSE
-    keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-    extendedKeyUsage = serverAuth
-    subjectAltName = IP:140.92.4.3
-    [alt_names]
-    DNS.1=140.92.4.3
-    DNS.2=140.92.4.3
-    DNS.3=iiidevops1
-    EOF
-    ```
-    * Use the 140.92.4.3.v3.ext file to generate a certificate for your Harbor host.
-    ```bash
-    openssl x509 -req -sha512 -days 3650 -extfile 140.92.4.3.v3.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in 140.92.4.3.csr -out 140.92.4.3.crt 
-    ```
-    * Convert 140.92.4.3.crt to 140.92.4.3.cert, for use by Docker.
-    ```bash
-    openssl x509 -inform PEM -in 140.92.4.3.crt -out 140.92.4.3.cert
-    ```
-* Provide the Certificates to Harbor and Docker  
-  * Copy the server certificate and key into the certficates folder on your Harbor host.
-  ```bash
-  cp 140.92.4.3.crt /data/harbor/cert
-  cp 140.92.4.3.key /data/harbor/cert
-  ```
-  * Create the appropriate folders For Docker certificates folder 
-  ```bash
-  mkdir /etc/docker/certs/140.92.4.3:5443
-  ```
-  * Copy the server certificate, key and CA files into the Docker certificates folder on the Harbor host
-  ```bash
-  cp 140.92.4.3.cert /etc/docker/certs.d/140.92.4.3:54433
-  cp 140.92.4.3.key /etc/docker/certs.d/140.92.4.3:5443
-  cp ca.crt /etc/docker/certs.d/140.92.4.3:5443
-  ```
-  
-* Configure the Harbor YML File
-  * Copy harbor temp yaml file to yaml file
-  ```bash
-  cd ~/harbor
-  cp harbor.yml.tmpl harbor.yml
-  ```
-  * Modfiy harbor parameters in harbor ymal file
-  ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor-modify-harbor-yml-1.png?raw=true)  
-  ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor-modify-harbor-yml-2.png?raw=true) 
-
-* Default Harbor installation
-```bash
-sudo ./install.sh
-```
-
+* Run Harbor installation Script
+> <code> sudo harbor/create_harbor.pl </code>  
 
 
 # install rancher on VM2 
