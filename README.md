@@ -13,7 +13,7 @@ perl ./iiidevops_install.pl
 ```
 
 ## Deploy Gitlab on VM1  
-> <code> sudo gitlab/create_gitlab.pl </code>  
+> <code> sudo ~/deploy-devops-master/gitlab/create_gitlab.pl </code>  
 
 ## Setting gitlab  
 > * set gitlab new password  
@@ -37,11 +37,11 @@ perl ./iiidevops_install.pl
 | Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
 
 * Run Harbor installation Script
-> <code> sudo harbor/create_harbor.pl </code>  
+> <code> sudo ~/deploy-devops-master/harbor/create_harbor.pl </code>  
 
 
-# install rancher on VM2 
-> <code> ./bin/ubuntu20lts_install_rancher.sh  </code>  
+# install rancher on VM1 
+> <code> sudo ~/deploy-devops-master/bin/ubuntu20lts_install_rancher.sh  </code>  
 > * set admin password
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 > * set rancher server url  
@@ -55,7 +55,7 @@ perl ./iiidevops_install.pl
 >   * CNI Plugin MTU Override: 1440  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
 >   * Node Options: Chose etcd, Control plane, worker
->   * Copy command to run on VM3, VM4  
+>   * Copy command to run on VM2, VM3, VM4  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 # Get Kubeconfig Files
@@ -85,36 +85,15 @@ perl ./iiidevops_install.pl
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
 
 # Prepare storage (Use NFS below)
-> ## VM2 (NFS Server)  
-> * Install NFS service  
-> <code> sudo apt install nfs-kernel-server -y </code>  
-> * Edit /etc/exports, add  
-> <code>/iiidevopsNFS *(no_root_squash,rw,sync,no_subtree_check) </code>  
+> ## VM1 (NFS Server)  
+> * Install & Setting NFS service  
+> <code> sudo ~/deploy-devops-master/bin/ubuntu20lts_install_nfsd.pl </code>  
 
-> * Create folder /iiidevopsNFS for NFS service  
-> <code> sudo mkdir /iiidevopsNFS </code>  
-> <code> sudo chmod 777 /iiidevopsNFS </code>  
-> * Restart NFS service  
-> <code> sudo systemctl restart nfs-kernel-server </code>  
-> * Check NFS service  
-> <code> sudo showmount -e localhost  </code>  
-> * Create redmine-postgresql folder for redmine-postgresql  
-> <code> sudo mkdir /iiidevopsNFS/redmine-postgresql </code>  
-> <code> sudo chmod 777 /iiidevopsNFS/redmine-postgresql </code>  
-> * Create devopsdb folder for DevOps DB  
-> <code> sudo mkdir /iiidevopsNFS/devopsdb </code>  
-> <code> sudo chmod 777 /iiidevopsNFS/devopsdb </code>  
-> * Create sonarqube folder for SonarQube Server  
-> <code> sudo mkdir /iiidevopsNFS/sonarqube </code>  
-> <code> sudo chmod 777 /iiidevopsNFS/sonarqube </code>  
-
-> ## VM3, VM4 (NFS Client, Kubernetes worker node)  
-> * Install on VM2  
-> <code>sudo apt install nfs-common </code>  
+# VM2, VM3, VM4 (Check NFS Client, Kubernetes worker node)  
 > * Check NFS Service  
 > <code> showmount -e {NFS server IP} </code>
 
-# Install kubectl (On user client)
+# Install kubectl (On user client if you need, because all VMs are already installed)
 > https://kubernetes.io/docs/tasks/tools/install-kubectl/  
 > Used Mac 
 >> Example: Mac install kubectl by brew  
@@ -130,6 +109,7 @@ perl ./iiidevops_install.pl
 > Used Windows, install kubectl by curl 
 >> <code> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/windows/amd64/kubectl.exe </code>  
 >> Execute kubectl.exe
+
 
 ## Create Namespace on kubernetes cluster
 > <code> kubectl apply -f kubernetes/namespaces/account.yaml </code>

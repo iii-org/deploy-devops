@@ -16,7 +16,6 @@ print("Unziping iiidevops Deploy Package..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
 
-#$cmd = "cd ~/deploy-devops-master/; sudo bin/ubuntu20lts_install_docker.sh";
 $cmd = "sudo apt-get update -y ";
 $cmd .= "; sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y ";
 $cmd .= "; curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - ";
