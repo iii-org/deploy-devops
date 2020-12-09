@@ -30,6 +30,7 @@ $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
 
 $cmd = "sudo snap install kubectl --classic";
+$cmd .= "; mkdir -p ~/.kube/";
 print("Install kubectl..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
