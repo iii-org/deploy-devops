@@ -1,25 +1,16 @@
 # deploy-devops
 ## Environment  
 * 4 Ubuntu20.04 LTS VM  
-  * VM1(iiidevops1, 140.92.4.3): GitLab ce-12.10.6 Server, Harbor 2.1 Server  
-  * VM2(iiidevops2, 140.92.4.4): Rancher Server, NFS Server  
+  * VM1(iiidevops1, 140.92.4.3): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
+  * VM2(iiidevops2, 140.92.4.4): Kubernetes node(control plane + etcd + worker node)  
   * VM3(iiidevops3, 140.92.4.5): Kubernetes node(control plane + etcd + worker node)  
   * VM4(iiidevops4, 140.92.4.6): Kubernetes node(control plane + etcd + worker node)  
 
-## Download deploy-devops
+## Download deploy-devops and Install docker (All VMs)
 ```bash
-wget https://github.com/iii-org/deploy-devops/archive/master.zip
-sudo apt install unzip
-unzip master.zip
-cd deploy-devops-master/
-chmod a+x bin/*.sh
-chmod a+x gitlab/*.pl
-chmod a+x harbor/*.pl
+wget https://github.com/iii-org/deploy-devops/bin/iiidevops_install.pl
+perl ./iiidevops_install.pl
 ```
- 
-## Install docker
-> * Install docker (All VMs)  
-> <code>sudo bin/ubuntu20lts_install_docker.sh </code>  
 
 ## Deploy Gitlab on VM1  
 > <code> sudo gitlab/create_gitlab.pl </code>  
