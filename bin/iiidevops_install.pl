@@ -10,6 +10,7 @@ $cmd = "sudo apt-get install unzip nfs-common -y";
 $cmd .= "; cd ~; unzip master.zip";
 $cmd .= "; cd deploy-devops-master/";
 $cmd .= "; chmod a+x bin/*.sh";
+$cmd .= "; chmod a+x bin/*.pl";
 $cmd .= "; chmod a+x gitlab/*.pl";
 $cmd .= "; chmod a+x harbor/*.pl";
 print("Unziping iiidevops Deploy Package..\n");

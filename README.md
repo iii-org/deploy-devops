@@ -12,19 +12,20 @@ wget wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iii
 perl ./iiidevops_install.pl
 ```
 
-## Deploy Gitlab on VM1  
-> <code> sudo ~/deploy-devops-master/gitlab/create_gitlab.pl </code>  
+## Deploy Gitlab / Harbor / Rancher / NFS on VM1
+> <code> sudo ~/deploy-devops-master/bin/iiidevops_install_master.pl </code>  
 
-## Setting gitlab  
+## Setting gitlab
+> * URL - http://{{vm1 ip}}/
 > * set gitlab new password  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 
 > * Generate root personal access tokens  
->   * User/Administrator/User seetings, gernerate root perionsal accesss token, and keep it.  
+>   * User/Administrator/User seetings, generate the root personal access token and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
-> * Admin/Settings/Network/Outbound reuests，enable allonw request to the local netowrk from web hooks and service
+> * Admin/Settings/Network/Outbound reuests, enable allow request to the local network from web hooks and service
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 
 # Deploy and Setting harbor server on VM1 
@@ -36,12 +37,10 @@ perl ./iiidevops_install.pl
 | Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
 | Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
 
-* Run Harbor installation Script
-> <code> sudo ~/deploy-devops-master/harbor/create_harbor.pl </code>  
+> * URL - https://{{vm1 ip}}:5443/  
 
-
-# install rancher on VM1 
-> <code> sudo ~/deploy-devops-master/bin/ubuntu20lts_install_rancher.sh  </code>  
+# Setting rancher on VM1 
+> * URL - https://{{vm1 ip}}:6443/
 > * set admin password
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 > * set rancher server url  
@@ -55,12 +54,13 @@ perl ./iiidevops_install.pl
 >   * CNI Plugin MTU Override: 1440  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
 >   * Node Options: Chose etcd, Control plane, worker
->   * Copy command to run on VM2, VM3, VM4  
+
+# Copy command to run on VM2, VM3, VM4  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 # Get Kubeconfig Files
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
-> Put on kubeconfig file to $HOME/.kube/config, and also keep it.  
+> Put on kubeconfig file to $HOME/.kube/config on VM1, and also keep it.  
 
 # Gitlab and Rancher pipline hook  
 > ## Rancher  
@@ -84,14 +84,10 @@ perl ./iiidevops_install.pl
 > Done  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
 
-# Prepare storage (Use NFS below)
-> ## VM1 (NFS Server)  
-> * Install & Setting NFS service  
-> <code> sudo ~/deploy-devops-master/bin/ubuntu20lts_install_nfsd.pl </code>  
-
-# VM2, VM3, VM4 (Check NFS Client, Kubernetes worker node)  
-> * Check NFS Service  
+# Check NFS Client on Kubernetes worker node (VM2, VM3, VM4)  
+> * Check VM1 NFS Service is available  
 > <code> showmount -e {NFS server IP} </code>
+
 
 # Install kubectl (On user client if you need, because all VMs are already installed)
 > https://kubernetes.io/docs/tasks/tools/install-kubectl/  
@@ -111,7 +107,7 @@ perl ./iiidevops_install.pl
 >> Execute kubectl.exe
 
 
-## Create Namespace on kubernetes cluster
+## Create Namespace on kubernetes cluster on VM1
 > <code> kubectl apply -f kubernetes/namespaces/account.yaml </code>
 
 # Deploy Redmine on kubernetes cluster  
