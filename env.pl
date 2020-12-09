@@ -17,4 +17,6 @@ $harbor_url = ""; # Exp. 140.92.4.3 , if empty value then auto using server ip
 # Rancher External URL bin/iiidevops_install_apps.pl
 $rancher_url = ""; # Exp. 140.92.4.3 , if empty value then auto using server ip
 # NFS IP bin/iiidevops_install_apps.pl
-$nfs_ip = ""; # Exp. 140.92.4.3 
+$nfs_ip = "10.20.0.71"; # Exp. 140.92.4.3 
+# Postgre root password
+$postgres_password = "a717cfa6db4ff07aefef1d81026289b8";
