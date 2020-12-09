@@ -8,7 +8,7 @@
 
 ## Download deploy-devops and Install docker (All VMs)
 ```bash
-wget https://github.com/iii-org/deploy-devops/bin/iiidevops_install.pl
+wget wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
 perl ./iiidevops_install.pl
 ```
 
