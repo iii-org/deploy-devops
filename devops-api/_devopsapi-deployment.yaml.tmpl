@@ -19,46 +19,46 @@ spec:
         - containerPort: 10009
         env:
         - name: SQLALCHEMY_DATABASE_URI
-          value: "postgresql://postgres:{{postgres_password}}@{{db_ip}}:31403/devopsdb"
+          value: "postgresql://postgres:{{db_passwd}}@{{db_ip}}:31403/devopsdb"
         - name: SQLALCHEMY_TRACK_MODIFICATIONS
           value: "false"
         - name: JWT_SECRET_KEY
-          value: "xxxxxxxx"
+          value: "{{jwt_secret_key}}"  
         - name: WTF_CSRF_CHECK_DEFAULT
           value: "false"
         - name: JSON_AS_ASCII
           value: "false"
         - name: REDMINE_IP_PORT
-          value: "140.92.4.5:32748"
+          value: "{{redmine_ip}}:32748"
         - name: REDMINE_ADMIN_ACCOUNT
           value: "admin"
         - name: REDMINE_ADMIN_PASSWORD
-          value: "xxxxxxxx"
+          value: "{{redmine_admin_passwd}}"
         - name: REDMINE_API_KEY
-          value: xxxxxxxx
+          value: {{redmine_api_key}}
         - name: GITLAB_IP_PORT
           value: {{gitlab_url}}
         - name: GITLAB_ADMIN_ACCOUNT
           value: root
         - name: GITLAB_ADMIN_PASSWORD
-          value: xxxxxxxx
+          value: gitlab_root_passwd
         - name: GITLAB_PRIVATE_TOKEN
-          value: xxxxxxxx
+          value: {{gitlab_private_token}}
         - name: RANCHER_IP_PORT
           value: {{rancher_url}}:6443
         - name: RANCHER_ADMIN_ACCOUNT
           value: admin
         - name: RANCHER_ADMIN_PASSWORD
-          value: xxxxxxxx
+          value: {{rancher_admin_password}}
         - name: RANCHER_CLUSTER_NAME
           value: iiidevops-k8s
         - name: CHECKMARX_ORIGIN
-          value: https://checkmarx.labad.org/cxrestapi
+          value: {{checkmarx_origin}}
         - name: CHECKMARX_USERNAME
-          value: dtiuser
+          value: {{checkmarx_username}}
         - name: CHECKMARX_PASSWORD
-          value: xxxxxxxx
+          value: {{checkmarx_password}}
         - name: CHECKMARX_SECRET
-          value: 014DF517-39D1-4453-B7B3-9930C563627C
+          value: {{checkmarx_secret}}
         - name: SONAR_IP_PORT
-          value: 140.92.4.5:31910
+          value: {{sonarqube_ip}}:31910

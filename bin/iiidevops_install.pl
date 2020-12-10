@@ -6,7 +6,7 @@ print("Getting iiidevops Deploy Package..\n");
 $cmd_msg = `$cmd`;
 #print("-----\n$cmd_msg\n-----\n");
 
-$cmd = "sudo apt-get install unzip nfs-common -y";
+$cmd = "sudo apt-get install unzip nfs-common libterm-readkey-perl -y";
 $cmd .= "; cd ~; unzip master.zip";
 $cmd .= "; cd deploy-devops-master/";
 $cmd .= "; chmod a+x bin/*.sh";
@@ -35,4 +35,4 @@ print("Install kubectl..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
 
-print("Please Edit ~/deploy-devops-master/env.pl \n\n");
+print("Please Edit ~/deploy-devops-master/env.pl or Run ~/deploy-devops-master/bin/generate_env.pl\n\n");
