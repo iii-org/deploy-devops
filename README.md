@@ -57,6 +57,7 @@ perl ./iiidevops_install.pl
 
 # Copy command to run on VM2, VM3, VM4  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
+> * It may take a while to create a Cluster, depending on your host and network performance
 
 # Get Kubeconfig Files
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
