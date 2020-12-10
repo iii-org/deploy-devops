@@ -8,7 +8,7 @@
 
 ## Download deploy-devops and Install docker (All VMs)
 ```bash
-wget wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
+wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
 perl ./iiidevops_install.pl
 ```
 
@@ -61,7 +61,8 @@ perl ./iiidevops_install.pl
 
 # Get Kubeconfig Files
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
-> Put on kubeconfig file to $HOME/.kube/config on VM1, and also keep it.  
+> Put on kubeconfig file to ~/.kube/config on VM1, and also keep it.  
+> <code> vi ~/.kube/config </code>
 
 # Gitlab and Rancher pipline hook  
 > ## Rancher  
@@ -86,7 +87,7 @@ perl ./iiidevops_install.pl
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
 
 # Check NFS Client on Kubernetes worker node (VM2, VM3, VM4)  
-> * Check VM1 NFS Service is available  
+> * Check NFS Service is available on VM2, VM3, VM4  
 > <code> showmount -e {NFS server IP} </code>
 
 
@@ -108,10 +109,16 @@ perl ./iiidevops_install.pl
 >> Execute kubectl.exe
 
 
-## Create Namespace on kubernetes cluster on VM1
-> <code> kubectl apply -f kubernetes/namespaces/account.yaml </code>
+# Create Namespace on kubernetes cluster on VM1
+> * Make sure the Kubernetes master is runing
+> <code> kubectl cluster-info </code>
+> * If everything is ok, you can use the following command to create a namespace.
+> <code> kubectl apply -f ~/deploy-devops-master/kubernetes/namespaces/account.yaml </code>
 
-# Deploy Redmine on kubernetes cluster  
+# Deploy Redmine / SonarQube / iiiDevops on kubernetes cluster
+> <code> ~/deploy-devops-master/bin/iiidevops_install_apps.pl </code>
+
+
 > * deploy redmine postgresql  
 > <code> kubectl apply -f redmine/redmine-postgresql/ </code>  
 > * deploy redmine  

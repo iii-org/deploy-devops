@@ -14,5 +14,7 @@
 $gitlab_url = ""; # Exp. 140.92.4.3 , if empty value then auto using server ip
 # Harbor External URL harbor/create_harbor.pl
 $harbor_url = ""; # Exp. 140.92.4.3 , if empty value then auto using server ip
-# NFS IP redmine/create_redmine.pl
+# Rancher External URL bin/iiidevops_install_apps.pl
+$rancher_url = ""; # Exp. 140.92.4.3 , if empty value then auto using server ip
+# NFS IP bin/iiidevops_install_apps.pl
 $nfs_ip = ""; # Exp. 140.92.4.3 
