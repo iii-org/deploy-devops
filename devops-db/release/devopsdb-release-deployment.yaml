@@ -1,0 +1,26 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: devopsdb-rel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devopsdb-rel
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: devopsdb-rel
+    spec:
+      containers:
+      - name: devopsdb-rel
+        image: iiiorg/devops-db-rel:V0.9.2
+        env:
+        - name: POSTGRES_PASSWORD
+          value: openstack
+        - name: POSTGRES_DB
+          value: devopsdb
+        ports:
+        - containerPort: 5432
