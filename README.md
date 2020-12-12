@@ -1,21 +1,33 @@
 # deploy-devops
 ## Environment  
 * 4 Ubuntu20.04 LTS VM  
-  * VM1(iiidevops1, 140.92.4.3): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
-  * VM2(iiidevops2, 140.92.4.4): Kubernetes node(control plane + etcd + worker node)  
-  * VM3(iiidevops3, 140.92.4.5): Kubernetes node(control plane + etcd + worker node)  
-  * VM4(iiidevops4, 140.92.4.6): Kubernetes node(control plane + etcd + worker node)  
+  * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
+  * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)  
+  * VM3(iiidevops3, 10.20.0.73): Kubernetes node(control plane + etcd + worker node)  
 
-## Download deploy-devops and Install docker (All VMs)
+## Step 1. Download deploy-devops and Install docker (All VMs)
 ```bash
-wget wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
-perl ./iiidevops_install.pl
+wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
+perl ./iiidevops_install.pl local
+perl ./iiidevops_install.pl localadmin@10.20.0.72
+perl ./iiidevops_install.pl localadmin@10.20.0.73
 ```
 
-## Deploy Gitlab / Harbor / Rancher / NFS on VM1
-> <code> sudo ~/deploy-devops-master/bin/iiidevops_install_master.pl </code>  
+## Step 2. Edit env.pl to configure settings information (VM1)
 
-## Setting gitlab
+> <code> vi ~/deploy-devops/env.pl</code>  
+>
+> 
+
+## Step 3. Deploy Gitlab / Harbor / Rancher / NFS (VM1)
+
+> <code> sudo ~/deploy-devops/bin/iiidevops_install_mainapps.pl</code>  
+>
+> After the deployment is complete, you should be able to see the URL information of these services as shown below.
+>
+> 
+
+## Step 4. Setting gitlab
 > * URL - http://{{vm1 ip}}/
 > * set gitlab new password  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
