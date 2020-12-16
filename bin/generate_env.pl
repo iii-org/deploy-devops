@@ -6,6 +6,7 @@ use Sys::Hostname;
 use FindBin qw($Bin);
 
 $p_config = "$Bin/../env.pl";
+$p_config_bak = $p_config.".bak";
 $p_config_tmpl = $p_config.".tmpl";
 if (!-e $p_config_tmpl) {
 	print("The template file [$p_config_tmpl] does not exist!\n");
@@ -24,6 +25,8 @@ $ans_tmpl = <<END;
 \$checkmarx_username = '{{checkmarx_username}}';
 \$checkmarx_password = '{{checkmarx_password}}';
 \$checkmarx_secret = '{{checkmarx_secret}}';
+\$auto_password = '{{auto_password}}';
+\$random_key = '{{random_key}}';
 
 END
 $p_config_tmpl_ans = $p_config.".ans";
@@ -204,14 +207,55 @@ print ("$answer\n\n");
 $ans_tmpl =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/;
 write_ans();
 
+# 8. Automatically generate password
+#\$auto_password = '{{auto_password}}';
+$auto_password = (defined($auto_password) && $auto_password ne '')?$auto_password:'';
+if ($auto_password ne '') {
+	$question = "Q8. Do you want to change auto password?(y/N)";
+	$answer = "A8. Skip Set auto password!";
+	$Y_N = prompt_for_input($question);
+	$isAsk = (lc($Y_N) eq 'y');	
+}
+else {
+	$isAsk=1;
+}
+if ($isAsk) {
+	$auto_password = random_password(20);
+	$answer = "A8. Set auto password OK!";
+}
+print ("$answer\n\n");
+$ans_tmpl =~ s/{{auto_password}}/$auto_password/;
+write_ans();
+
+# 9. Automatically generate random key
+#\$random_key = '{{random_key}}';
+$random_key = (defined($random_key) && $random_key ne '')?$random_key:'';
+if ($random_key ne '') {
+	$question = "Q9. Do you want to change auto password?(y/N)";
+	$answer = "A9. Skip Set auto password!";
+	$Y_N = prompt_for_input($question);
+	$isAsk = (lc($Y_N) eq 'y');	
+}
+else {
+	$isAsk=1;
+}
+if ($isAsk) {
+	$random_key = random_password(20);
+	$answer = "A9. Set random key OK!";
+}
+print ("$answer\n\n");
+$ans_tmpl =~ s/{{random_key}}/$random_key/;
+write_ans();
+
+
 #------------------------------
 # checkmarx setting(Option)
 #------------------------------
-# 8. \$checkmarx_origin = '{{checkmarx_origin}}';
+# 11. \$checkmarx_origin = '{{checkmarx_origin}}';
 $checkmarx_origin = (defined($checkmarx_origin) && $checkmarx_origin ne '')?$checkmarx_origin:'';
 if ($checkmarx_origin ne '') {
-	$question = "Q8. Do you want to change Checkmarx origin?(y/N)";
-	$answer = "A8. Skip Set Checkmarx origin!";
+	$question = "Q11. Do you want to change Checkmarx origin?(y/N)";
+	$answer = "A11. Skip Set Checkmarx origin!";
 	$Y_N = prompt_for_input($question);
 	$isAsk = (lc($Y_N) eq 'y');	
 }
@@ -219,25 +263,25 @@ else {
 	$isAsk=1;
 }
 while ($isAsk) {
-	$question = "Q8. Please enter the Checkmarx origin:";
+	$question = "Q11. Please enter the Checkmarx origin:";
 	$checkmarx_origin = prompt_for_input($question);
 	$isAsk = ($checkmarx_origin eq '');
 	if ($isAsk) {
-		print("A8. The Checkmarx origin is empty, please re-enter!\n");
+		print("A11. The Checkmarx origin is empty, please re-enter!\n");
 	}
 	else {
-		$answer = "A8. Set Checkmarx origin OK!";
+		$answer = "A11. Set Checkmarx origin OK!";
 	}
 }
 print ("$answer\n\n");
 $ans_tmpl =~ s/{{checkmarx_origin}}/$checkmarx_origin/;
 write_ans();
 
-# 9. \$checkmarx_username = '{{checkmarx_username}}';
+# 12. \$checkmarx_username = '{{checkmarx_username}}';
 $checkmarx_username = (defined($checkmarx_username) && $checkmarx_username ne '')?$checkmarx_username:'';
 if ($checkmarx_username ne '') {
-	$question = "Q9. Do you want to change Checkmarx username?(y/N)";
-	$answer = "A9. Skip Set Checkmarx username!";
+	$question = "Q12. Do you want to change Checkmarx username?(y/N)";
+	$answer = "A12. Skip Set Checkmarx username!";
 	$Y_N = prompt_for_input($question);
 	$isAsk = (lc($Y_N) eq 'y');	
 }
@@ -245,25 +289,25 @@ else {
 	$isAsk=1;
 }
 while ($isAsk) {
-	$question = "Q9. Please enter the Checkmarx username:";
+	$question = "Q12. Please enter the Checkmarx username:";
 	$checkmarx_username = prompt_for_input($question);
 	$isAsk = ($checkmarx_username eq '');
 	if ($isAsk) {
-		print("A9. The Checkmarx username is empty, please re-enter!\n");
+		print("A12. The Checkmarx username is empty, please re-enter!\n");
 	}
 	else {
-		$answer = "A9. Set Checkmarx username OK!";
+		$answer = "A12. Set Checkmarx username OK!";
 	}
 }
 print ("$answer\n\n");
 $ans_tmpl =~ s/{{checkmarx_username}}/$checkmarx_username/;
 write_ans();
 
-# 10. \$checkmarx_password = '{{checkmarx_password}}';
+# 13. \$checkmarx_password = '{{checkmarx_password}}';
 $password1 = (defined($checkmarx_password) && $checkmarx_password ne '')?$checkmarx_password:'';
 if ($password1 ne '') {
-	$question = "Q10. Do you want to change Checkmarx password?(y/N)";
-	$answer = "A10. Skip Set Checkmarx password!";
+	$question = "Q13. Do you want to change Checkmarx password?(y/N)";
+	$answer = "A13. Skip Set Checkmarx password!";
 	$Y_N = prompt_for_input($question);
 	$isAsk = (lc($Y_N) eq 'y');	
 }
@@ -271,16 +315,16 @@ else {
 	$isAsk=1;
 }
 while ($isAsk) {
-	$question = "Q10. Please enter the Checkmarx password:";
+	$question = "Q13. Please enter the Checkmarx password:";
 	$password1 = prompt_for_password($question);
-	$question = "Q10. Please re-enter the Checkmarx password:";
+	$question = "Q13. Please re-enter the Checkmarx password:";
 	$password2 = prompt_for_password($question);
 	$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
 	if ($isAsk) {
-		print("A10. The password is not the same, please re-enter!\n");
+		print("A13. The password is not the same, please re-enter!\n");
 	}
 	else {
-		$answer = "A10. Set Checkmarx password OK!";
+		$answer = "A13. Set Checkmarx password OK!";
 	}
 }
 $checkmarx_password = $password1;
@@ -288,11 +332,11 @@ print ("$answer\n\n");
 $ans_tmpl =~ s/{{checkmarx_password}}/$checkmarx_password/;
 write_ans();
 
-# 11. \$checkmarx_secret = '{{checkmarx_secret}}';
+# 14. \$checkmarx_secret = '{{checkmarx_secret}}';
 $checkmarx_secret = (defined($checkmarx_secret) && $checkmarx_secret ne '')?$checkmarx_secret:'';
 if ($checkmarx_secret ne '') {
-	$question = "Q11. Do you want to change Checkmarx secret?(y/N)";
-	$answer = "A11. Skip Set Checkmarx secret!";
+	$question = "Q14. Do you want to change Checkmarx secret?(y/N)";
+	$answer = "A14. Skip Set Checkmarx secret!";
 	$Y_N = prompt_for_input($question);
 	$isAsk = (lc($Y_N) eq 'y');	
 }
@@ -300,25 +344,56 @@ else {
 	$isAsk=1;
 }
 while ($isAsk) {
-	$question = "Q11. Please enter the Checkmarx secret:";
+	$question = "Q14. Please enter the Checkmarx secret:";
 	$checkmarx_secret = prompt_for_input($question);
 	$isAsk = ($checkmarx_secret eq '');
 	if ($isAsk) {
-		print("A11. The Checkmarx secret is empty, please re-enter!\n");
+		print("A14. The Checkmarx secret is empty, please re-enter!\n");
 	}
 	else {
-		$answer = "A11. Set Checkmarx secret OK!";
+		$answer = "A14. Set Checkmarx secret OK!";
 	}
 }
 print ("$answer\n\n");
 $ans_tmpl =~ s/{{checkmarx_secret}}/$checkmarx_secret/;
 write_ans();
 
+
+#------------------------------
+# 21. Generate env.pl
+#------------------------------
+$question = "Q21. Do you want to generate env.pl based on the above information?(y/N)";
+$Y_N = prompt_for_input($question);
+if (lc($Y_N) eq 'y') {
+	if (-e $p_config) {
+		`cp -a $p_config $p_config_bak`;
+		print("The original env.pl has been backed up as $p_config_bak\n");
+	}
+	
+	$env_template = `cat $p_config_tmpl`;
+	$env_template =~ s/{{vm1_ip}}/$vm1_ip/g;
+	$env_template =~ s/{{vm2_ip}}/$vm2_ip/g;
+	$env_template =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/g;
+	$env_template =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/g;
+	$env_template =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/g;
+	$env_template =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/g;
+	$env_template =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/g;
+	$env_template =~ s/{{auto_password}}/$auto_password/g;
+	$env_template =~ s/{{random_key}}/$random_key/g;
+	$env_template =~ s/{{checkmarx_origin}}/$checkmarx_origin/g;
+	$env_template =~ s/{{checkmarx_username}}/$checkmarx_username/g;
+	$env_template =~ s/{{checkmarx_password}}/$checkmarx_password/g;
+	$env_template =~ s/{{checkmarx_secret}}/$checkmarx_secret/g;	
+	
+	open(FH, '>', $p_config) or die $!;
+	print FH $env_template;
+	close(FH);	
+}
+
 exit;
 
 
 sub write_ans {
-
 	open(FH, '>', $p_config_tmpl_ans) or die $!;
 	print FH $ans_tmpl;
 	close(FH);
@@ -353,4 +428,20 @@ sub prompt_for_password {
     $password =~ s/\R\z//;
 
     return $password;
+}
+
+# Ref - https://utdream.org/quick-random-password-generator-for-perl/
+sub random_password {
+	my ($password_len) = @_;
+	my @alphanumeric = ('a'..'z', 'A'..'Z', 0..9); #('a'..'z', 'A'..'Z', 0..9,'!','_','-');
+	my @numeric = (0..9);
+	my $randpassword = '';
+	my $password_len_max = ($password_len>0)?$password_len:16;
+	
+
+	until ( length($randpassword) > $password_len_max ) {
+        $randpassword = $randpassword . join '', map $alphanumeric[rand @alphanumeric], 0..(rand @numeric);
+	}
+	
+	return($randpassword);
 }

@@ -26,36 +26,51 @@ if (uc($ARGV[0] ne 'local')) {
 	exit;
 }
 
-$cmd = "cd ~; wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip";
+$cmd = <<END;
+cd ~; \
+wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip
+END
 log_print("Getting iiidevops Deploy Package..\n");
 $cmd_msg = `$cmd`;
 #log_print("-----\n$cmd_msg\n-----\n");
 
-$cmd = "sudo apt-get install unzip nfs-common libterm-readkey-perl -y";
-$cmd .= "; cd ~; unzip -o -d deploy-devops $ins_repo.zip";
-$cmd .= "; cd deploy-devops-$ins_repo/";
-$cmd .= "; chmod a+x bin/*.sh";
-$cmd .= "; chmod a+x bin/*.pl";
-$cmd .= "; chmod a+x gitlab/*.pl";
-$cmd .= "; chmod a+x harbor/*.pl";
+$cmd = <<END;
+sudo apt-get install unzip nfs-common libterm-readkey-perl -y; \
+cd ~; unzip -o $ins_repo.zip \
+cd deploy-devops-$ins_repo/ \
+chmod a+x bin/*.sh \
+chmod a+x bin/*.pl \
+chmod a+x gitlab/*.pl \
+chmod a+x harbor/*.pl
+END
 log_print("Unziping iiidevops Deploy Package..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
 
-$cmd = "sudo apt-get update -y ";
-$cmd .= "; sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y ";
-$cmd .= "; curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - ";
-$cmd .= "; sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\" "; 
-$cmd .= "; sudo apt-get update -y ";
-$cmd .= "; sudo apt-get install docker-ce docker-ce-cli containerd.io -y ";
-$cmd .= "; usermod -aG docker \$SUDO_USER ";
-$cmd .= "; docker -v";
+$cmd = <<END;
+sudo apt-get update -y; \
+sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
+END
+log_print("Install default packages..\n");
+$cmd_msg = `$cmd`;
+log_print("-----\n$cmd_msg\n-----\n");
+
+$cmd = <<END;
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -; \
+sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\"; \ 
+sudo apt-get update -y; \
+sudo apt-get install docker-ce docker-ce-cli containerd.io -y; \
+usermod -aG docker \$SUDO_USER; \
+docker -v
+END
 log_print("Install docker..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
 
-$cmd = "sudo snap install kubectl --classic";
-$cmd .= "; mkdir -p ~/.kube/";
+$cmd = <<END;
+sudo snap install kubectl --classic; \
+mkdir -p ~/.kube/
+END
 log_print("Install kubectl..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
