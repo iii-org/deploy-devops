@@ -39,7 +39,7 @@ $host = hostname();
 $host_ip = inet_ntoa(scalar gethostbyname($host || 'localhost'));
 
 # 1. Set $vm1_ip
-$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '')?$vm1_ip:$host_ip;
+$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
 $question = "Q1. Do you want to set [$vm1_ip] as the URL of the main service?(GitLab, Harbor...)? (Y/n)";
 $Y_N = prompt_for_input($question);
 while (lc($Y_N) eq 'n') {	
@@ -53,7 +53,7 @@ $ans_tmpl =~ s/{{vm1_ip}}/$vm1_ip/;
 write_ans();
 
 # 2. Set $vm2_ip
-$vm2_ip = (defined($vm2_ip) && $vm2_ip ne '')?$vm2_ip:$host_ip;
+$vm2_ip = (defined($vm2_ip) && $vm2_ip ne '{{vm2_ip}}' && $vm2_ip ne '')?$vm2_ip:$host_ip;
 $question = "Q2. Please enter the IP or domain name of the application service?(Redmine, Sonarqube...):($vm2_ip)";
 $ans_ip = prompt_for_input($question);
 $vm2_ip = ($ans_ip ne '')?$ans_ip:$vm2_ip;
@@ -64,7 +64,7 @@ write_ans();
 
 # 3. set GitLab root password
 #\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
-$password1 = (defined($ask_gitlab_root_password) && $ask_gitlab_root_password ne '')?$ask_gitlab_root_password:'';
+$password1 = (defined($ask_gitlab_root_password) && $ask_gitlab_root_password ne '{{ask_gitlab_root_password}}' && $ask_gitlab_root_password ne '')?$ask_gitlab_root_password:'';
 if ($password1 ne '') {
 	$question = "Q3. Do you want to change GitLab root password?(y/N)";
 	$answer = "A3. Skip Set GitLab root password!";
@@ -95,7 +95,7 @@ write_ans();
 
 # 4. set GitLab Token
 #\$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
-$ask_gitlab_private_token = (defined($ask_gitlab_private_token) && $ask_gitlab_private_token ne '' && lc($ask_gitlab_private_token) ne 'skip')?$ask_gitlab_private_token:'';
+$ask_gitlab_private_token = (defined($ask_gitlab_private_token) && $ask_gitlab_private_token ne '{{ask_gitlab_private_token}}' && $ask_gitlab_private_token ne '' && lc($ask_gitlab_private_token) ne 'skip')?$ask_gitlab_private_token:'';
 if ($ask_gitlab_private_token ne '') {
 	$question = "Q4. Do you want to change GitLab Token?(y/N)";
 	$answer = "A4. Skip Set GitLab Token!";
@@ -122,7 +122,7 @@ write_ans();
 
 # 5. set Rancher admin password
 #\$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';
-$password1 = (defined($ask_rancher_admin_password) && $ask_rancher_admin_password ne '')?$ask_rancher_admin_password:'';
+$password1 = (defined($ask_rancher_admin_password) && $ask_rancher_admin_password ne '{{ask_rancher_admin_password}}' && $ask_rancher_admin_password ne '')?$ask_rancher_admin_password:'';
 if ($password1 ne '') {
 	$question = "Q5. Do you want to change Rancher admin password?(y/N)";
 	$answer = "A5. Skip Set Rancher admin password!";
@@ -152,7 +152,7 @@ write_ans();
 
 # 6. set Redmine admin password
 #\$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
-$password1 = (defined($ask_redmine_admin_password) && $ask_redmine_admin_password ne '')?$ask_redmine_admin_password:'';
+$password1 = (defined($ask_redmine_admin_password) && $ask_redmine_admin_password ne '{{ask_redmine_admin_password}}' && $ask_redmine_admin_password ne '')?$ask_redmine_admin_password:'';
 if ($password1 ne '') {
 	$question = "Q6. Do you want to change Redmine admin password?(y/N)";
 	$answer = "A6. Skip Set Redmine admin password!";
@@ -182,7 +182,7 @@ write_ans();
 
 # 7. set Redmine API key
 #\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
-$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '' && lc($ask_redmine_api_key) ne 'skip')?$ask_redmine_api_key:'';
+$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '{{ask_redmine_api_key}}' && $ask_redmine_api_key ne '' && lc($ask_redmine_api_key) ne 'skip')?$ask_redmine_api_key:'';
 if ($ask_redmine_api_key ne '') {
 	$question = "Q7. Do you want to change Redmine API key?(y/N)";
 	$answer = "A7. Skip Set Redmine API key!";
@@ -209,7 +209,7 @@ write_ans();
 
 # 8. Automatically generate password
 #\$auto_password = '{{auto_password}}';
-$auto_password = (defined($auto_password) && $auto_password ne '')?$auto_password:'';
+$auto_password = (defined($auto_password) && $auto_password ne '{{auto_password}}' && $auto_password ne '')?$auto_password:'';
 if ($auto_password ne '') {
 	$question = "Q8. Do you want to change auto password?(y/N)";
 	$answer = "A8. Skip Set auto password!";
@@ -229,7 +229,7 @@ write_ans();
 
 # 9. Automatically generate random key
 #\$random_key = '{{random_key}}';
-$random_key = (defined($random_key) && $random_key ne '')?$random_key:'';
+$random_key = (defined($random_key) && $random_key ne '{{random_key}}' && $random_key ne '')?$random_key:'';
 if ($random_key ne '') {
 	$question = "Q9. Do you want to change auto password?(y/N)";
 	$answer = "A9. Skip Set auto password!";
@@ -252,7 +252,7 @@ write_ans();
 # checkmarx setting(Option)
 #------------------------------
 # 11. \$checkmarx_origin = '{{checkmarx_origin}}';
-$checkmarx_origin = (defined($checkmarx_origin) && $checkmarx_origin ne '')?$checkmarx_origin:'';
+$checkmarx_origin = (defined($checkmarx_origin)) && $checkmarx_origin ne '{{checkmarx_origin}}' && $checkmarx_origin ne '')?$checkmarx_origin:'';
 if ($checkmarx_origin ne '') {
 	$question = "Q11. Do you want to change Checkmarx origin?(y/N)";
 	$answer = "A11. Skip Set Checkmarx origin!";
@@ -278,7 +278,7 @@ $ans_tmpl =~ s/{{checkmarx_origin}}/$checkmarx_origin/;
 write_ans();
 
 # 12. \$checkmarx_username = '{{checkmarx_username}}';
-$checkmarx_username = (defined($checkmarx_username) && $checkmarx_username ne '')?$checkmarx_username:'';
+$checkmarx_username = (defined($checkmarx_username) && $checkmarx_username ne '{{checkmarx_username}}' && $checkmarx_username ne '')?$checkmarx_username:'';
 if ($checkmarx_username ne '') {
 	$question = "Q12. Do you want to change Checkmarx username?(y/N)";
 	$answer = "A12. Skip Set Checkmarx username!";
@@ -304,7 +304,7 @@ $ans_tmpl =~ s/{{checkmarx_username}}/$checkmarx_username/;
 write_ans();
 
 # 13. \$checkmarx_password = '{{checkmarx_password}}';
-$password1 = (defined($checkmarx_password) && $checkmarx_password ne '')?$checkmarx_password:'';
+$password1 = (defined($checkmarx_password) && $checkmarx_password ne '{{checkmarx_password}}' && $checkmarx_password ne '')?$checkmarx_password:'';
 if ($password1 ne '') {
 	$question = "Q13. Do you want to change Checkmarx password?(y/N)";
 	$answer = "A13. Skip Set Checkmarx password!";
@@ -333,7 +333,7 @@ $ans_tmpl =~ s/{{checkmarx_password}}/$checkmarx_password/;
 write_ans();
 
 # 14. \$checkmarx_secret = '{{checkmarx_secret}}';
-$checkmarx_secret = (defined($checkmarx_secret) && $checkmarx_secret ne '')?$checkmarx_secret:'';
+$checkmarx_secret = (defined($checkmarx_secret) && $checkmarx_secret ne '{{checkmarx_secret}}' && $checkmarx_secret ne '')?$checkmarx_secret:'';
 if ($checkmarx_secret ne '') {
 	$question = "Q14. Do you want to change Checkmarx secret?(y/N)";
 	$answer = "A14. Skip Set Checkmarx secret!";
