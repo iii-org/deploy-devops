@@ -21,6 +21,7 @@ $ans_tmpl = <<END;
 \$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';
 \$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
 \$ask_redmine_api_key = '{{ask_redmine_api_key}}';
+\$ask_harbor_admin_password = '{{ask_harbor_admin_password}}';
 \$checkmarx_origin = '{{checkmarx_origin}}';
 \$checkmarx_username = '{{checkmarx_username}}';
 \$checkmarx_password = '{{checkmarx_password}}';
@@ -207,30 +208,41 @@ print ("$answer\n\n");
 $ans_tmpl =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/;
 write_ans();
 
-# 8. Automatically generate password
-#\$auto_password = '{{auto_password}}';
-$auto_password = (defined($auto_password) && $auto_password ne '{{auto_password}}' && $auto_password ne '')?$auto_password:'';
-if ($auto_password ne '') {
-	$question = "Q8. Do you want to change auto password?(y/N)";
-	$answer = "A8. Skip Set auto password!";
+# 8. set Harbor admin password
+#\$ask_harbor_admin_password = '{{ask_harbor_admin_password}}';
+$password1 = (defined($ask_harbor_admin_password) && $ask_harbor_admin_password ne '{{ask_harbor_admin_password}}' && $ask_harbor_admin_password ne '')?$ask_harbor_admin_password:'';
+if ($password1 ne '') {
+	$question = "Q8. Do you want to change Harbor admin password?(y/N)";
+	$answer = "A8. Skip Set Harbor admin password!";
 	$Y_N = prompt_for_input($question);
 	$isAsk = (lc($Y_N) eq 'y');	
 }
 else {
 	$isAsk=1;
 }
-if ($isAsk) {
-	$auto_password = random_password(20);
-	$answer = "A8. Set auto password OK!";
+while ($isAsk) {
+	$question = "Q8. Please enter the Harbor admin password:";
+	$password1 = prompt_for_password($question);
+	$question = "Q8. Please re-enter the Harbor admin password:";
+	$password2 = prompt_for_password($question);
+	$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+	if ($isAsk) {
+		print("A8. The password is not the same, please re-enter!\n");
+	}
+	else {
+		$answer = "A8. Set Harbor admin password OK!";
+	}
 }
+$ask_harbor_admin_password = $password1;
 print ("$answer\n\n");
-$ans_tmpl =~ s/{{auto_password}}/$auto_password/;
+$ans_tmpl =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;
 write_ans();
 
-# 9. Automatically generate random key
-#\$random_key = '{{random_key}}';
-$random_key = (defined($random_key) && $random_key ne '{{random_key}}' && $random_key ne '')?$random_key:'';
-if ($random_key ne '') {
+
+# 9. Automatically generate password
+#\$auto_password = '{{auto_password}}';
+$auto_password = (defined($auto_password) && $auto_password ne '{{auto_password}}' && $auto_password ne '')?$auto_password:'';
+if ($auto_password ne '') {
 	$question = "Q9. Do you want to change auto password?(y/N)";
 	$answer = "A9. Skip Set auto password!";
 	$Y_N = prompt_for_input($question);
@@ -240,8 +252,28 @@ else {
 	$isAsk=1;
 }
 if ($isAsk) {
+	$auto_password = random_password(20);
+	$answer = "A9. Set auto password OK!";
+}
+print ("$answer\n\n");
+$ans_tmpl =~ s/{{auto_password}}/$auto_password/;
+write_ans();
+
+# 10. Automatically generate random key
+#\$random_key = '{{random_key}}';
+$random_key = (defined($random_key) && $random_key ne '{{random_key}}' && $random_key ne '')?$random_key:'';
+if ($random_key ne '') {
+	$question = "Q10. Do you want to change auto password?(y/N)";
+	$answer = "A10. Skip Set auto password!";
+	$Y_N = prompt_for_input($question);
+	$isAsk = (lc($Y_N) eq 'y');	
+}
+else {
+	$isAsk=1;
+}
+if ($isAsk) {
 	$random_key = random_password(20);
-	$answer = "A9. Set random key OK!";
+	$answer = "A10. Set random key OK!";
 }
 print ("$answer\n\n");
 $ans_tmpl =~ s/{{random_key}}/$random_key/;
@@ -378,6 +410,7 @@ if (lc($Y_N) eq 'y') {
 	$env_template =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/g;
 	$env_template =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/g;
 	$env_template =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/g;
+	$env_template =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/g;
 	$env_template =~ s/{{auto_password}}/$auto_password/g;
 	$env_template =~ s/{{random_key}}/$random_key/g;
 	$env_template =~ s/{{checkmarx_origin}}/$checkmarx_origin/g;
