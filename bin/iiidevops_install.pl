@@ -37,7 +37,9 @@ $cmd_msg = `$cmd`;
 $cmd = <<END;
 sudo apt-get install unzip nfs-common libterm-readkey-perl -y; \
 cd ~; unzip -o $ins_repo.zip \
-cd deploy-devops-$ins_repo/ \
+rm -rf deploy-devops \
+mv deploy-devops-$ins_repo deploy-devops \
+cd deploy-devops/ \
 chmod a+x bin/*.sh \
 chmod a+x bin/*.pl \
 chmod a+x gitlab/*.pl \

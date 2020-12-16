@@ -252,7 +252,7 @@ write_ans();
 # checkmarx setting(Option)
 #------------------------------
 # 11. \$checkmarx_origin = '{{checkmarx_origin}}';
-$checkmarx_origin = (defined($checkmarx_origin)) && $checkmarx_origin ne '{{checkmarx_origin}}' && $checkmarx_origin ne '')?$checkmarx_origin:'';
+$checkmarx_origin = (defined($checkmarx_origin) && $checkmarx_origin ne '{{checkmarx_origin}}' && $checkmarx_origin ne '')?$checkmarx_origin:'';
 if ($checkmarx_origin ne '') {
 	$question = "Q11. Do you want to change Checkmarx origin?(y/N)";
 	$answer = "A11. Skip Set Checkmarx origin!";
