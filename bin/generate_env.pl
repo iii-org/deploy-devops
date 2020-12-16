@@ -66,7 +66,7 @@ write_ans();
 #\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
 $password1 = (defined($ask_gitlab_root_password) && $ask_gitlab_root_password ne '')?$ask_gitlab_root_password:'';
 if ($password1 ne '') {
-	$question = "Q3. Do you want to change GitlLab root password?(y/N)";
+	$question = "Q3. Do you want to change GitLab root password?(y/N)";
 	$answer = "A3. Skip Set GitLab root password!";
 	$Y_N = prompt_for_input($question);
 	$isAsk = (lc($Y_N) eq 'y');	
@@ -95,9 +95,9 @@ write_ans();
 
 # 4. set GitLab Token
 #\$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
-$ask_gitlab_private_token = (defined($ask_gitlab_private_token) && $ask_gitlab_private_token ne '')?$ask_gitlab_private_token:'';
+$ask_gitlab_private_token = (defined($ask_gitlab_private_token) && $ask_gitlab_private_token ne '' && lc($ask_gitlab_private_token) ne 'skip')?$ask_gitlab_private_token:'';
 if ($ask_gitlab_private_token ne '') {
-	$question = "Q4. Do you want to change GitlLab Token?(y/N)";
+	$question = "Q4. Do you want to change GitLab Token?(y/N)";
 	$answer = "A4. Skip Set GitLab Token!";
 	$Y_N = prompt_for_input($question);
 	$isAsk = (lc($Y_N) eq 'y');	
@@ -106,7 +106,7 @@ else {
 	$isAsk=1;
 }
 while ($isAsk) {
-	$question = "Q4. Please enter the GitLab Token:";
+	$question = "Q4. Please enter the GitLab Token:(If your GitLab has not been set up, please enter 'SKIP')";
 	$ask_gitlab_private_token = prompt_for_input($question);
 	$isAsk = ($ask_gitlab_private_token eq '');
 	if ($isAsk) {
@@ -182,7 +182,7 @@ write_ans();
 
 # 7. set Redmine API key
 #\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
-$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '')?$ask_redmine_api_key:'';
+$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '' && lc($ask_redmine_api_key) ne 'skip')?$ask_redmine_api_key:'';
 if ($ask_redmine_api_key ne '') {
 	$question = "Q7. Do you want to change Redmine API key?(y/N)";
 	$answer = "A7. Skip Set Redmine API key!";
@@ -193,7 +193,7 @@ else {
 	$isAsk=1;
 }
 while ($isAsk) {
-	$question = "Q7. Please enter the Redmine API key:";
+	$question = "Q7. Please enter the Redmine API key:(If your Redmine has not been set up, please enter 'SKIP')";
 	$ask_redmine_api_key = prompt_for_input($question);
 	$isAsk = ($ask_redmine_api_key eq '');
 	if ($isAsk) {
