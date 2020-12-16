@@ -19,7 +19,7 @@ print("-----\n$cmd_msg\n\n");
 
 $cmd = <<END;
 cd ~; sudo mkdir -p /data/harbor \
-wget https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz \
+wget -O harbor-offline-installer-v2.1.0.tgz https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz \
 tar xvf harbor-offline-installer-v2.1.0.tgz
 END
 print("Download and Unpack the Installer (V2.1)\n-----\n$cmd\n\n");
@@ -49,7 +49,7 @@ DNS.2=$harbor_url
 DNS.3=iiidevops1
 EOF
 
-open(FH, '>', "~/harbor/data/certs/$harbor_url.v3.ext") or die $!;
+open(FH, '>', "$Bin/../../harbor/data/certs/$harbor_url.v3.ext") or die $!;
 print FH $harbor_ca;
 close(FH);
 
@@ -72,7 +72,7 @@ sudo cp $harbor_url.key /etc/docker/certs.d/$harbor_url:5443/
 sudo cp ca.crt /etc/docker/certs.d/$harbor_url:5443/
 END
 
-$harbor_yml =<<EOF
+$harbor_yml =<<EOF;
 hostname: $harbor_url
 http:
   port: 5080
@@ -116,7 +116,7 @@ proxy:
     - trivy
 EOF
 
-open(FH, '>', "~/harbor/harbor.yml") or die $!;
+open(FH, '>', "$Bin/../../harbor/harbor.yml") or die $!;
 print FH $harbor_yml;
 close(FH);
 

@@ -25,11 +25,11 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 perl ./iiidevops_install.pl localadmin@10.20.0.73
 ```
 
-## Step 2. Edit env.pl to configure settings information (VM1)
+## Step 2. Generate & edit configuration setting information file "env.pl" (VM1)
 
-> <code> vi ~/deploy-devops/env.pl</code>  
+> <code>~/deploy-devops/bin/generate_env.pl</code>  
 >
-> 
+> <code>vi ~/deploy-devops/env.pl</code>
 
 ## Step 3. Deploy Gitlab / Harbor / Rancher / NFS (VM1)
 
