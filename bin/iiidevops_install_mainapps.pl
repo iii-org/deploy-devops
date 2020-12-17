@@ -11,7 +11,7 @@ print("Deploy and Setting harbor server on Master Node(VM1)..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
 
-$cmd = "sudo ~/deploy-devops/bin/ubuntu20lts_install_rancher.sh";
+$cmd = "sudo ~/deploy-devops/bin/ubuntu20lts_install_rancher.pl";
 print("install rancher on Master Node(VM1)..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
