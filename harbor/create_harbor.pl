@@ -3,6 +3,7 @@ use FindBin qw($Bin);
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
+$home_dir = "$Bin/../../";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
@@ -16,29 +17,42 @@ else {
 }
 
 log_print("Install Harbor URL: https://$harbor_url\n");
-$os_m = `uname -m`;
-$os_m =~ s/\n|\r//;
-$cmd="sudo curl -L \"https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-$os_m\" -o /usr/local/bin/docker-compose; sudo chmod  +x /usr/local/bin/docker-compose";
-log_print("Install Docker Compose\n-----\n$cmd\n\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n\n");
+$cmd_msg = `/usr/local/bin/docker-compose -v`;
+if (index($cmd_msg, 'version')<0) {
+	$os_m = `uname -m`;
+	$os_m =~ s/\n|\r//;
+	$cmd="sudo curl -L \"https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-$os_m\" -o /usr/local/bin/docker-compose; sudo chmod  +x /usr/local/bin/docker-compose";
+	log_print("Install Docker Compose\n-----\n$cmd\n\n");
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg\n\n");
+}
+else {
+	log_print("-----\n$cmd_msg\n\n");
+}
 
+$cmd_option = "wget -O $home_dir/harbor-offline-installer-v2.1.0.tgz https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz;";
+$chk_file = "$home_dir/harbor-offline-installer-v2.1.0.tgz";
+$md5_value = substr(`md5sum $chk_file`, 0, 32); # 2194f0c0a37e3cd073ce46db4cbf2c07
+if ($md5_value eq '2194f0c0a37e3cd073ce46db4cbf2c07') {
+	$cmd_option = '';
+}
 $cmd = <<END;
-cd ~; sudo mkdir -p /data/harbor \
-wget -O harbor-offline-installer-v2.1.0.tgz https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz \
-tar xvf harbor-offline-installer-v2.1.0.tgz
+sudo mkdir -p /data/harbor;
+$cmd_option
+rm -rf $home_dir/harbor;
+tar xvf $chk_file;
 END
 log_print("Download and Unpack the Installer (V2.1)\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
 $cmd = <<END;
-mkdir -p ~/harbor/data/certs \
-cd ~/harbor/data/certs \
-openssl genrsa -out ca.key 4096 \
-openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=$harbor_url" -key ca.key  -out ca.crt \
-openssl genrsa -out $harbor_url.key 4096 \
-openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=$harbor_url" -key $harbor_url.key -out $harbor_url.csr
+mkdir -p $home_dir/harbor/data/certs;
+cd $home_dir/harbor/data/certs;
+openssl genrsa -out ca.key 4096;
+openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=$harbor_url" -key ca.key  -out ca.crt;
+openssl genrsa -out $harbor_url.key 4096;
+openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=$harbor_url" -key $harbor_url.key -out $harbor_url.csr;
 END
 log_print("Generate a Certificate Authority Certificate\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
@@ -60,22 +74,22 @@ print FH $harbor_ca;
 close(FH);
 
 $cmd = <<END;
-cd ~/harbor/data/certs
-openssl x509 -req -sha512 -days 3650 -extfile $harbor_url.v3.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in $harbor_url.csr -out $harbor_url.crt
-openssl x509 -inform PEM -in $harbor_url.crt -out $harbor_url.cert
+cd $home_dir/harbor/data/certs;
+openssl x509 -req -sha512 -days 3650 -extfile $harbor_url.v3.ext -CA ca.crt -CAkey ca.key -CAcreateserial -in $harbor_url.csr -out $harbor_url.crt;
+openssl x509 -inform PEM -in $harbor_url.crt -out $harbor_url.cert;
 END
 $cmd_msg .= `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
 $cmd =<<END;
-cd ~/harbor/data/certs
-sudo mkdir -p /data/harbor/cert/
-sudo cp $harbor_url.crt /data/harbor/cert/
-sudo cp $harbor_url.key /data/harbor/cert/
-sudo mkdir -p /etc/docker/certs.d/$harbor_url:5443/
-sudo cp $harbor_url.cert /etc/docker/certs.d/$harbor_url:5443/
-sudo cp $harbor_url.key /etc/docker/certs.d/$harbor_url:5443/
-sudo cp ca.crt /etc/docker/certs.d/$harbor_url:5443/
+cd $home_dir/harbor/data/certs;
+sudo mkdir -p /data/harbor/cert/;
+sudo cp $harbor_url.crt /data/harbor/cert/;
+sudo cp $harbor_url.key /data/harbor/cert/;
+sudo mkdir -p /etc/docker/certs.d/$harbor_url:5443/;
+sudo cp $harbor_url.cert /etc/docker/certs.d/$harbor_url:5443/;
+sudo cp $harbor_url.key /etc/docker/certs.d/$harbor_url:5443/;
+sudo cp ca.crt /etc/docker/certs.d/$harbor_url:5443/;
 END
 
 $harbor_yml =<<EOF;
@@ -130,7 +144,7 @@ log_print("Provide the Certificates to Harbor and Docker\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
-$cmd="cd ~/harbor; sudo ./install.sh";
+$cmd="cd $home_dir/harbor; sudo ./install.sh";
 log_print("Install Harbor\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
