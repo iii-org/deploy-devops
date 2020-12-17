@@ -1,30 +1,36 @@
 #!/usr/bin/perl
 use FindBin qw($Bin);
+
+$prgname = substr($0, rindex($0,"/")+1);
+$logfile = "$Bin/$prgname.log";
+log_print("\n----------------------------------------\n");
+log_print(`TZ='Asia/Taipei' date`);
+
 my $p_config = "$Bin/../env.pl";
 if (-e $p_config) {
 	require($p_config);
 }
 else {
-	print("Cannot find configuration setting information file '$p_config'! \n");
+	log_print("Cannot find configuration setting information file '$p_config'! \n");
 	exit;
 }
 
-print("Install Harbor URL: https://$harbor_url\n");
+log_print("Install Harbor URL: https://$harbor_url\n");
 $os_m = `uname -m`;
 $os_m =~ s/\n|\r//;
 $cmd="sudo curl -L \"https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-$os_m\" -o /usr/local/bin/docker-compose; sudo chmod  +x /usr/local/bin/docker-compose";
-print("Install Docker Compose\n-----\n$cmd\n\n");
+log_print("Install Docker Compose\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n\n");
+log_print("-----\n$cmd_msg\n\n");
 
 $cmd = <<END;
 cd ~; sudo mkdir -p /data/harbor \
 wget -O harbor-offline-installer-v2.1.0.tgz https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz \
 tar xvf harbor-offline-installer-v2.1.0.tgz
 END
-print("Download and Unpack the Installer (V2.1)\n-----\n$cmd\n\n");
+log_print("Download and Unpack the Installer (V2.1)\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n\n");
+log_print("-----\n$cmd_msg\n\n");
 
 $cmd = <<END;
 mkdir -p ~/harbor/data/certs \
@@ -34,7 +40,7 @@ openssl req -x509 -new -nodes -sha512 -days 3650  -subj "/C=TW/ST=Taipei/L=Taipe
 openssl genrsa -out $harbor_url.key 4096 \
 openssl req -sha512 -new -subj "/C=TW/ST=Taipei/L=Taipei/O=iii/OU=dti/CN=$harbor_url" -key $harbor_url.key -out $harbor_url.csr
 END
-print("Generate a Certificate Authority Certificate\n-----\n$cmd\n\n");
+log_print("Generate a Certificate Authority Certificate\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
 
 $harbor_ca = <<EOF;
@@ -59,7 +65,7 @@ openssl x509 -req -sha512 -days 3650 -extfile $harbor_url.v3.ext -CA ca.crt -CAk
 openssl x509 -inform PEM -in $harbor_url.crt -out $harbor_url.cert
 END
 $cmd_msg .= `$cmd`;
-print("-----\n$cmd_msg\n\n");
+log_print("-----\n$cmd_msg\n\n");
 
 $cmd =<<END;
 cd ~/harbor/data/certs
@@ -120,11 +126,23 @@ open(FH, '>', "$Bin/../../harbor/harbor.yml") or die $!;
 print FH $harbor_yml;
 close(FH);
 
-print("Provide the Certificates to Harbor and Docker\n-----\n$cmd\n\n");
+log_print("Provide the Certificates to Harbor and Docker\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n\n");
+log_print("-----\n$cmd_msg\n\n");
 
 $cmd="cd ~/harbor; sudo ./install.sh";
-print("Install Harbor\n-----\n$cmd\n\n");
+log_print("Install Harbor\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n\n");
+log_print("-----\n$cmd_msg\n\n");
+
+sub log_print {
+	my ($p_msg) = @_;
+
+    print "$p_msg";
+	
+	open(FH, '>>', $logfile) or die $!;
+	print FH $p_msg;
+	close(FH);	
+
+    return;
+}
