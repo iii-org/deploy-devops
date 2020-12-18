@@ -39,32 +39,32 @@ perl ./iiidevops_install.pl localadmin@10.20.0.73
 >
 > 
 
-## Step 4. Setting gitlab
-> * URL - http://{{vm1 ip}}/
-> * set gitlab new password  
+## Step 4. Set up GitLab from the web UI
+> * URL - http://{{vm1 ip}}/ 
+>
+>   Exp. http://10.20.0.71/
+>
+> * set GitLab **New password**  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 
-> * Generate root personal access tokens  
->   * User/Administrator/User seetings, generate the root personal access token and keep it.  
+> * Generate **root personal access tokens**  
+>   * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
+>   
 > * Admin/Settings/Network/Outbound reuests, enable allow request to the local network from web hooks and service
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
+>
+> * Modify the gitlab_private_token value in env.pl
+>
+>   <code>~/deploy-devops/bin/generate_env.plgitlab_private_token  {{root personal access tokens}}</code>  
 
-# Deploy and Setting harbor server on VM1 
-* Install Prereqs
-
-| Software | Version  | Description |
-| -------- | -------- | -------- |
-| Docker engine |	Version 17.06.0-ce+ or higher |	For installation instructions, see Docker Engine documentation |
-| Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
-| Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
-
-> * URL - https://{{vm1 ip}}:5443/  
-
-# Setting rancher on VM1 
+## Step 5. Set up Rancher from the web UI
 > * URL - https://{{vm1 ip}}:6443/
+>
+>   Exp. http://10.20.0.71:6443/
+>
 > * set admin password
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 > * set rancher server url  
@@ -78,6 +78,19 @@ perl ./iiidevops_install.pl localadmin@10.20.0.73
 >   * CNI Plugin MTU Override: 1440  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
 >   * Node Options: Chose etcd, Control plane, worker
+
+# Deploy and Setting harbor server on VM1 
+
+* Install Prereqs
+
+| Software | Version  | Description |
+| -------- | -------- | -------- |
+| Docker engine |	Version 17.06.0-ce+ or higher |	For installation instructions, see Docker Engine documentation |
+| Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
+| Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
+
+> * URL - https://{{vm1 ip}}:5443/  
+
 
 # Copy command to run on VM2, VM3, VM4  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
