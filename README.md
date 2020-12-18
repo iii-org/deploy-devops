@@ -169,16 +169,10 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 # Step 10. Deploy Redmine / SonarQube on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 
+## Set Redmine
+> * Redmine URL - http://10.20.0.72:32748/
+> * login by admin/ admin, and reset the administrator password using redmine_admin_passwd entered in Step 2.
 
-> * deploy redmine postgresql  
-> <code> kubectl apply -f redmine/redmine-postgresql/ </code>  
-> * deploy redmine  
-> <code> kubectl apply -f redmine/redmine/ </code>  
-> * redmine url  
-> http://140.92.4.5:32748/
-
-# Set Redmine
-> * login by admin/ admin, and reset administrator password
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
 > * Enable REST API
 >   * Administration/ Settings/ API/ Enable REST web service
