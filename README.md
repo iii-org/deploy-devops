@@ -136,12 +136,13 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 | Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
 | Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
 
-# Check NFS Client on Kubernetes worker node (VM2)  
+# Step 7. Check NFS Client on Kubernetes worker node (VM2)  
 > * Check NFS Service is available on VM2  
 > <code> showmount -e {NFS server IP} </code>
 
 
-# Install kubectl (On user client if you need, because all VMs are already installed)
+# Step 8. Install kubectl (On user client if you need)
+* All virtual machines have been installed in Step 1.
 > https://kubernetes.io/docs/tasks/tools/install-kubectl/  
 > Used Mac 
 >> Example: Mac install kubectl by brew  
@@ -159,14 +160,14 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 >> Execute kubectl.exe
 
 
-# Create Namespace on kubernetes cluster on VM1
+# Step 9. Create Namespace on kubernetes cluster
 > * Make sure the Kubernetes master is runing
 > <code> kubectl cluster-info </code>
 > * If everything is ok, you can use the following command to create a namespace.
-> <code> kubectl apply -f ~/deploy-devops-master/kubernetes/namespaces/account.yaml </code>
+> <code> kubectl apply -f ~/deploy-devops/kubernetes/namespaces/account.yaml </code>
 
-# Deploy Redmine / SonarQube / iiiDevops on kubernetes cluster
-> <code> ~/deploy-devops-master/bin/iiidevops_install_apps.pl </code>
+# Step 10. Deploy Redmine / SonarQube on kubernetes cluster
+> <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 
 
 > * deploy redmine postgresql  
