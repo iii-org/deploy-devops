@@ -1,10 +1,10 @@
 # deploy-devops
 ## Environment  
 
-* 3 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD)
+* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD)
   * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
-  * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)  
-  * VM3(iiidevops3, 10.20.0.73): Kubernetes node(control plane + etcd + worker node)  
+  * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)
+* After installing the system, you can expand Kubernetes nodes (VM3, VM4, VM5...) according to actual performance requirements.
 
 * Before installation, you should decide on these configuration settings
   1. External access IP or domain name of VM1 and VM2
@@ -12,17 +12,16 @@
   3. Rancher admin password
   4. Redmine admin password
   5. Harbor admin passowrd
-* After installation, you should be able to get the following setup information through Redmine and GitLab Web operations
+* After installation, you should be able to get the following setup information through Redmine and GitLab Web UI
   1. GitLab private token
   2. Redmine API key
 
-## Step 1. Download deploy-devops and Install docker (All VMs)
+## Step 1. Download deploy-devops and Install docker (VM1)
 
 ```bash
 wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
 perl ./iiidevops_install.pl local
 perl ./iiidevops_install.pl localadmin@10.20.0.72
-perl ./iiidevops_install.pl localadmin@10.20.0.73
 ```
 
 ## Step 2. Generate & edit configuration setting information file "env.pl" (VM1)
@@ -92,7 +91,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.73
 > * URL - https://{{vm1 ip}}:5443/  
 
 
-# Copy command to run on VM2, VM3, VM4  
+# Copy command to run on VM2  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 # Get Kubeconfig Files
@@ -122,8 +121,8 @@ perl ./iiidevops_install.pl localadmin@10.20.0.73
 > Done  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
 
-# Check NFS Client on Kubernetes worker node (VM2, VM3, VM4)  
-> * Check NFS Service is available on VM2, VM3, VM4  
+# Check NFS Client on Kubernetes worker node (VM2)  
+> * Check NFS Service is available on VM2  
 > <code> showmount -e {NFS server IP} </code>
 
 
