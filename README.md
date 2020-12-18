@@ -43,18 +43,22 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 ## Step 4. Set up GitLab from the web UI
 > * URL - http://{{vm1 ip}}/ 
 >
->   Exp. http://10.20.0.71/
+>   ​	Exp. http://10.20.0.71/
 >
 > * set GitLab **New password**  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 
+> 
 > * Generate **root personal access tokens**  
 >   * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
+>  * Access Tokens / Name : root-pat / Scopes : Check all / Create personal access token  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
+> 
+> * Keep Your New Personal Access Token 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
->   
-> * Admin/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service**
+>
+> * Admin/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
 > * Modify the **gitlab_private_token** value in env.pl

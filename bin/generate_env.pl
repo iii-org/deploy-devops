@@ -43,7 +43,7 @@ $host_ip = inet_ntoa(scalar gethostbyname($host || 'localhost'));
 
 # Set the specified key value
 if (defined($ARGV[0])) {
-	if (index($ans_tmpl, $ARGV[0])<0) {
+	if (index($ans_tmpl, '{{'.$ARGV[0].'}}')<0) {
 		print("The specified key: [$ARGV[0]] is unknown!\n");
 		exit;
 	}
@@ -115,6 +115,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 #	}
 #	else {
 #		$password1 = $ARGV[1];
+#		$answer = "A3. Set GitLab root password OK!";
 #	}
 #	$ask_gitlab_root_password = $password1;
 #	print ("$answer\n\n");
@@ -149,6 +150,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_private_token') {
 	}
 	else {
 		$ask_gitlab_private_token = $ARGV[1];
+		$answer = "A4. Set GitLab Token OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
@@ -184,6 +186,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_rancher_admin_password') {
 	}
 	else {
 		$password1 = $ARGV[1];
+		$answer = "A5. Set Rancher admin password OK!";
 	}
 	$ask_rancher_admin_password = $password1;
 	print ("$answer\n\n");
@@ -220,6 +223,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 	}
 	else {
 		$password1 = $ARGV[1];
+		$answer = "A6. Set Redmine admin password OK!";
 	}
 	$ask_redmine_admin_password = $password1;
 	print ("$answer\n\n");
@@ -254,6 +258,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 	}
 	else {
 		$ask_redmine_api_key = $ARGV[1];
+		$answer = "A7. Set Redmine API key OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
@@ -289,6 +294,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_harbor_admin_password') {
 	}
 	else {
 		$password1 = $ARGV[1];
+		$answer = "A8. Set Harbor admin password OK!";
 	}
 	$ask_harbor_admin_password = $password1;
 	print ("$answer\n\n");
@@ -316,6 +322,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'auto_password') {
 	}
 	else {
 		$auto_password = $ARGV[1];
+		$answer = "A9. Set auto password OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
@@ -342,6 +349,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 	}
 	else {
 		$random_key = $ARGV[1];
+		$answer = "A10. Set random key OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
@@ -377,6 +385,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_origin') {
 	}
 	else {
 		$checkmarx_origin = $ARGV[1];
+		$answer = "A11. Set Checkmarx origin OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
@@ -409,6 +418,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_username') {
 	}
 	else {
 		$checkmarx_username = $ARGV[1];
+		$answer = "A12. Set Checkmarx username OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
@@ -444,6 +454,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_password') {
 	}
 	else {
 		$checkmarx_password = $ARGV[1];
+		$answer = "A13. Set Checkmarx password OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
@@ -476,6 +487,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_secret') {
 	}
 	else {
 		$checkmarx_secret = $ARGV[1];
+		$answer = "A14. Set Checkmarx secret OK!";
 	}
 	print ("$answer\n\n");
 	write_ans();
