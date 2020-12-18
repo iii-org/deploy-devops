@@ -4,17 +4,19 @@
 * 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD)
   * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
   * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)
-* After installing the system, you can expand Kubernetes nodes (VM3, VM4, VM5...) according to actual performance requirements.
-
 * Before installation, you should decide on these configuration settings
   1. External access IP or domain name of VM1 and VM2
   2. GitLab root password
   3. Rancher admin password
   4. Redmine admin password
   5. Harbor admin passowrd
+
 * After installation, you should be able to get the following setup information through Redmine and GitLab Web UI
   1. GitLab private token
   2. Redmine API key
+
+* You can scale out the Kubernetes nodes (VM3, VM4, VM5...) according to actual performance requirements.
+
 
 ## Step 1. Download deploy-devops and Install docker (VM1)
 

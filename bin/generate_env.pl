@@ -16,7 +16,6 @@ $ans_tmpl = <<END;
 # generate_env_answer
 \$vm1_ip = '{{vm1_ip}}';
 \$vm2_ip = '{{vm2_ip}}';
-\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
 \$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
 \$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';
 \$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
@@ -30,6 +29,9 @@ $ans_tmpl = <<END;
 \$random_key = '{{random_key}}';
 
 END
+# No longer needed key
+#\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
+
 $p_config_tmpl_ans = $p_config.".ans";
 if (-e $p_config_tmpl_ans) {
 	require($p_config_tmpl_ans);
@@ -83,41 +85,41 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	write_ans();
 }
 
-# 3. set GitLab root password
+# 3. set GitLab root password(No longer needed)
 #\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_root_password') {
-	if (!defined($ARGV[1])) {
-		$password1 = (defined($ask_gitlab_root_password) && $ask_gitlab_root_password ne '{{ask_gitlab_root_password}}' && $ask_gitlab_root_password ne '')?$ask_gitlab_root_password:'';
-		if ($password1 ne '') {
-			$question = "Q3. Do you want to change GitLab root password?(y/N)";
-			$answer = "A3. Skip Set GitLab root password!";
-			$Y_N = prompt_for_input($question);
-			$isAsk = (lc($Y_N) eq 'y');
-		}	
-		else {
-			$isAsk=1;
-		}
-		while ($isAsk) {
-			$question = "Q3. Please enter the GitLab root password:";
-			$password1 = prompt_for_password($question);
-			$question = "Q3. Please re-enter the GitLab root password:";
-			$password2 = prompt_for_password($question);
-			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
-			if ($isAsk) {
-				print("A3. The password is not the same, please re-enter!\n");
-			}
-			else {
-				$answer = "A3. Set GitLab root password OK!";
-			}
-		}
-	}
-	else {
-		$password1 = $ARGV[1];
-	}
-	$ask_gitlab_root_password = $password1;
-	print ("$answer\n\n");
-	write_ans();
-}
+#if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_root_password') {
+#	if (!defined($ARGV[1])) {
+#		$password1 = (defined($ask_gitlab_root_password) && $ask_gitlab_root_password ne '{{ask_gitlab_root_password}}' && $ask_gitlab_root_password ne '')?$ask_gitlab_root_password:'';
+#		if ($password1 ne '') {
+#			$question = "Q3. Do you want to change GitLab root password?(y/N)";
+#			$answer = "A3. Skip Set GitLab root password!";
+#			$Y_N = prompt_for_input($question);
+#			$isAsk = (lc($Y_N) eq 'y');
+#		}	
+#		else {
+#			$isAsk=1;
+#		}
+#		while ($isAsk) {
+#			$question = "Q3. Please enter the GitLab root password:";
+#			$password1 = prompt_for_password($question);
+#			$question = "Q3. Please re-enter the GitLab root password:";
+#			$password2 = prompt_for_password($question);
+#			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+#			if ($isAsk) {
+#				print("A3. The password is not the same, please re-enter!\n");
+#			}
+#			else {
+#				$answer = "A3. Set GitLab root password OK!";
+#			}
+#		}
+#	}
+#	else {
+#		$password1 = $ARGV[1];
+#	}
+#	$ask_gitlab_root_password = $password1;
+#	print ("$answer\n\n");
+#	write_ans();
+#}
 
 # 4. set GitLab Token
 #\$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
@@ -493,7 +495,6 @@ if (lc($Y_N) eq 'y') {
 	$env_template = `cat $p_config_tmpl`;
 	$env_template =~ s/{{vm1_ip}}/$vm1_ip/g;
 	$env_template =~ s/{{vm2_ip}}/$vm2_ip/g;
-	$env_template =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/g;
 	$env_template =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/g;
 	$env_template =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/g;
 	$env_template =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/g;
@@ -510,6 +511,8 @@ if (lc($Y_N) eq 'y') {
 	print FH $env_template;
 	close(FH);	
 }
+# No longer needed 
+#	$env_template =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/g;
 
 exit;
 
@@ -518,7 +521,6 @@ sub write_ans {
 
   	$ans_tmpl =~ s/{{vm1_ip}}/$vm1_ip/;
 	$ans_tmpl =~ s/{{vm2_ip}}/$vm2_ip/;
-	$ans_tmpl =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/;
 	$ans_tmpl =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/;
 	$ans_tmpl =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;
 	$ans_tmpl =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/;
@@ -537,6 +539,9 @@ sub write_ans {
 	
 	return;	
 }
+# No longer needed 
+#	$ans_tmpl =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/;
+
 
 # Ref - http://www.tizag.com/perlT/perluserinput.php
 sub prompt_for_input {
