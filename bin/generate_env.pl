@@ -519,19 +519,19 @@ exit;
 
 sub write_ans {
 
-  	$ans_tmpl =~ s/{{vm1_ip}}/$vm1_ip/;
-	$ans_tmpl =~ s/{{vm2_ip}}/$vm2_ip/;
-	$ans_tmpl =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/;
-	$ans_tmpl =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;
-	$ans_tmpl =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/;
-	$ans_tmpl =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/;
-	$ans_tmpl =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;
-	$ans_tmpl =~ s/{{auto_password}}/$auto_password/;
-	$ans_tmpl =~ s/{{random_key}}/$random_key/;
-	$ans_tmpl =~ s/{{checkmarx_origin}}/$checkmarx_origin/;
-	$ans_tmpl =~ s/{{checkmarx_username}}/$checkmarx_username/;
-	$ans_tmpl =~ s/{{checkmarx_password}}/$checkmarx_password/;
-	$ans_tmpl =~ s/{{checkmarx_secret}}/$checkmarx_secret/;
+	if ($vm1_ip ne '') {$ans_tmpl =~ s/{{vm1_ip}}/$vm1_ip/;}
+	if ($vm2_ip ne '') {$ans_tmpl =~ s/{{vm2_ip}}/$vm2_ip/;}
+	if ($ask_gitlab_private_token ne '') {$ans_tmpl =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/;}
+	if ($ask_rancher_admin_password ne '') {$ans_tmpl =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;}
+	if ($ask_redmine_admin_password ne '') {$ans_tmpl =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/;}
+	if ($ask_redmine_api_key ne '') {$ans_tmpl =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/;}
+	if ($ask_harbor_admin_password ne '') {$ans_tmpl =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;}
+	if ($auto_password ne '') {$ans_tmpl =~ s/{{auto_password}}/$auto_password/;}
+	if ($random_key ne '') {$ans_tmpl =~ s/{{random_key}}/$random_key/;}
+	if ($checkmarx_origin ne '') {$ans_tmpl =~ s/{{checkmarx_origin}}/$checkmarx_origin/;}
+	if ($checkmarx_username ne '') {$ans_tmpl =~ s/{{checkmarx_username}}/$checkmarx_username/;}
+	if ($checkmarx_password ne '') {$ans_tmpl =~ s/{{checkmarx_password}}/$checkmarx_password/;}
+	if ($checkmarx_secret ne '') {$ans_tmpl =~ s/{{checkmarx_secret}}/$checkmarx_secret/;}
 	
 	open(FH, '>', $p_config_tmpl_ans) or die $!;
 	print FH $ans_tmpl;
