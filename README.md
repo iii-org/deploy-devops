@@ -1,46 +1,70 @@
 # deploy-devops
 ## Environment  
-* 4 Ubuntu20.04 LTS VM  
-  * VM1(iiidevops1, 140.92.4.3): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
-  * VM2(iiidevops2, 140.92.4.4): Kubernetes node(control plane + etcd + worker node)  
-  * VM3(iiidevops3, 140.92.4.5): Kubernetes node(control plane + etcd + worker node)  
-  * VM4(iiidevops4, 140.92.4.6): Kubernetes node(control plane + etcd + worker node)  
 
-## Download deploy-devops and Install docker (All VMs)
+* 3 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD)
+  * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
+  * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)  
+  * VM3(iiidevops3, 10.20.0.73): Kubernetes node(control plane + etcd + worker node)  
+
+* Before installation, you should decide on these configuration settings
+  1. External access IP or domain name of VM1 and VM2
+  2. GitLab root password
+  3. Rancher admin password
+  4. Redmine admin password
+  5. Harbor admin passowrd
+* After installation, you should be able to get the following setup information through Redmine and GitLab Web operations
+  1. GitLab private token
+  2. Redmine API key
+
+## Step 1. Download deploy-devops and Install docker (All VMs)
+
 ```bash
 wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
-perl ./iiidevops_install.pl
+perl ./iiidevops_install.pl local
+perl ./iiidevops_install.pl localadmin@10.20.0.72
+perl ./iiidevops_install.pl localadmin@10.20.0.73
 ```
 
-## Deploy Gitlab / Harbor / Rancher / NFS on VM1
-> <code> sudo ~/deploy-devops-master/bin/iiidevops_install_master.pl </code>  
+## Step 2. Generate & edit configuration setting information file "env.pl" (VM1)
 
-## Setting gitlab
-> * URL - http://{{vm1 ip}}/
-> * set gitlab new password  
+> <code>~/deploy-devops/bin/generate_env.pl</code>  
+>
+> <code>vi ~/deploy-devops/env.pl</code>
+
+## Step 3. Deploy Gitlab / Harbor / Rancher / NFS (VM1)
+
+> <code> sudo ~/deploy-devops/bin/iiidevops_install_mainapps.pl</code>  
+>
+> After the deployment is complete, you should be able to see the URL information of these services as shown below.
+>
+> 
+
+## Step 4. Set up GitLab from the web UI
+> * URL - http://{{vm1 ip}}/ 
+>
+>   Exp. http://10.20.0.71/
+>
+> * set GitLab **New password**  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 
-> * Generate root personal access tokens  
->   * User/Administrator/User seetings, generate the root personal access token and keep it.  
+> * Generate **root personal access tokens**  
+>   * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
-> * Admin/Settings/Network/Outbound reuests, enable allow request to the local network from web hooks and service
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
+>   
+> * Admin/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service**
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
+>
+> * Modify the **gitlab_private_token** value in env.pl
+>
+>   <code>~/deploy-devops/bin/generate_env.pl gitlab_private_token  {{root personal access tokens}}</code>  
 
-# Deploy and Setting harbor server on VM1 
-* Install Prereqs
-
-| Software | Version  | Description |
-| -------- | -------- | -------- |
-| Docker engine |	Version 17.06.0-ce+ or higher |	For installation instructions, see Docker Engine documentation |
-| Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
-| Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
-
-> * URL - https://{{vm1 ip}}:5443/  
-
-# Setting rancher on VM1 
+## Step 5. Set up Rancher from the web UI
 > * URL - https://{{vm1 ip}}:6443/
+>
+>   Exp. http://10.20.0.71:6443/
+>
 > * set admin password
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 > * set rancher server url  
@@ -55,9 +79,21 @@ perl ./iiidevops_install.pl
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
 >   * Node Options: Chose etcd, Control plane, worker
 
+# Deploy and Setting harbor server on VM1 
+
+* Install Prereqs
+
+| Software | Version  | Description |
+| -------- | -------- | -------- |
+| Docker engine |	Version 17.06.0-ce+ or higher |	For installation instructions, see Docker Engine documentation |
+| Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
+| Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
+
+> * URL - https://{{vm1 ip}}:5443/  
+
+
 # Copy command to run on VM2, VM3, VM4  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
-> * It may take a while to create a Cluster, depending on your host and network performance
 
 # Get Kubeconfig Files
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  

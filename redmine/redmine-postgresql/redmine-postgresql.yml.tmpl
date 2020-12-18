@@ -17,7 +17,7 @@ spec:
         image: postgres:12
         env:
         - name: POSTGRES_PASSWORD
-          value: {{postgres_password}}
+          value: {{redmine_db_passwd}}
         - name: POSTGRES_DB
           value: redmine
         ports:
