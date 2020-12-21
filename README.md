@@ -26,13 +26,13 @@ perl ./iiidevops_install.pl local
 perl ./iiidevops_install.pl localadmin@10.20.0.72
 ```
 
-# Step 2. Generate configuration setting information file "env.pl" (VM1)[1]
+# Step 2. Generate configuration setting information file "env.pl" (VM1)
 
 > <code>~/deploy-devops/bin/generate_env.pl</code>  
 >
 > * Check the configuration setting information
 >
-> <code>vi ~/deploy-devops/env.pl</code>
+> <code>more ~/deploy-devops/env.pl</code>
 
 # Step 3. Deploy Gitlab / Harbor / Rancher / NFS (VM1)
 
@@ -46,7 +46,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 4. Set up GitLab from the web UI
 > * GitLab - http://10.20.0.71/ 
-> * Use the gitlab_root_passwd entered in Step 2. as GitLab **new password** [1] 
+> * Use the gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab **new password** 
 >![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 >   
 
@@ -73,7 +73,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 5. Set up Rancher from the web UI
 > * Rancher - https://10.20.0.71:5443/
-> * Use the rancher_admin_password entered in Step 2. as admin password
+> * Use the rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password
 >![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
 >* set **Rancher Server URL**  
@@ -122,7 +122,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 6. Setting harbor server 
 * Harbor - https://10.20.0.71:6443/
-* Use the harbour_admin_password entered in Step 2. to log in to harbour
+* Use the harbour_admin_password entered in Step 2.(~/deploy-devops/env.pl) to log in to harbour
 
 * New Project - iiidevops
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_new_project.png?raw=true)  
@@ -168,10 +168,14 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 10. Deploy Redmine / SonarQube on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
+> After the deployment is complete, you should be able to see the URL information of these services as shown below.
+>
+> * Redmine  - http://10.20.0.72:32748/ 
+> * SonarQube - http://10.20.0.72:31910/
 
-## Set Redmine
+> ## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
-> * login by admin/ admin, and reset the administrator password using redmine_admin_passwd entered in Step 2.
+> * login by admin/ admin, and reset the administrator password using redmine_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)
 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
 > * Enable REST API
@@ -180,6 +184,9 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > * Generate redmine admin token
 >   * My account/ API access key/ Show
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-admin-apikey.png?raw=true)  
+> * set API access key to env.pl
+> <code> ~/deploy-devops/bin/generate_env.pl ask_redmine_api_key</code> 
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine_set_API_access_key.png?raw=true)
 > * wiki set markdown  
 >   * Administration/ Setting/ Gereral/ Text formatting  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
