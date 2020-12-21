@@ -36,3 +36,5 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'webinspect_base_url') {
 	print ("$answer\n\n");
 	write_ans();
 }
+
+1;

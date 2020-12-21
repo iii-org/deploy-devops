@@ -138,3 +138,5 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_secret') {
 	print ("$answer\n\n");
 	write_ans();
 }
+
+1;

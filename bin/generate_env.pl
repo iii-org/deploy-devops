@@ -309,8 +309,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_password') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_admin_init_password) && $ask_admin_init_password ne '{{ask_admin_init_password}}' && $ask_admin_init_password ne '')?$ask_admin_init_password:'';
 		if ($password1 ne '') {
-			$question = "Q8. Do you want to change Harbor admin password?(y/N)";
-			$answer = "A8. Skip Set Harbor admin password!";
+			$question = "Q9. Do you want to change III-DevOps admin password?(y/N)";
+			$answer = "A9. Skip Set III-DevOps admin password!";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
 		}
@@ -318,22 +318,22 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_password') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q8. Please enter the Harbor admin password:";
+			$question = "Q9. Please enter the III-DevOps admin password:";
 			$password1 = prompt_for_password($question);
-			$question = "Q8. Please re-enter the Harbor admin password:";
+			$question = "Q9. Please re-enter the III-DevOps admin password:";
 			$password2 = prompt_for_password($question);
 			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
 			if ($isAsk) {
-				print("A8. The password is not the same, please re-enter!\n");
+				print("A9. The password is not the same, please re-enter!\n");
 			}
 			else {
-				$answer = "A8. Set Harbor admin password OK!";
+				$answer = "A9. Set III-DevOps admin password OK!";
 			}
 		}
 	}
 	else {
 		$password1 = $ARGV[1];
-		$answer = "A8. Set Harbor admin password OK!";
+		$answer = "A9. Set III-DevOps admin password OK!";
 	}
 	$ask_admin_init_password = $password1;
 	print ("$answer\n\n");
