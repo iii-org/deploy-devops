@@ -176,7 +176,6 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > ## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
 > * login by admin/ admin, and reset the administrator password using redmine_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)
-
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
 > * Enable REST API
 >   * Administration/ Settings/ API/ Enable REST web service
@@ -191,25 +190,34 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 >   * Administration/ Setting/ Gereral/ Text formatting  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
 > * Create issue status  
->   *  Administration/ Issues statuses  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
+>   * Administration/ Issues statuses / New status
+>     *  Active, Assigned, Solved, Responded, Finished, Closed  
+>
+>     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
 > * Create Trackers  
->   *  Administration/ Trackers  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-trackers.png?raw=true)  
+>   * Administration/ Trackers / New tracker
+>     *  Feature, Bug, Document, Research
+>
+>     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-trackers.png?raw=true)  
 > * Create roles
->   * Administration/ Roles and permissions
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
+>   * Administration/ Roles and permissions / New role
+>   * Engineer, Project Manager
+>     * Engineer Permissions : Check all and then uncheck all project permissions 
+>        ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-engineer-permissions.png?raw=true)
+>     * Project Manager Permissions :  Check all 
+>        ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-pm-permissions.png?raw=true)
+>     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
 > * Create priority
->   * Administration/ Enumerations/ Issue priorities
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
+>   
+>   * Administration/ Enumerations/ Issue priorities / New value
+> * Immediate, High, Normal, Low
+>   
+>   * ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
-# Deploy SonarQube Server on kubernetes cluster  
-> * Deploy SonarQube Server Deployment  
-> <code> kubectl apply -f sonarqube/sonar-server-deployment.yaml </code>  
-> * Deploy SonarQube Server Service  
-> <code> kubectl apply -f sonar-server-service.yaml </code>  
+> ## SonarQube  
+> * URL- http://10.20.0.72:31910/ 
+> * login by admin/ admin, and reset the admin password using sonarqube_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/sonarqube.png?raw=true)  
-> URL: http://140.92.4.5:31910/, Account: admin, Password: admin  
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster  
 > <code> docker build devops-db --tag devops-db:version </code>  
