@@ -42,8 +42,8 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
 > * GitLab - http://10.20.0.71/ 
-> * Rancher - https://10.20.0.71:5443/
-> * Harbor - https://10.20.0.71:6443/
+> * Rancher - https://10.20.0.71:6443/
+> * Harbor - https://10.20.0.71:5443/
 
 # Step 4. Set up GitLab from the web UI
 > * GitLab - http://10.20.0.71/ 
@@ -73,7 +73,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 >   <code>~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token   {{root personal access tokens}}</code>  
 
 # Step 5. Set up Rancher from the web UI
-> * Rancher - https://10.20.0.71:5443/
+> * Rancher - https://10.20.0.71:6443/
 > * Use the rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password
 >![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
@@ -92,14 +92,25 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 ## Copy command to run on VM2
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher_cluster_cmd.png?raw=true)  
+>
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster
 >
->   
 
 ## Get Kubeconfig Files
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig file to ~/.kube/config on VM1, and also keep it.  
 > <code> vi ~/.kube/config </code>
+>
+> Use the following command to check if the config is working
+>
+>  <code>kubectl top node</code>
+>
+> It should display as below.
+>
+> `localadmin@iiidevops-71:~$ kubectl top node`
+> `NAME           CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%`
+> `iiidevops-72   258m         12%    2008Mi          25%`
 
 ## setting Gitlab and Rancher pipline hook  
 > ## Rancher  
@@ -124,46 +135,45 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
 
 # Step 6. Setting harbor server 
-* Harbor - https://10.20.0.71:6443/
+* Harbor - https://10.20.0.71:5443/
 * Use the harbour_admin_password entered in Step 2.(~/deploy-devops/env.pl) to log in to harbour
 
 * New Project - iiidevops
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_new_project.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_project_list.png?raw=true)  
 
-* * Install Prereqs
-
-| Software | Version  | Description |
-| -------- | -------- | -------- |
-| Docker engine |	Version 17.06.0-ce+ or higher |	For installation instructions, see Docker Engine documentation |
-| Docker Compose |	Version 1.18.0 or higher |	For installation instructions, see Docker Compose documentation |
-| Openssl |	Latest is preferred	Used to generate | certificate and keys for Harbor |
-
 # Step 7. Check NFS Client on Kubernetes worker node (VM2)  
 > * Check NFS Service is available on VM2  
-> <code> showmount -e {NFS server IP} </code>
+>   <code> showmount -e {NFS server IP} </code>
+>
+> * It should display as below.
+>
+>   `localadmin@iiidevops-72:~$ showmount -e 10.20.0.71`
+>   `Export list for 10.20.0.71:`
+>   `/iiidevopsNFS *`
 
 
 # Step 8. Install kubectl (On user client if you need)
 * All virtual machines have been installed in Step 1.
 > https://kubernetes.io/docs/tasks/tools/install-kubectl/  
 > Used Mac 
->> Example: Mac install kubectl by brew  
->> <code> brew install kubectl </code>  
->> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/mac-brew-install-kubectl.png?raw=true)  
->> <code> kubectl version --client </code>  
->> Example: Mac install kubectl by curl  
->> <code> curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" </code>  
->> <code> chmod +x ./kubectl </code>  
->> <code> sudo mv ./kubectl /usr/local/bin/kubectl </code>  
->> <code> kubectl version --client </code>  
+>
+> > Example: Mac install kubectl by brew  
+> > <code> brew install kubectl </code>  
+> > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/mac-brew-install-kubectl.png?raw=true)  
+> > <code> kubectl version --client </code>  
+> > Example: Mac install kubectl by curl  
+> > <code> curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" </code>  
+> > <code> chmod +x ./kubectl </code>  
+> > <code> sudo mv ./kubectl /usr/local/bin/kubectl </code>  
+> > <code> kubectl version --client </code>  
 
 > Used Windows, install kubectl by curl 
 >> <code> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/windows/amd64/kubectl.exe </code>  
 >> Execute kubectl.exe
 
 
-# Step 9. Create Namespace on kubernetes cluster
+# Step 9. Create Namespace on kubernetes cluster(VM1)
 > * Make sure the Kubernetes master is runing
 > <code> kubectl cluster-info </code>
 > * If everything is ok, you can use the following command to create a namespace.
@@ -171,7 +181,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 10. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
-> After the deployment is complete, you should be able to see the URL information of these services as shown below.
+> After the deployment is complete, you should wait 2 to 5 minutes to access the URL of the service as shown below.
 >
 > * Redmine  - http://10.20.0.72:32748/ 
 
@@ -193,7 +203,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
 > * Create issue status  
 >   * Administration/ Issues statuses / New status
->     *  Active, Assigned, Solved, Responded, Finished, Closed  
+>     *  Active, Assigned, Solved, Responded, Finished, Closed
 >
 >     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
 > * Create Trackers  
