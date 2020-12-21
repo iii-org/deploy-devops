@@ -1,4 +1,4 @@
-apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2 , Ref - devops-system/_environments.json
 kind: Deployment
 metadata:
   name: devopsapi
@@ -35,30 +35,44 @@ spec:
         - name: REDMINE_ADMIN_PASSWORD
           value: "{{redmine_admin_passwd}}"
         - name: REDMINE_API_KEY
-          value: {{redmine_api_key}}
+          value: "{{redmine_api_key}}"
         - name: GITLAB_IP_PORT
-          value: {{gitlab_url}}
+          value: "{{gitlab_url}}"
         - name: GITLAB_ADMIN_ACCOUNT
-          value: root
+          value: "root"
         - name: GITLAB_ADMIN_PASSWORD
-          value: gitlab_root_passwd
+          value: "{{gitlab_root_passwd"
         - name: GITLAB_PRIVATE_TOKEN
-          value: {{gitlab_private_token}}
+          value: "{{gitlab_private_token}}"
         - name: RANCHER_IP_PORT
-          value: {{rancher_url}}:6443
+          value: "{{rancher_url}}:6443"
         - name: RANCHER_ADMIN_ACCOUNT
-          value: admin
+          value: "admin"
         - name: RANCHER_ADMIN_PASSWORD
-          value: {{rancher_admin_password}}
+          value: "{{rancher_admin_password}}"
         - name: RANCHER_CLUSTER_NAME
-          value: iiidevops-k8s
+          value: "iiidevops-k8s"
+        - name: HARBOR_BASE_URL
+          value: "{{harbor_url}}:5443"
+        - name: HARBOR_ACCOUNT
+          value: "admin"
+        - name: HARBOR_PASSWORD
+          value: "{{harbor_admin_password}}"
         - name: CHECKMARX_ORIGIN
-          value: {{checkmarx_origin}}
+          value: "{{checkmarx_origin}}"
         - name: CHECKMARX_USERNAME
-          value: {{checkmarx_username}}
+          value: "{{checkmarx_username}}"
         - name: CHECKMARX_PASSWORD
-          value: {{checkmarx_password}}
+          value: "{{checkmarx_password}}"
         - name: CHECKMARX_SECRET
-          value: {{checkmarx_secret}}
+          value: "{{checkmarx_secret}}"
+        - name: WEBINSPECT_BASE_URL
+          value: "{{webinspect_base_url}}"
         - name: SONAR_IP_PORT
-          value: {{sonarqube_ip}}:31910
+          value: "{{sonarqube_ip}}:31910"
+        - name: ADMIN_INIT_LOGIN
+          value: "admin"
+        - name: ADMIN_INIT_EMAIL
+          value: "admin@yourmail.com"
+        - name: ADMIN_INIT_PASSWORD
+          value: "{{admin_init_password}}"

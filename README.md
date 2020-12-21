@@ -4,18 +4,19 @@
 * 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD)
   * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
   * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)
-* Before installation, you should decide on these configuration settings[1]
+* Before installation, you should decide on these configuration settings
   1. External access IP or domain name of VM1 and VM2
   2. GitLab root password
   3. Rancher admin password
   4. Redmine admin password
   5. Harbor admin passowrd
+6. III-devops admin  password
 
 * After installation, you should be able to get the following setup information through Redmine and GitLab Web UI
   1. GitLab private token
   2. Redmine API key
 
-* You can scale out the Kubernetes nodes (VM3, VM4, VM5...) according to actual performance requirements.
+* You can scale out the Kubernetes nodes (VM3, VM4, VM5...) or scale up the VM1 according to actual performance requirements.
 
 
 # Step 1. Download deploy-devops and Install docker (VM1)
@@ -92,6 +93,8 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 ## Copy command to run on VM2
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster
+>
+>   
 
 ## Get Kubeconfig Files
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
@@ -166,12 +169,11 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > * If everything is ok, you can use the following command to create a namespace.
 > <code> kubectl apply -f ~/deploy-devops/kubernetes/namespaces/account.yaml </code>
 
-# Step 10. Deploy Redmine / SonarQube on kubernetes cluster
+# Step 10. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
 > * Redmine  - http://10.20.0.72:32748/ 
-> * SonarQube - http://10.20.0.72:31910/
 
 > ## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
@@ -210,51 +212,16 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > * Create priority
 >   
 >   * Administration/ Enumerations/ Issue priorities / New value
-> * Immediate, High, Normal, Low
->   
->   * ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
+>     * Immediate, High, Normal, Low
+>     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
-> ## SonarQube  
-> * URL- http://10.20.0.72:31910/ 
-> * login by admin/ admin, and reset the admin password using sonarqube_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/sonarqube.png?raw=true)  
+# Step 11. Deploy III-DevOps
+> <code> ~/deploy-devops/bin/iiidevops_install_core.pl </code>
+> After the deployment is complete, you should wait 3 to 5 minutes for the initial system setup, and then you can access the URL as shown below.
+>
+> * III-DevOps URL -  http://10.20.0.72:30775/ 
 
-# Deploy DevOps DB (Postgresql) on kubernetes cluster  
-> <code> docker build devops-db --tag devops-db:version </code>  
-> <code> docker push  devops-db:version </code>  
-> <code> kubectl apply -f devops-db/devopsdb-deployment.yaml </code>  
-> <code> kubectl apply -f devops-db/devopsdb-service.yaml </code>  
-
-# Deploy DevOps API (Python Flask) on kubernetes cluster  
-> <code> cd ../ </code>  
-> <code> git clone -b develope https://github.com/iii-org/devops-system.git </code>  
-> <code> cd devops-system </code>  
-> <code> cp $HOME/.kube/config k8s_config</code>  
-> <code> docker build . --tag {{DockerHub_account}}/devopsapi:{{version}} </code>  
-> <code> docker push {{DockerHub_account}}/devopsapi:{{version}} </code>  
-> <code> docker login </code>  
-> <code> cd ../deploy-devops </code>  
-> <code> cp devops-api/_devopsapi-deployment.yaml devops-api/devopsapi-deployment.yaml </code>  
-> Edit devops-api/devopsapi-deployment.yaml, replace image name. From iiiorg/devops-api:0cb6e72-10121141, to {{DockerHub_account}}/devopsapi:{{version}}.  
-> <code> kubectl apply -f devops-api/devopsapi-deployment.yaml </code>  
-> <code> kubectl apply -f devops-api/devopsapi-service.yaml</code>  
-> <code> curl -X POST http://140.92.4.5:31850/init?name=devops_admin </code> This will return the password of the initial admin user.
-
-# Deploy DevOps UI (VueJS) on kubernetes cluster  
-> Install Node jS  
-> <code> cd ../ </code>  
-> <code> git clone -b develop https://github.com/iii-org/devops-ui.git </code>  
-> <code> cd devops-ui </code>  
-> Edit  .env.staging, replace VUE_APP_BASE_API = '/stage-api' to be VUE_APP_BASE_API = 'http://{{VM3_IP}}:31850'  
-> <code> npm install </code>  
-> <code> npm run build:stage </code>  
-> <code> docker build . --tag {{DockerHub_account}}/devopsui:{{version}} </code>  
-> <code> docker push {{DockerHub_account}}/devopsui:{{version}} </code>  
-> <code> docker login </code>  
-> <code> cd ../deploy-devops </code>  
-> Edit devops-ui/devopsui-deployment.yaml, replace image name. From iiiorg/devops-ui:prod-0cb6e72, to {{DockerHub_account}}/devopsui:{{version}}.  
-> <code> kubectl apply -f devops-ui/devopsui-deployment.yaml </code>  
-> <code> kubectl apply -f devops-ui/devopsui-service.yaml </code>  
-
-# Finish. Go to Web UI to login, Account: admin, Password: administrator
+# Step 12. Finish. Go to Web UI to login 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
+>
+> * Account: admin, Password: Use the **admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to log in toIII-DevOps
