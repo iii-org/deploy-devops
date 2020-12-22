@@ -70,6 +70,17 @@ print("-----\n$cmd_msg\n-----\n\n");
 
 # Deploy DevOps UI (VueJS) on kubernetes cluster
 $yaml_path = "$Bin/../devops-ui/";
+$yaml_file = $yaml_path.'devopsui-deployment.yaml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	print("The template file [$tmpl_file] does not exist!\n");
+	exit;
+}
+$template = `cat $tmpl_file`;
+#print("-----\n$template\n-----\n\n");
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
 $cmd = "kubectl apply -f $yaml_path";
 print("Deploy devops-ui..\n");
 $cmd_msg = `$cmd`;
