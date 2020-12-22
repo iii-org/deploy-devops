@@ -33,6 +33,7 @@ $ans_tmpl = <<END;
 \$auto_password = '{{auto_password}}';
 \$random_key = '{{random_key}}';
 
+1;
 END
 # No longer needed key
 
