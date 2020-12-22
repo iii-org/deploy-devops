@@ -10,8 +10,10 @@
   3. Rancher admin password
   4. Redmine admin password
   5. Harbor admin passowrd
-  6. III-devops admin  password
-
+  6. III-devops super user account ('admin' is not allowed)
+7. III-devops super user E-Mail
+  8. III-devops super user password
+  
 * After installation, you should be able to get the following setup information through Redmine and GitLab Web UI
   1. GitLab private token
   2. Redmine API key
