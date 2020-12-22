@@ -40,7 +40,6 @@ cd ~; unzip -o $ins_repo.zip \
 rm -rf deploy-devops \
 mv deploy-devops-$ins_repo deploy-devops \
 cd deploy-devops/ \
-chmod a+x bin/*.sh \
 chmod a+x bin/*.pl \
 chmod a+x gitlab/*.pl \
 chmod a+x harbor/*.pl

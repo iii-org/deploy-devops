@@ -11,9 +11,9 @@
   4. Redmine admin password
   5. Harbor admin passowrd
   6. III-devops super user account ('admin' is not allowed)
-7. III-devops super user E-Mail
+  7. III-devops super user E-Mail
   8. III-devops super user password
-  
+
 * After installation, you should be able to get the following setup information through Redmine and GitLab Web UI
   1. GitLab private token
   2. Redmine API key
@@ -67,7 +67,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > * Keep Your New Personal Access Token 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
 >
-> * Admin/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
+> * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
 > * Modify the **gitlab_private_token** value in env.pl
@@ -89,17 +89,18 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 >   * Network provider: **Calico**  
 >   * CNI Plugin MTU Override: **1440**  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
->   * Click Next to  save the setting
+>   * Click Next to  save the setting (It will take a while. If  you receive the error message "Failed while: Wait for Condition: InitialRolesPopulated: True", just click 'Next' again.)
 >   * Node Options: Chose etcd, Control plane, worker
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 ## Copy command to run on VM2
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher_cluster_cmd.png?raw=true)  
 >
-> * After executing this command, it takes about 5 to 10 minutes to build the cluster
+> * After executing this command, it takes about 5 to 10 minutes to build the cluster. The command 'sudo docker ps' is helpful to check working status. 
+> * Rancher Web UI will automatically refresh to use the new SSL certificate. You need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
 >
 
-## Get Kubeconfig Files
+## Get Kubeconfig File
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig file to ~/.kube/config on VM1, and also keep it.  
 > <code> vi ~/.kube/config </code>
@@ -184,6 +185,15 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 # Step 10. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 > After the deployment is complete, you should wait 2 to 5 minutes to access the URL of the service as shown below.
+>
+> You can check the deployment status with the command "kubectl get pod".
+> It should display as below.
+>
+> `localadmin@iiidevops-73:~$ kubectl get pod`
+> `NAME                                  READY   STATUS    RESTARTS   AGE`
+> `redmine-bddc54f6c-tmk59               1/1     Running   0          2m5s`
+> `redmine-postgresql-77cc655bb8-vr2r8   1/1     Running   0          2m5s`
+> `sonarqube-server-6ccbf4c54f-77qkd     1/1     Running   0          2m5s`
 >
 > * Redmine  - http://10.20.0.72:32748/ 
 
