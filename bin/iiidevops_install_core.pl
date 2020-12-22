@@ -60,6 +60,7 @@ $template =~ s/{{sonarqube_ip}}/$sonarqube_ip/g;
 $template =~ s/{{admin_init_login}}/$admin_init_login/g;
 $template =~ s/{{admin_init_email}}/$admin_init_email/g;
 $template =~ s/{{admin_init_password}}/$admin_init_password/g;
+$template =~ s/{{nfs_ip}}/$nfs_ip/g;
 #print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;

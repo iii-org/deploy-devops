@@ -15,6 +15,7 @@ spec:
       containers:
       - name: devopsapi
         image: iiiorg/devops-api:develop
+        imagePullPolicy: Always
         ports:
         - containerPort: 10009
         env:
@@ -76,3 +77,11 @@ spec:
           value: "{{admin_init_email}}"
         - name: ADMIN_INIT_PASSWORD
           value: "{{admin_init_password}}"
+        volumeMounts:
+        - name: kube-config
+          mountPath: /root/.kube
+      volumes:
+      - name: kube-config
+        nfs:
+          server: {{nfs_ip}}
+          path: /iiidevopsNFS/kube-config

@@ -32,12 +32,14 @@ print("Setting & Restart NFS Service..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
 
-# Create redmine-postgresql folder for redmine-postgresql  
+# Create folder for other services  
 $cmd =<<END;
 sudo mkdir $home_dir/redmine-postgresql;
 sudo chmod 777 $home_dir/redmine-postgresql;
 sudo mkdir $home_dir/devopsdb;
 sudo chmod 777 $home_dir/devopsdb;
+sudo mkdir $home_dir/kube-config;
+sudo chmod 777 $home_dir/kube-config;
 sudo mkdir $home_dir/sonarqube;
 sudo chmod 777 $home_dir/sonarqube;
 END

@@ -102,12 +102,13 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 ## Get Kubeconfig File
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
-> Put on kubeconfig file to ~/.kube/config on VM1, and also keep it.  
+> Put on kubeconfig file to **~/.kube/config** and **/iiidevopsNFS/kube-config/config** on VM1, and also keep it.  
 > <code> vi ~/.kube/config </code>
+> <code> vi  /iiidevopsNFS/kube-config/config </code>
 >
 > Use the following command to check if the config is working
 >
->  <code>kubectl top node</code>
+> <code>kubectl top node</code>
 >
 > It should display as below.
 >
