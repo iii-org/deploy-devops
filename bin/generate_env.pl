@@ -22,6 +22,8 @@ $ans_tmpl = <<END;
 \$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
 \$ask_redmine_api_key = '{{ask_redmine_api_key}}';
 \$ask_harbor_admin_password = '{{ask_harbor_admin_password}}';
+\$ask_admin_init_login = '{{ask_admin_init_login}}';
+\$ask_admin_init_email = '{{ask_admin_init_email}}';
 \$ask_admin_init_password = '{{ask_admin_init_password}}';
 \$checkmarx_origin = '{{checkmarx_origin}}';
 \$checkmarx_username = '{{checkmarx_username}}';
@@ -303,43 +305,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_harbor_admin_password') {
 	write_ans();
 }
 
-# 9. set III-DevOps admin password
-#\$ask_admin_init_password = '{{ask_admin_init_password}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_password') {
-	if (!defined($ARGV[1])) {
-		$password1 = (defined($ask_admin_init_password) && $ask_admin_init_password ne '{{ask_admin_init_password}}' && $ask_admin_init_password ne '')?$ask_admin_init_password:'';
-		if ($password1 ne '') {
-			$question = "Q9. Do you want to change III-DevOps admin password?(y/N)";
-			$answer = "A9. Skip Set III-DevOps admin password!";
-			$Y_N = prompt_for_input($question);
-			$isAsk = (lc($Y_N) eq 'y');	
-		}
-		else {
-			$isAsk=1;
-		}
-		while ($isAsk) {
-			$question = "Q9. Please enter the III-DevOps admin password:";
-			$password1 = prompt_for_password($question);
-			$question = "Q9. Please re-enter the III-DevOps admin password:";
-			$password2 = prompt_for_password($question);
-			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
-			if ($isAsk) {
-				print("A9. The password is not the same, please re-enter!\n");
-			}
-			else {
-				$answer = "A9. Set III-DevOps admin password OK!";
-			}
-		}
-	}
-	else {
-		$password1 = $ARGV[1];
-		$answer = "A9. Set III-DevOps admin password OK!";
-	}
-	$ask_admin_init_password = $password1;
-	print ("$answer\n\n");
-	write_ans();
-}
-
+# 9. set III-DevOps settings(Core)
+require($Bin.'/generate_env_iiidevops.pl');
 
 # 10a. Automatically generate password
 #\$auto_password = '{{auto_password}}';
@@ -455,6 +422,8 @@ if (lc($Y_N) eq 'y') {
 	$env_template =~ s/{{checkmarx_password}}/$checkmarx_password/g;
 	$env_template =~ s/{{checkmarx_secret}}/$checkmarx_secret/g;	
 	$env_template =~ s/{{webinspect_base_url}}/$webinspect_base_url/g;
+	$env_template =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/g;
+	$env_template =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/g;
 	$env_template =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/g;
 	
 	open(FH, '>', $p_config) or die $!;
@@ -483,6 +452,8 @@ sub write_ans {
 	if ($checkmarx_password ne '') {$ans_tmpl =~ s/{{checkmarx_password}}/$checkmarx_password/;}
 	if ($checkmarx_secret ne '') {$ans_tmpl =~ s/{{checkmarx_secret}}/$checkmarx_secret/;}
 	if ($webinspect_base_url ne '') {$ans_tmpl =~ s/{{webinspect_base_url}}/$webinspect_base_url/;}
+	if ($ask_admin_init_login ne '') {$ans_tmpl =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/;}
+	if ($ask_admin_init_email ne '') {$ans_tmpl =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;}
 	if ($ask_admin_init_password ne '') {$ans_tmpl =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;}
 	
 	open(FH, '>', $p_config_tmpl_ans) or die $!;

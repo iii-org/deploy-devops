@@ -71,8 +71,8 @@ spec:
         - name: SONAR_IP_PORT
           value: "{{sonarqube_ip}}:31910"
         - name: ADMIN_INIT_LOGIN
-          value: "admin"
+          value: "{{admin_init_login}}"
         - name: ADMIN_INIT_EMAIL
-          value: "admin@yourmail.com"
+          value: "{{admin_init_email}}"
         - name: ADMIN_INIT_PASSWORD
           value: "{{admin_init_password}}"
