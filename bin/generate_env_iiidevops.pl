@@ -21,9 +21,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_login') {
 		while ($isAsk) {
 			$question = "Q9a. Please enter the III-DevOps super user account:";
 			$ask_admin_init_login = prompt_for_input($question);
-			$isAsk = ($ask_admin_init_login eq '' || $ask_admin_init_login eq 'admin');
+			$isAsk = ($ask_admin_init_login eq '' || $ask_admin_init_login eq 'admin' || $ask_admin_init_login eq 'root');
 			if ($isAsk) {
-				print("A9a. The III-DevOps super user account is 'admin' or empty, please re-enter!\n");
+				print("A9a. The III-DevOps super user account is 'admin' or 'root' or empty, please re-enter!\n");
 			}
 			else {
 				$answer = "A9a. Set III-DevOps super user account OK!";
