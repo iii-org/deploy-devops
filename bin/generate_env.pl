@@ -399,9 +399,9 @@ if ($isAsk) {
 #------------------------------
 # 21. Generate env.pl
 #------------------------------
-$question = "Q21. Do you want to generate env.pl based on the above information?(y/N)";
+$question = "Q21. Do you want to generate env.pl based on the above information?(Y/n)";
 $Y_N = prompt_for_input($question);
-if (lc($Y_N) eq 'y') {
+if (lc($Y_N) ne 'n') {
 	if (-e $p_config) {
 		`cp -a $p_config $p_config_bak`;
 		print("The original env.pl has been backed up as $p_config_bak\n");
@@ -429,7 +429,14 @@ if (lc($Y_N) eq 'y') {
 	
 	open(FH, '>', $p_config) or die $!;
 	print FH $env_template;
-	close(FH);	
+	close(FH);
+	if (-e $p_config_bak) {
+		$cmd_msg = `diff $p_config $p_config_bak`;
+	}
+	else {
+		$cmd_msg = `cat $p_config`;
+	}
+	print("-----\n$cmd_msg-----\n");
 }
 # No longer needed 
 
