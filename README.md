@@ -49,7 +49,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 4. Set up GitLab from the web UI
 > * GitLab - http://10.20.0.71/ 
-> * **Use the gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab new password** 
+> * **Use the $gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab new password** 
 >![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 >   
 
@@ -74,7 +74,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
->* Modify the **gitlab_private_token** value in env.pl
+>* Modify the **$gitlab_private_token** value in env.pl
 >
 >> ```~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token```
 >
@@ -90,7 +90,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 5. Set up Rancher from the web UI
 > * Rancher - https://10.20.0.71:6443/
-> * **Use the rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password**
+> * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password**
 >![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
 >* set **Rancher Server URL**  
@@ -172,7 +172,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 6. Setting harbor server 
 * Harbor - https://10.20.0.71:5443/
-* Use the harbour_admin_password entered in Step 2.(~/deploy-devops/env.pl) to log in to harbour
+* Use the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to harbour
 
 * New Project - iiidevops (Access Level : **Public**)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_new_project.png?raw=true)  
@@ -236,40 +236,37 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 > ## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
-> * **login by admin/ admin, and reset the administrator password using redmine_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)**
+> * **login by admin/ admin, and reset the administrator password using $redmine_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
 > * Enable REST API
 >   * Administration/ Settings/ API/ Enable REST web service
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/enable-redmine-rest.png?raw=true)  
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/enable-redmine-rest.png?raw=true)  
 > * Generate redmine admin token
 >   * My account/ API access key/ Show
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-admin-apikey.png?raw=true)  
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-admin-apikey.png?raw=true)  
 > * set API access key to env.pl
-> <code> ~/deploy-devops/bin/generate_env.pl ask_redmine_api_key</code> 
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine_set_API_access_key.png?raw=true)
+>   <code> ~/deploy-devops/bin/generate_env.pl ask_redmine_api_key</code> 
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine_set_API_access_key.png?raw=true)
 > * wiki set markdown  
 >   * Administration/ Setting/ Gereral/ Text formatting  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
 > * Create issue status  
 >   * Administration/ Issues statuses / New status
->     *  Active, Assigned, Solved, Responded, Finished, Closed
->
+>     * Active, Assigned, Solved, Responded, Finished, Closed
 >     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
 > * Create Trackers  
 >   * Administration/ Trackers / New tracker
->     *  Feature, Bug, Document, Research
->
+>     * Feature, Bug, Document, Research
 >     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-trackers.png?raw=true)  
 > * Create roles
 >   * Administration/ Roles and permissions / New role
 >   * Engineer, Project Manager
 >     * Engineer Permissions : Check all and then uncheck all project permissions 
->        ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-engineer-permissions.png?raw=true)
+>     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-engineer-permissions.png?raw=true)
 >     * Project Manager Permissions :  Check all 
->        ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-pm-permissions.png?raw=true)
->     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
+>     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-pm-permissions.png?raw=true)
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
 > * Create priority
->   
 >   * Administration/ Enumerations/ Issue priorities / New value
 >     * Immediate, High, Normal, Low
 >     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
@@ -283,4 +280,4 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > * III-DevOps URL -  http://10.20.0.72:30775/ 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
 >
-> Use the **admin_init_login** and **admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III-DevOps
+> Use the **$admin_init_login** and **$admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III-DevOps
