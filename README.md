@@ -49,34 +49,48 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 4. Set up GitLab from the web UI
 > * GitLab - http://10.20.0.71/ 
-> * Use the gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab **new password** 
+> * **Use the gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab new password** 
 >![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
 >   
 
 >
-> * After setting a new password for GitLab, you should log in again with **root** and the **new password**
->   
-> * Generate **root personal access tokens**  
->   
+>* After setting a new password for GitLab, you should log in again with **root** and the **new password**
+>
+>* Generate **root personal access tokens**  
+>
+>
 > * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
->   
+>
 >  * Access Tokens / Name : root-pat / Scopes : Check all / Create personal access token  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 >
 > * Keep Your New Personal Access Token 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
 >
+>* Enable Outbound requests from web hooks
+>
+>
 > * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
-> * Modify the **gitlab_private_token** value in env.pl
+>* Modify the **gitlab_private_token** value in env.pl
 >
->   <code>~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token   {{root personal access tokens}}</code>  
+>> ```~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token```
+>
+> It should display as below.
+>```bash
+> localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token
+> Q4. Please enter the GitLab Token:(If your GitLab has not been set up, please enter 'SKIP')GexxxxWxxxdJyCyz4knt
+> A4. Set GitLab Token OK!
+>
+> Q21. Do you want to generate env.pl based on the above information?(y/N)y
+> The original env.pl has been backed up as /home/localadmin/deploy-devops/bin/../env.pl.bak
+>```
 
 # Step 5. Set up Rancher from the web UI
 > * Rancher - https://10.20.0.71:6443/
-> * Use the rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password
+> * **Use the rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password**
 >![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
 >* set **Rancher Server URL**  
@@ -97,38 +111,56 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher_cluster_cmd.png?raw=true)  
 >
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster. The command 'sudo docker ps' is helpful to check working status. 
+>
+> ```bash
+> localadmin@iiidevops-72:~$ sudo docker ps
+> CONTAINER ID   IMAGE                                 COMMAND                  CREATED          STATUS          PORTS     NAMES
+> e07030df28a8   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   14 seconds ago   Up 13 seconds             kube-proxy
+> ec609e7c4aed   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   25 seconds ago   Up 24 seconds             kubelet
+> c38c1e7e2b06   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   31 seconds ago   Up 30 seconds             kube-scheduler
+> 9004d6316561   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   37 seconds ago   Up 36 seconds             kube-controller-manager
+> 72e32adc984b   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   48 seconds ago   Up 47 seconds             kube-apiserver
+> d1380406d63e   rancher/coreos-etcd:v3.4.3-rancher1   "/usr/local/bin/etcd…"   50 seconds ago   Up 49 seconds             etcd
+> 05e8e1e4eaa8   rancher/rancher-agent:v2.4.5          "run.sh --server htt…"   3 minutes ago    Up 3 minutes              great_hawking
+> ```
+>
 > * Rancher Web UI will automatically refresh to use the new SSL certificate. You need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
 >
 
 ## Get Kubeconfig File
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig file to **~/.kube/config** and **/iiidevopsNFS/kube-config/config** on VM1, and also keep it.  
-> <code> vi ~/.kube/config </code>
-> <code> vi  /iiidevopsNFS/kube-config/config </code>
+> ```bash
+>  vi ~/.kube/config 
+>  cp ~/.kube/config /iiidevopsNFS/kube-config/ 
+> ```
 >
 > Use the following command to check if the config is working
 >
-> <code>kubectl top node</code>
+> > <code> kubectl top node </code>
 >
 > It should display as below.
 >
-> `localadmin@iiidevops-71:~$ kubectl top node`
-> `NAME           CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%`
-> `iiidevops-72   258m         12%    2008Mi          25%`
+> ```bash
+> localadmin@iiidevops-71:~$ kubectl top node
+> NAME           CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
+> iiidevops-72   258m         12%    2008Mi          25%
+> ```
 
 ## setting Gitlab and Rancher pipline hook  
 > ## Rancher  
->  Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
+> Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
 > Choose Tools/Pipline, select Gitlab  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
 > Get the "Redirect URI"  
+>
 > ## Gitlab  
 > Use root account/ settings/ Applications
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
 > Setting Applications  
-> insert name, redirect url and chose all optional, and save application.
+> insert Name : iiidevops-k8s, Redirect URI: [from Rancher] and chose all optional, and save application.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
 > Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url.  
@@ -142,26 +174,34 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 * Harbor - https://10.20.0.71:5443/
 * Use the harbour_admin_password entered in Step 2.(~/deploy-devops/env.pl) to log in to harbour
 
-* New Project - iiidevops
+* New Project - iiidevops (Access Level : **Public**)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_new_project.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_project_list.png?raw=true)  
 
 # Step 7. Check NFS Client on Kubernetes worker node (VM2)  
 > * Check NFS Service is available on VM2  
->   <code> showmount -e {NFS server IP} </code>
->
+>     <code> showmount -e {NFS server IP} </code>
+> 
 > * It should display as below.
 >
->   `localadmin@iiidevops-72:~$ showmount -e 10.20.0.71`
->   `Export list for 10.20.0.71:`
->   `/iiidevopsNFS *`
-
+>   ```bash
+> localadmin@iiidevops-72:~$ showmount -e 10.20.0.71
+> Export list for 10.20.0.71:
+> /iiidevopsNFS *
+>   ```
+> * Trust harbor SSL cert on VM2
+>   ```bash
+> sudo scp localadmin@10.20.0.71:/data/harbor/cert/10.20.0.71.crt /usr/local/share/ca-certificates/
+> sudo update-ca-certificates
+> sudo systemctl restart docker.service
+> ls /etc/ssl/certs | awk /10.20.0.71/
+>   ```
 
 # Step 8. Install kubectl (On user client if you need)
-* All virtual machines have been installed in Step 1.
 > https://kubernetes.io/docs/tasks/tools/install-kubectl/  
-> Used Mac 
+> ## All virtual machines have been installed in Step 1.
 >
+> ## Used Mac 
 > > Example: Mac install kubectl by brew  
 > > <code> brew install kubectl </code>  
 > > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/mac-brew-install-kubectl.png?raw=true)  
@@ -172,18 +212,11 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > > <code> sudo mv ./kubectl /usr/local/bin/kubectl </code>  
 > > <code> kubectl version --client </code>  
 
-> Used Windows, install kubectl by curl 
+> ## Used Windows, install kubectl by curl 
 >> <code> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/windows/amd64/kubectl.exe </code>  
 >> Execute kubectl.exe
 
-
-# Step 9. Create Namespace on kubernetes cluster(VM1)
-> * Make sure the Kubernetes master is runing
-> <code> kubectl cluster-info </code>
-> * If everything is ok, you can use the following command to create a namespace.
-> <code> kubectl apply -f ~/deploy-devops/kubernetes/namespaces/account.yaml </code>
-
-# Step 10. Deploy Redmine on kubernetes cluster
+# Step 9. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 > After the deployment is complete, you should wait 2 to 5 minutes to access the URL of the service as shown below.
 >
@@ -200,7 +233,7 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 > ## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
-> * login by admin/ admin, and reset the administrator password using redmine_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)
+> * **login by admin/ admin, and reset the administrator password using redmine_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
 > * Enable REST API
 >   * Administration/ Settings/ API/ Enable REST web service
@@ -238,13 +271,12 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 >     * Immediate, High, Normal, Low
 >     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
-# Step 11. Deploy III-DevOps
+# Step 10. Deploy III-DevOps
 > <code> ~/deploy-devops/bin/iiidevops_install_core.pl </code>
 > After the deployment is complete, you should wait 3 to 5 minutes for the initial system setup, and then you can access the URL as shown below.
 >
+> ## Go to Web UI to login 
 > * III-DevOps URL -  http://10.20.0.72:30775/ 
-
-# Step 12. Finish. Go to Web UI to login 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
 >
 > * Account: admin, Password: Use the **admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to log in toIII-DevOps

@@ -9,6 +9,27 @@ if (!-e $p_config) {
 }
 require($p_config);
 
+# Check kubernetes cluster info.
+$cmd = "kubectl cluster-info";
+print("Check kubernetes cluster info..\n");
+$cmd_msg = `$cmd`;
+print("-----\n$cmd_msg\n-----\n\n");
+$cmd_msg =~  s/\e\[[\d;]*[a-zA-Z]//g; # Remove ANSI color
+if (index($cmd_msg, 'Kubernetes control plane is running')<0 || index($cmd_msg, 'CoreDNS is running')<0) {
+	print("The Kubernetes cluster is not working properly!\n");
+	exit;
+}
+
+# Create Namespace on kubernetes cluster
+$cmd = "kubectl apply -f $Bin/../kubernetes/namespaces/account.yaml";
+print("Create Namespace on kubernetes cluster..\n");
+$cmd_msg = `$cmd`;
+print("-----\n$cmd_msg\n-----\n\n");
+if (index($cmd_msg, 'namespace/account created')<0 && index($cmd_msg, 'namespace/account unchanged')<0) {
+	print("Failed to create namespace on kubernetes cluster!\n");
+	exit;
+}
+
 # Deploy DevOps DB (Postgresql) on kubernetes cluster
 $yaml_path = "$Bin/../devops-db/";
 $yaml_file = $yaml_path.'devopsdb-deployment.yaml';
@@ -90,5 +111,26 @@ $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n\n");
 
 # Display Wait 5 min. message
-print("It takes 3 to 5 minutes to deploy III-DevOps services. Please try to connect to the following URL later.\nIII-DevOps URL - $iiidevops_url\n");
+print("It takes 3 to 5 minutes to deploy III-DevOps services. Please wait.. \n");
 
+# check deploy status
+#NAME                                  READY   STATUS    RESTARTS   AGE
+#redmine-7cdd59f44c-hz4qz              1/1     Running   2          40m
+#redmine-postgresql-6989b6c4d4-tw2bc   1/1     Running   1          40m
+#sonarqube-server-5788564ddc-ld4mp     1/1     Running   1          40m
+$isChk=1;
+while($isChk) {
+	$isChk = 0;
+	foreach $line (split(/\n/, `kubectl get pod`)) {
+		$line =~ s/( )+/ /g;
+		($l_name, $l_ready, $l_status, $l_restarts, $l_age) = split(/ /, $line);
+		if ($l_name eq 'NAME') {next;}
+		if ($l_status ne 'Running') {
+			print("[$l_name][$l_status]\n");
+			$isChk ++;
+		}
+	}
+	sleep($isChk);
+}
+
+print("\nThe deployment of III-DevOps services has been completed. Please try to connect to the following URL.\nIII-DevOps URL - $iiidevops_url\n");
