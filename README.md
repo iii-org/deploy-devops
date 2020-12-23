@@ -185,16 +185,16 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 > * It should display as below.
 >
 >   ```bash
-> localadmin@iiidevops-72:~$ showmount -e 10.20.0.71
-> Export list for 10.20.0.71:
-> /iiidevopsNFS *
+>    localadmin@iiidevops-72:~$ showmount -e 10.20.0.71
+>    Export list for 10.20.0.71:
+>    /iiidevopsNFS *
 >   ```
 > * Trust harbor SSL cert on VM2
 >   ```bash
-> sudo scp localadmin@10.20.0.71:/data/harbor/cert/10.20.0.71.crt /usr/local/share/ca-certificates/
-> sudo update-ca-certificates
-> sudo systemctl restart docker.service
-> ls /etc/ssl/certs | awk /10.20.0.71/
+>    sudo scp localadmin@10.20.0.71:/data/harbor/cert/10.20.0.71.crt /usr/local/share/ca-certificates/
+>    sudo update-ca-certificates
+>    sudo systemctl restart docker.service
+>    ls /etc/ssl/certs | awk /10.20.0.71/
 >   ```
 
 # Step 8. Install kubectl (On user client if you need)
@@ -218,16 +218,19 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 9. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
+>
 > After the deployment is complete, you should wait 2 to 5 minutes to access the URL of the service as shown below.
 >
 > You can check the deployment status with the command "kubectl get pod".
 > It should display as below.
 >
-> `localadmin@iiidevops-73:~$ kubectl get pod`
-> `NAME                                  READY   STATUS    RESTARTS   AGE`
-> `redmine-bddc54f6c-tmk59               1/1     Running   0          2m5s`
-> `redmine-postgresql-77cc655bb8-vr2r8   1/1     Running   0          2m5s`
-> `sonarqube-server-6ccbf4c54f-77qkd     1/1     Running   0          2m5s`
+> ```basb
+>   localadmin@iiidevops-73:~$ kubectl get pod
+>   NAME                                  READY   STATUS    RESTARTS   AGE
+>   redmine-bddc54f6c-tmk59               1/1     Running   0          2m5s
+>   redmine-postgresql-77cc655bb8-vr2r8   1/1     Running   0          2m5s
+>   sonarqube-server-6ccbf4c54f-77qkd     1/1     Running   0          2m5s
+> ```
 >
 > * Redmine  - http://10.20.0.72:32748/ 
 
@@ -273,10 +276,11 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 10. Deploy III-DevOps
 > <code> ~/deploy-devops/bin/iiidevops_install_core.pl </code>
-> After the deployment is complete, you should wait 3 to 5 minutes for the initial system setup, and then you can access the URL as shown below.
+>
+> You should wait 3 to 5 minutes to complete the deployment and initial system setup. Then, you can access the URL as shown below.
 >
 > ## Go to Web UI to login 
 > * III-DevOps URL -  http://10.20.0.72:30775/ 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
 >
-> * Account: admin, Password: Use the **admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to log in toIII-DevOps
+> Use the **admin_init_login** and **admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III-DevOps
