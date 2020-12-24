@@ -42,13 +42,7 @@
  
   ```
   localadmin@iiidevops-74:~$ sudo docker login https://10.20.0.71:5443/
-  Username: admin
-  Password:
-  Error response from daemon: Get https://10.20.0.71:5443/v2/: x509: certificate signed by unknown authority
-  localadmin@iiidevops-74:~$ sudo vi /etc/docker/daemon.json
-  localadmin@iiidevops-74:~$ sudo systemctl restart docker.service
-  localadmin@iiidevops-74:~$ sudo docker login https://10.20.0.74:5443/
-  Username: admin
+  Username: jonathan
   Password:
   WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
   Configure a credential helper to remove this warning. See
@@ -81,7 +75,7 @@
  
   ```
   C:\Users\jonathan>docker login https://10.20.0.71:5443/
-  Username: admin
+  Username: jonathan
   Password:
   Login Succeeded
   ```
