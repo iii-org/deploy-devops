@@ -149,6 +149,38 @@ log_print("Install Harbor\n-----\n$cmd\n\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
+# Create reboot auto start service
+# Ref - https://stackoverflow.com/questions/43671482/how-to-run-docker-compose-up-d-at-system-start-up
+$docker_compose_app_service =<<EOF;
+[Unit]
+Description=Docker Compose Application Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=$Bin../../harbor
+ExecStart=/usr/local/bin/docker-compose up -d
+ExecStop=/usr/local/bin/docker-compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+
+open(FH, '>', "/etc/systemd/system/docker-compose-app.service") or die $!;
+print FH $docker_compose_app_service;
+close(FH);
+
+$cmd = "sudo systemctl enable docker-compose-app";
+log_print("Set the Harbor service to start automatically after the system boot..\n-----\n$cmd\n\n");
+$cmd_msg = `$cmd`;
+log_print("-----\n$cmd_msg\n\n");
+
+exit;
+
 sub log_print {
 	my ($p_msg) = @_;
 
