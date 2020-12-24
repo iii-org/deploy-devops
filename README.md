@@ -173,7 +173,7 @@
 
 # Step 6. Setting harbor server 
 * Harbor - https://10.20.0.71:5443/
-* Use the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to harbour
+* Use **admin** and the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to harbour
 
 * New Project - iiidevops (Access Level : **Public**)
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_new_project.png?raw=true)  
