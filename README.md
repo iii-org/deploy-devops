@@ -246,7 +246,8 @@
 >   * My account/ API access key/ Show
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-admin-apikey.png?raw=true)  
 > * set API access key to env.pl
->   <code> ~/deploy-devops/bin/generate_env.pl ask_redmine_api_key</code> 
+>   
+>   ``` ~/deploy-devops/bin/generate_env.pl ask_redmine_api_key```
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine_set_API_access_key.png?raw=true)
 > * wiki set markdown  
 >   * Administration/ Setting/ Gereral/ Text formatting  
