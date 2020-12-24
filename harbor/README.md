@@ -19,7 +19,7 @@
   Docker version 20.10.1, build 831ebea
   ```
 
-* Trush Harbor Server IP
+* Trust Harbor Server IP
   ```bash
   sudo vi /etc/docker/daemon.json
   ```
@@ -65,7 +65,7 @@
   Docker version 20.10.0, build 7287ab3
   ```
 
-* Trush Harbor Server IP & Restart docker service
+* Trust Harbor Server IP & Restart docker service
 ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/docker_windows_setting.png?raw=true)  
   
 * Login harbor
