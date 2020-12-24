@@ -16,6 +16,16 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+# Check OS version
+$cmd_msg = `lsb_release -r`;
+$cmd_msg =~ s/\n|\r//g;
+($key, $OSVer) = split(/\t/, $cmd_msg);
+if ($OSVer ne '20.04') {
+	log_print("Only supports Ubuntu 20.04 LTS, your operating system $OSVer is not a supported version\n");
+	exit;
+}
+
+
 # Run on remote host 
 if (uc($ARGV[0] ne 'local')) {
 
