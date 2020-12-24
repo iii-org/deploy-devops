@@ -146,4 +146,8 @@ if (index($cmd_msg, '/iiidevopsNFS')<0) {
 	exit;	
 }
 
-print("\nThe deployment of Gitlab / Harbor / Rancher / NFS services has been completed, please Read https://github.com/iii-org/deploy-devops/blob/master/README.md to continue.\n\n");
+print("\nThe deployment of Gitlab / Rancher / Harbor / NFS services has been completed, These services URL are: \n");
+print("GitLab - http://$gitlab_url/\n");
+print("Rancher - http://$rancher_url/\n");
+print("Harbor - http://$harbor_url/\n");
+print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
