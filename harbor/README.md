@@ -79,3 +79,31 @@
   Password:
   Login Succeeded
   ```
+
+## Local Settings (Mac)
+* Install docker service
+
+  Ref - https://docs.docker.com/docker-for-mac/install/
+* Check docker version
+  ```bash
+  docker -v
+  ```
+
+  ```bash
+  User@MacBook-Pro:~$ docker -v
+  Docker version 20.10.0, build 7287ab3
+  ```
+
+* Trust Harbor Server IP
+  ```bash
+  sudo vim /etc/docker/daemon.json
+  ```
+  
+  ```
+  {
+      "insecure-registries":["10.20.0.71:5443"]
+  }
+  ```
+  
+* Restart docker service
+![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/mac_restart_docker.png?raw=true)  
