@@ -56,3 +56,33 @@
  
   Login Succeeded
   ```
+
+## Local Settings (Windows)
+* Install docker service
+
+  Ref - https://hub.docker.com/editions/community/docker-ce-desktop-windows
+* Check docker version
+  ```dos
+  docker -v
+  ```
+
+  ```dos
+  C:\Users\jonathan>docker -v
+  Docker version 20.10.0, build 7287ab3
+  ```
+
+* Trush Harbor Server IP
+  
+* Restart docker service
+  
+* Login harbor
+  ```dos
+  docker login https://10.20.0.71:5443/
+  ```
+ 
+  ```
+  C:\Users\jonathan>docker login https://10.20.0.74:5443/
+  Username: admin
+  Password:
+  Login Succeeded
+  ```
