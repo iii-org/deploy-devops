@@ -31,15 +31,13 @@ perl ./iiidevops_install.pl localadmin@10.20.0.72
 
 # Step 2. Generate configuration setting information file "env.pl" (VM1)
 
-> <code>~/deploy-devops/bin/generate_env.pl</code>  
+> * After entering, please check whether the configuration setting information is correct.  You can also edit this env.pl configuration file data.
 >
-> * Check the configuration setting information
->
-> <code>more ~/deploy-devops/env.pl</code>
+>   ``` vi ~/deploy-devops/env.pl```
 
 # Step 3. Deploy Gitlab / Harbor / Rancher / NFS (VM1)
 
-> <code> sudo ~/deploy-devops/bin/iiidevops_install_mainapps.pl</code>  
+> ``` sudo ~/deploy-devops/bin/iiidevops_install_mainapps.pl```
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
