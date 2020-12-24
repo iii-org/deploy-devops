@@ -10,7 +10,7 @@
   3. Rancher admin password
   4. Redmine admin password
   5. Harbor admin passowrd
-  6. III-devops super user account ('admin' is not allowed)
+  6. III-devops super user account ('admin' and 'root' are not allowed)
   7. III-devops super user E-Mail
   8. III-devops super user password
 
@@ -23,14 +23,17 @@
 
 # Step 1. Download deploy-devops and Install docker (VM1)
 
-```bash
-wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
-perl ./iiidevops_install.pl local
-perl ./iiidevops_install.pl localadmin@10.20.0.72
-```
+> ```bash
+> wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
+> perl ./iiidevops_install.pl local
+> perl ./iiidevops_install.pl localadmin@10.20.0.72
+> ```
 
 # Step 2. Generate configuration setting information file "env.pl" (VM1)
 
+> ```bash
+> ~/deploy-devops/bin/generate_env.pl
+> ````
 > * After entering, please check whether the configuration setting information is correct.  You can also edit this env.pl configuration file data.
 >
 >   ``` vi ~/deploy-devops/env.pl```
