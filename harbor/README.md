@@ -71,9 +71,8 @@
   Docker version 20.10.0, build 7287ab3
   ```
 
-* Trush Harbor Server IP
-  
-* Restart docker service
+* Trush Harbor Server IP & Restart docker service
+![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/docker_windows_setting.png?raw=true)  
   
 * Login harbor
   ```dos
@@ -81,7 +80,7 @@
   ```
  
   ```
-  C:\Users\jonathan>docker login https://10.20.0.74:5443/
+  C:\Users\jonathan>docker login https://10.20.0.71:5443/
   Username: admin
   Password:
   Login Succeeded
