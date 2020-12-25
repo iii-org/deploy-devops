@@ -179,23 +179,20 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_new_project.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_project_list.png?raw=true)  
 
-# Step 7. Check NFS Client on Kubernetes worker node (VM2)  
-> * Check NFS Service is available on VM2  
->     <code> showmount -e {NFS server IP} </code>
-> 
-> * It should display as below.
+# Step 7. Check NFS Client and Harbor cert of the Kubernetes worker node
+> * You can run the check-k8s-node.pl script on VM1 to check all k8s nodes
 >
+>   ``` ~/deploy-devops/bin/check-k8s-node.pl [user@k8s_ip] ```
+>
+>   If everything in the k8s node is correct, you will see that all check items are OK in the verification result shown below.
 >   ```bash
->    localadmin@iiidevops-72:~$ showmount -e 10.20.0.71
->    Export list for 10.20.0.71:
->    /iiidevopsNFS *
->   ```
-> * Trust harbor SSL cert on VM2
->   ```bash
->    sudo scp localadmin@10.20.0.71:/data/harbor/cert/10.20.0.71.crt /usr/local/share/ca-certificates/
->    sudo update-ca-certificates
->    sudo systemctl restart docker.service
->    ls /etc/ssl/certs | awk /10.20.0.71/
+>   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/check-k8s-node.pl localadmin@10.20.0.72
+>   :
+>   :
+>   :
+>   -----Validation results-----
+>   NFS Client      : OK!
+>   Harbor Cert     : OK!
 >   ```
 
 # Step 8. Install kubectl (On user client if you need)
