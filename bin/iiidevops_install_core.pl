@@ -30,6 +30,84 @@ if (index($cmd_msg, 'namespace/account created')<0 && index($cmd_msg, 'namespace
 	exit;
 }
 
+# Check if Gitlab/Rancher/Harbor/Redmine services are running well
+# GitLab
+$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"gitlab\"";
+$running=0;
+foreach $line (split(/\n/, `$cmd`)) {
+	($l_id, $l_image, $l_state) = split(/: /, $line);
+	if ($l_state ne 'running') {
+		print("[$l_image][$l_state]\n");
+	}
+	else {
+		$running ++;
+	}
+}
+$cmd_msg = `$cmd`;
+print("-----Check GitLab-----\n$cmd_msg");
+if ($running<1) {
+	print("GitLab is not working well!\n");
+	exit;
+}
+
+# Rancher
+$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"rancher\"";
+$running=0;
+foreach $line (split(/\n/, `$cmd`)) {
+	($l_id, $l_image, $l_state) = split(/: /, $line);
+	if ($l_state ne 'running') {
+		print("[$l_image][$l_state]\n");
+	}
+	else {
+		$running ++;
+	}
+}
+$cmd_msg = `$cmd`;
+print("-----Check Rancher-----\n$cmd_msg");
+if ($running<1) {
+	print("Rancher is not working well!\n");
+	exit;
+}
+
+# Harbor
+$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"goharbor\"";
+$running=0;
+foreach $line (split(/\n/, `$cmd`)) {
+	($l_id, $l_image, $l_state) = split(/: /, $line);
+	if ($l_state ne 'running') {
+		print("[$l_image][$l_state]\n");
+	}
+	else {
+		$running ++;
+	}
+}
+$cmd_msg = `$cmd`;
+print("-----Check Harbor-----\n$cmd_msg");
+if ($running<8) {
+	print("Harbor is not working well!\n");
+	exit;
+}
+
+# Redmine
+$cmd = "kubectl get pod | grep redmine";
+$running=0;
+foreach $line (split(/\n/, `$cmd`)) {
+	$line =~ s/( )+/ /g;
+	($l_name, $l_ready, $l_status, $l_restarts, $l_age) = split(/ /, $line);
+	if ($l_status ne 'Running') {
+		print("[$l_name][$l_status]\n");
+	}
+	else {
+		$running ++;
+	}
+}
+$cmd_msg = `$cmd`;
+print("-----Check Redmine-----\n$cmd_msg");
+if ($running<2) {
+	print("Redmine is not working well!\n");
+	exit;
+}
+
 # Deploy DevOps DB (Postgresql) on kubernetes cluster
 $yaml_path = "$Bin/../devops-db/";
 $yaml_file = $yaml_path.'devopsdb-deployment.yaml';
