@@ -217,20 +217,8 @@
 # Step 9. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 >
-> After the deployment is complete, you should wait 2 to 5 minutes to access the URL of the service as shown below.
+> After running the script, you should wait 1 to 3 minutes for these services to start running.
 >
-> You can check the deployment status with the command "kubectl get pod".
-> It should display as below.
->
-> ```basb
->   localadmin@iiidevops-73:~$ kubectl get pod
->   NAME                                  READY   STATUS    RESTARTS   AGE
->   redmine-bddc54f6c-tmk59               1/1     Running   0          2m5s
->   redmine-postgresql-77cc655bb8-vr2r8   1/1     Running   0          2m5s
->   sonarqube-server-6ccbf4c54f-77qkd     1/1     Running   0          2m5s
-> ```
->
-> * Redmine  - http://10.20.0.72:32748/ 
 
 > ## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
