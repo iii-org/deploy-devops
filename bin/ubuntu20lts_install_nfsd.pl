@@ -40,6 +40,8 @@ sudo mkdir $home_dir/devopsdb;
 sudo chmod 777 $home_dir/devopsdb;
 sudo mkdir $home_dir/kube-config;
 sudo chmod 777 $home_dir/kube-config;
+sudo mkdir $home_dir/api-logs;
+sudo chmod 777 $home_dir/api-logs;
 sudo mkdir $home_dir/sonarqube;
 sudo chmod 777 $home_dir/sonarqube;
 END
