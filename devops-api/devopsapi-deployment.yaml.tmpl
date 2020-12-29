@@ -80,8 +80,8 @@ spec:
         volumeMounts:
         - name: kube-config
           mountPath: /root/.kube
-		- name: iii-logs
-		  mountPath: /usr/src/app/logs
+        - name: iii-logs
+          mountPath: /usr/src/app/logs
       volumes:
       - name: kube-config
         nfs:
