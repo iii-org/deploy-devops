@@ -12,6 +12,14 @@ if (!-e $p_config_tmpl) {
 	print("The template file [$p_config_tmpl] does not exist!\n");
 	exit;
 }
+
+if (-e '/iiidevopsNFS/deploy-config/env.pl') {
+	$cmd_msg = `rm -f $p_config; ln -s /iiidevopsNFS/deploy-config/env.pl $p_config`; 
+}
+if (-e '/iiidevopsNFS/deploy-config/env.pl.ans') {
+	$cmd_msg = `rm -f $p_config.ans; ln -s /iiidevopsNFS/deploy-config/env.pl.ans $p_config.ans`; 
+}
+
 $ans_tmpl = <<END;
 # generate_env_answer
 \$vm1_ip = '{{vm1_ip}}';
@@ -38,9 +46,6 @@ END
 # No longer needed key
 
 $p_config_tmpl_ans = $p_config.".ans";
-if (-e $p_config_tmpl_ans) {
-	require($p_config_tmpl_ans);
-}
 
 # 0. get host IP
 $host = hostname();
@@ -71,7 +76,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	}
 	$answer = "A1. Set [$vm1_ip] for the main service";
 	print ("$answer\n\n");
-	write_ans();
+	if ($vm1_ip ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$vm1_ip;
+			require($p_config_tmpl_ans);
+			$vm1_ip=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 2. Set $vm2_ip
@@ -87,7 +99,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	}
 	$answer = "A2. Set [$vm2_ip] for the application service";
 	print ("$answer\n\n");
-	write_ans();
+	if ($vm2_ip ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$vm2_ip;
+			require($p_config_tmpl_ans);
+			$vm2_ip=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 3. set GitLab root password(No longer needed)
@@ -124,7 +143,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_root_password') {
 	}
 	$ask_gitlab_root_password = $password1;
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_gitlab_root_password ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_gitlab_root_password;
+			require($p_config_tmpl_ans);
+			$ask_gitlab_root_password=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 4. set GitLab Token
@@ -158,7 +184,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_private_token') {
 		$answer = "A4. Set GitLab Token OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_gitlab_private_token ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_gitlab_private_token;
+			require($p_config_tmpl_ans);
+			$ask_gitlab_private_token=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 5. set Rancher admin password
@@ -195,7 +228,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_rancher_admin_password') {
 	}
 	$ask_rancher_admin_password = $password1;
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_rancher_admin_password ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_rancher_admin_password;
+			require($p_config_tmpl_ans);
+			$ask_rancher_admin_password=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 6. set Redmine admin password
@@ -232,7 +272,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 	}
 	$ask_redmine_admin_password = $password1;
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_redmine_admin_password ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_redmine_admin_password;
+			require($p_config_tmpl_ans);
+			$ask_redmine_admin_password=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 7. set Redmine API key
@@ -266,7 +313,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 		$answer = "A7. Set Redmine API key OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_redmine_api_key ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_redmine_api_key;
+			require($p_config_tmpl_ans);
+			$ask_redmine_api_key=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 8. set Harbor admin password
@@ -303,7 +357,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_harbor_admin_password') {
 	}
 	$ask_harbor_admin_password = $password1;
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_harbor_admin_password ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_harbor_admin_password;
+			require($p_config_tmpl_ans);
+			$ask_harbor_admin_password=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 9. set III-DevOps settings(Core)
@@ -333,7 +394,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'auto_password') {
 		$answer = "A10a. Set auto password OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($auto_password ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$auto_password;
+			require($p_config_tmpl_ans);
+			$auto_password=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 10b. Automatically generate random key
@@ -360,7 +428,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 		$answer = "A10b. Set random key OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($random_key ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$random_key;
+			require($p_config_tmpl_ans);
+			$random_key=$tmp;
+		}
+		write_ans();
+	}
 }
 
 #------------------------------
@@ -403,7 +478,7 @@ $question = "Q21. Do you want to generate env.pl based on the above information?
 $Y_N = prompt_for_input($question);
 if (lc($Y_N) ne 'n') {
 	if (-e $p_config) {
-		`cp -a $p_config $p_config_bak`;
+		`cat $p_config > $p_config_bak`;
 		print("The original env.pl has been backed up as $p_config_bak\n");
 	}
 	
@@ -445,32 +520,32 @@ exit;
 
 sub write_ans {
 
-	if ($vm1_ip ne '') {$ans_tmpl =~ s/{{vm1_ip}}/$vm1_ip/;}
-	if ($vm2_ip ne '') {$ans_tmpl =~ s/{{vm2_ip}}/$vm2_ip/;}
-	if ($ask_gitlab_root_password ne '') {$ans_tmpl =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/;}
-	if ($ask_gitlab_private_token ne '') {$ans_tmpl =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/;}
-	if ($ask_rancher_admin_password ne '') {$ans_tmpl =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;}
-	if ($ask_redmine_admin_password ne '') {$ans_tmpl =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/;}
-	if ($ask_redmine_api_key ne '') {$ans_tmpl =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/;}
-	if ($ask_harbor_admin_password ne '') {$ans_tmpl =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;}
-	if ($auto_password ne '') {$ans_tmpl =~ s/{{auto_password}}/$auto_password/;}
-	if ($random_key ne '') {$ans_tmpl =~ s/{{random_key}}/$random_key/;}
-	if ($checkmarx_origin ne '') {$ans_tmpl =~ s/{{checkmarx_origin}}/$checkmarx_origin/;}
-	if ($checkmarx_username ne '') {$ans_tmpl =~ s/{{checkmarx_username}}/$checkmarx_username/;}
-	if ($checkmarx_password ne '') {$ans_tmpl =~ s/{{checkmarx_password}}/$checkmarx_password/;}
-	if ($checkmarx_secret ne '') {$ans_tmpl =~ s/{{checkmarx_secret}}/$checkmarx_secret/;}
-	if ($webinspect_base_url ne '') {$ans_tmpl =~ s/{{webinspect_base_url}}/$webinspect_base_url/;}
-	if ($ask_admin_init_login ne '') {$ans_tmpl =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/;}
-	if ($ask_admin_init_email ne '') {$ans_tmpl =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;}
-	if ($ask_admin_init_password ne '') {$ans_tmpl =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;}
+	$ans_file = $ans_tmpl;
+	$ans_file =~ s/{{vm1_ip}}/$vm1_ip/;
+	$ans_file =~ s/{{vm2_ip}}/$vm2_ip/;
+	$ans_file =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/;
+	$ans_file =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/;
+	$ans_file =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;
+	$ans_file =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/;
+	$ans_file =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/;
+	$ans_file =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;
+	$ans_file =~ s/{{auto_password}}/$auto_password/;
+	$ans_file =~ s/{{random_key}}/$random_key/;
+	$ans_file =~ s/{{checkmarx_origin}}/$checkmarx_origin/;
+	$ans_file =~ s/{{checkmarx_username}}/$checkmarx_username/;
+	$ans_file =~ s/{{checkmarx_password}}/$checkmarx_password/;
+	$ans_file =~ s/{{checkmarx_secret}}/$checkmarx_secret/;
+	$ans_file =~ s/{{webinspect_base_url}}/$webinspect_base_url/;
+	$ans_file =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/;
+	$ans_file =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;
+	$ans_file =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;
 	
 	open(FH, '>', $p_config_tmpl_ans) or die $!;
-	print FH $ans_tmpl;
+	print FH $ans_file;
 	close(FH);
 	
 	return;	
 }
-# No longer needed 
 
 
 # Ref - http://www.tizag.com/perlT/perluserinput.php

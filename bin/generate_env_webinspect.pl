@@ -34,7 +34,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'webinspect_base_url') {
 		$answer = "A12. Set WebInspect URL OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($webinspect_base_url ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$webinspect_base_url;
+			require($p_config_tmpl_ans);
+			$webinspect_base_url=$tmp;
+		}
+		write_ans();
+	}
 }
 
 1;

@@ -10,16 +10,16 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 $cmd = "sudo apt install nfs-kernel-server -y";
-print("Install NFS service Package..\n");
+log_print("Install NFS service Package..\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n");
+log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd_msg = `sudo cat /etc/exports`;
 if (index($cmd_msg, $home_dir)<0) {
 	$cmd = "echo '$home_dir *(no_root_squash,rw,sync,no_subtree_check)' |sudo tee -a /etc/exports";
 	log_print("-----\n$cmd\n");
 	$cmd_msg = `$cmd`;
-	print("-----\n$cmd_msg\n-----\n");
+	log_print("-----\n$cmd_msg\n-----\n");
 }
 
 $cmd =<<END;
@@ -28,9 +28,9 @@ sudo chmod 777 $home_dir;
 sudo systemctl restart nfs-kernel-server;
 sudo showmount -e localhost;
 END
-print("Setting & Restart NFS Service..\n");
+log_print("Setting & Restart NFS Service..\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n");
+log_print("-----\n$cmd_msg\n-----\n");
 
 # Create folder for other services  
 $cmd =<<END;
@@ -40,14 +40,46 @@ sudo mkdir $home_dir/devopsdb;
 sudo chmod 777 $home_dir/devopsdb;
 sudo mkdir $home_dir/kube-config;
 sudo chmod 777 $home_dir/kube-config;
+sudo mkdir $home_dir/deploy-config;
+sudo chmod 777 $home_dir/deploy-config;
 sudo mkdir $home_dir/api-logs;
 sudo chmod 777 $home_dir/api-logs;
 sudo mkdir $home_dir/sonarqube;
 sudo chmod 777 $home_dir/sonarqube;
 END
-print("Create iiidevops services folder for NFS service..\n");
+log_print("Create iiidevops services folder for NFS service..\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n");
+log_print("-----\n$cmd_msg\n-----\n");
+
+$cmd_touch =<<END;
+touch $home_dir/deploy-config/env.pl;
+touch $home_dir/deploy-config/env.pl.ans;
+END
+
+$cmd_move =<<END;
+mv $Bin/../env.pl $home_dir/deploy-config/;
+mv $Bin/../env.pl.ans $home_dir/deploy-config/;
+END
+
+$cmd_link =<<END;
+ln -s $home_dir/deploy-config/env.pl $Bin/../env.pl;
+ln -s $home_dir/deploy-config/env.pl.ans $Bin/../env.pl.ans;
+END
+
+# copy env.pl.ans / env.pl to deploy-config/
+if (!-e "$Bin/../env.pl") {
+	$cmd_msg = `$cmd_touch`;
+}
+else {
+	$cmd_msg = `$cmd_move`;
+}
+$cmd_msg .= `$cmd_link`;
+if ($cmd_msg ne '') {
+	log_print("Move env.pl to $home_dir/deploy-config/ ERROR!\n----\n$cmd_msg\n");
+}
+else {
+	log_print("Move env.pl to $home_dir/deploy-config/ OK!\n");
+}
 
 exit;
 

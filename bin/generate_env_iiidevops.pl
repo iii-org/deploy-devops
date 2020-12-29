@@ -35,7 +35,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_login') {
 		$answer = "A9a. Set III-DevOps super user account OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_admin_init_login ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_admin_init_login;
+			require($p_config_tmpl_ans);
+			$ask_admin_init_login=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 9b. \$ask_admin_init_email = '{{ask_admin_init_email}}';
@@ -68,7 +75,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_email') {
 		$answer = "A9b. Set III-DevOps super user E-Mail OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_admin_init_email ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_admin_init_email;
+			require($p_config_tmpl_ans);
+			$ask_admin_init_email=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 9c. \$ask_admin_init_password = '{{ask_admin_init_password}}';
@@ -104,7 +118,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_password') {
 	}
 	$ask_admin_init_password = $password1;
 	print ("$answer\n\n");
-	write_ans();
+	if ($ask_admin_init_password ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_admin_init_password;
+			require($p_config_tmpl_ans);
+			$ask_admin_init_password=$tmp;
+		}
+		write_ans();
+	}
 }
 
 1;

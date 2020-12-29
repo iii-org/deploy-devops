@@ -34,7 +34,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_origin') {
 		$answer = "A11a. Set Checkmarx origin OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($checkmarx_origin ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$checkmarx_origin;
+			require($p_config_tmpl_ans);
+			$checkmarx_origin=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 11b. \$checkmarx_username = '{{checkmarx_username}}';
@@ -67,7 +74,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_username') {
 		$answer = "A11b. Set Checkmarx username OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($checkmarx_username ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$checkmarx_username;
+			require($p_config_tmpl_ans);
+			$checkmarx_username=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 11c. \$checkmarx_password = '{{checkmarx_password}}';
@@ -103,7 +117,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_password') {
 		$answer = "A11c. Set Checkmarx password OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($checkmarx_password ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$checkmarx_password;
+			require($p_config_tmpl_ans);
+			$checkmarx_password=$tmp;
+		}
+		write_ans();
+	}
 }
 
 # 11d. \$checkmarx_secret = '{{checkmarx_secret}}';
@@ -136,7 +157,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'checkmarx_secret') {
 		$answer = "A11d. Set Checkmarx secret OK!";
 	}
 	print ("$answer\n\n");
-	write_ans();
+	if ($checkmarx_secret ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$checkmarx_secret;
+			require($p_config_tmpl_ans);
+			$checkmarx_secret=$tmp;
+		}
+		write_ans();
+	}
 }
 
 1;
