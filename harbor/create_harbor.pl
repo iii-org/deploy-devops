@@ -30,10 +30,10 @@ else {
 	log_print("-----\n$cmd_msg\n\n");
 }
 
-$cmd_option = "wget -O $home_dir/harbor-offline-installer-v2.1.0.tgz https://github.com/goharbor/harbor/releases/download/v2.1.0/harbor-offline-installer-v2.1.0.tgz;";
-$chk_file = "$home_dir/harbor-offline-installer-v2.1.0.tgz";
-$md5_value = substr(`md5sum $chk_file`, 0, 32); # 2194f0c0a37e3cd073ce46db4cbf2c07
-if ($md5_value eq '2194f0c0a37e3cd073ce46db4cbf2c07') {
+$cmd_option = "wget -O $home_dir/harbor-offline-installer-v2.1.2.tgz  https://github.com/goharbor/harbor/releases/download/v2.1.2/harbor-offline-installer-v2.1.2.tgz;";
+$chk_file = "$home_dir/harbor-offline-installer-v2.1.2.tgz";
+$md5_value = substr(`md5sum $chk_file`, 0, 32); # 37a84e078504546c24e6fb99f80f6d05
+if ($md5_value eq '37a84e078504546c24e6fb99f80f6d05') {
 	$cmd_option = '';
 }
 $cmd = <<END;
