@@ -13,124 +13,84 @@ $home = "$Bin/../../";
 
 # GitLab
 $cmd = "sudo $home/deploy-devops/gitlab/create_gitlab.pl";
-print("Deploy Gitlab..\n");
+print("Deploy Gitlab..");
 $cmd_msg = `$cmd`;
 #print("-----\n$cmd_msg\n-----\n");
 
-#55f53640bc5e: gitlab/gitlab-ce:12.10.6-ce.0: running
 $isChk=1;
 $count=0;
-$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"gitlab\"";
-while($isChk && $count<5) {
+while($isChk && $count<60) {
 	print('.');
-	$isChk = 0;
-	$line = `$cmd`;
-	$line =~ s/\n|\r//g;
-	if ($line eq '') {
-		$isChk ++;
-	}
-	else {
-		($l_id, $l_image, $l_state) = split(/: /, $line);
-		if ($l_state ne 'running') {
-			print("[$l_image][$l_state]\n");
-			$isChk ++;
-		}
-	}
+	$cmd_msg = `nc -z -v $gitlab_url 80 2>&1`;
+	# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
 	$count ++;
 	sleep($isChk);
 }
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg-----\n");
 if ($isChk) {
 	print("Failed to deploy GitLab!\n");
+	print("-----\n$cmd_msg-----\n");
 	exit;	
 }
 else {
+	print("OK!\n");
+#	print("-----\n$cmd_msg-----\n");
 	print("Successfully deployed GitLab!\n");
 }
 
 # Harbor
 $cmd = "sudo $home/deploy-devops/harbor/create_harbor.pl";
-print("\nDeploy and Setting harbor server..\n");
+print("\nDeploy and Setting Harbor server..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
-#e741c0904f5a: goharbor/harbor-jobservice:v2.1.0: running
-#cc3c961b5620: goharbor/nginx-photon:v2.1.0: running
-#b8cca61a22f1: goharbor/harbor-core:v2.1.0: running
-#f8b3a37fde4a: goharbor/redis-photon:v2.1.0: running
-#3b413a2d7ad3: goharbor/harbor-registryctl:v2.1.0: running
-#eeb1646e63dc: goharbor/harbor-portal:v2.1.0: running
-#3264ed9d0b7d: goharbor/harbor-db:v2.1.0: running
-#a508a138b9da: goharbor/harbor-log:v2.1.0: running
+
 $isChk=1;
 $count=0;
-$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"goharbor\"";
-while($isChk && $count<5) {
+while($isChk && $count<180) {
 	print('.');
-	$isChk = 0;
-	$running = 0;
-	foreach $line (split(/\n/, `$cmd`)) {
-		($l_id, $l_image, $l_state) = split(/: /, $line);
-		if ($l_state ne 'running') {
-			print("[$l_image][$l_state]\n");
-			$isChk ++;
-		}
-		else {
-			$running ++;
-		}
-	}
-	if ($running<8) {
-		$isChk ++;
-	}
+	$cmd_msg = `nc -z -v $harbor_url 5443 2>&1`;
+	# Connection to 10.20.0.71 5443 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
 	$count ++;
 	sleep($isChk);
 }
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg-----\n");
 if ($isChk) {
-	print("Failed to deploy harbor!\n");
+	print("Failed to deploy Harbor!\n");
+	print("-----\n$cmd_msg-----\n");
 	exit;	
 }
 else {
-	print("Successfully deployed harbor!\n");
+	print("OK!\n");
+#	print("-----\n$cmd_msg-----\n");
+	print("Successfully deployed Harbor!\n");
 }
+
 
 # Rancher
 $cmd = "sudo $home/deploy-devops/bin/ubuntu20lts_install_rancher.pl";
-print("\nInstall rancher..\n");
+print("\nInstall Rancher..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
 
-#3c3e647bbb5b: rancher/rancher:v2.4.5: running
 $isChk=1;
 $count=0;
-$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"rancher\"";
-while($isChk && $count<5) {
+while($isChk && $count<120) {
 	print('.');
-	$isChk = 0;
-	$line = `$cmd`;
-	$line =~ s/\n|\r//g;
-	if ($line eq '') {
-		$isChk ++;
-	}
-	else {
-		($l_id, $l_image, $l_state) = split(/: /, $line);
-		if ($l_state ne 'running') {
-			print("[$l_image][$l_state]\n");
-			$isChk ++;
-		}
-	}
+	$cmd_msg = `nc -z -v $rancher_url 6443 2>&1`;
+	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
 	$count ++;
 	sleep($isChk);
 }
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg-----\n");
 if ($isChk) {
-	print("Failed to deploy rancher!\n");
+	print("Failed to deploy Rancher!\n");
+	print("-----\n$cmd_msg-----\n");
 	exit;	
 }
 else {
-	print("Successfully deployed rancher!\n");
+	print("OK!\n");
+#	print("-----\n$cmd_msg-----\n");
+	print("Successfully deployed Rancher!\n");
 }
 
 # NFS
@@ -148,6 +108,6 @@ if (index($cmd_msg, '/iiidevopsNFS')<0) {
 
 print("\nThe deployment of Gitlab / Rancher / Harbor / NFS services has been completed, These services URL are: \n");
 print("GitLab - http://$gitlab_url/\n");
-print("Rancher - http://$rancher_url/\n");
-print("Harbor - http://$harbor_url/\n");
+print("Rancher - https://$rancher_url:6443/\n");
+print("Harbor - https://$harbor_url:5443/\n");
 print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
