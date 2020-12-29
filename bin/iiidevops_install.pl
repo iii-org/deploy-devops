@@ -45,42 +45,41 @@ $cmd_msg = `$cmd`;
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo apt-get install unzip nfs-common libterm-readkey-perl -y; \
-cd ~; unzip -o $ins_repo.zip \
-rm -rf deploy-devops \
-mv deploy-devops-$ins_repo deploy-devops \
-cd deploy-devops/ \
-chmod a+x bin/*.pl \
-chmod a+x gitlab/*.pl \
-chmod a+x harbor/*.pl
+sudo apt-get install unzip nfs-common libterm-readkey-perl -y;
+cd ~; unzip -o $ins_repo.zip;
+rm -rf deploy-devops;
+mv deploy-devops-$ins_repo deploy-devops;
+cd deploy-devops/;
+chmod a+x bin/*.pl;
+chmod a+x gitlab/*.pl;
+chmod a+x harbor/*.pl;
 END
 log_print("Unziping iiidevops Deploy Package..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo apt-get update -y; \
-sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
+sudo apt-get update -y;
+sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y;
 END
 log_print("Install default packages..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -; \
-sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\"; \ 
-sudo apt-get update -y; \
-sudo apt-get install docker-ce docker-ce-cli containerd.io -y; \
-usermod -aG docker \$SUDO_USER; \
-docker -v
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
+sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\";
+sudo apt-get update -y;
+sudo apt-get install docker-ce=5:19.03.14~3-0~ubuntu-focal docker-ce-cli=5:19.03.14~3-0~ubuntu-focal containerd.io -y;
+docker -v;
 END
 log_print("Install docker..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo snap install kubectl --classic; \
-mkdir -p ~/.kube/
+sudo snap install kubectl --classic;
+mkdir -p ~/.kube/;
 END
 log_print("Install kubectl..\n");
 $cmd_msg = `$cmd`;
