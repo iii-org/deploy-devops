@@ -126,7 +126,18 @@ close(FH);
 $cmd = "kubectl apply -f $yaml_path";
 print("Deploy devops-db..\n");
 $cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n\n");
+#print("-----\n$cmd_msg\n-----\n\n");
+
+# Check the database is ready!
+$isChk=1;
+while($isChk) {
+	print('.');
+	$cmd_msg = `nc -z -v $db_ip 31403 2>&1`;
+	# Connection to 192.168.11.205 31403 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
+	sleep($isChk);
+}
+print("OK!\n");
 
 # Deploy DevOps API (Python Flask) on kubernetes cluster
 $yaml_path = "$Bin/../devops-api/";
@@ -192,10 +203,6 @@ print("-----\n$cmd_msg\n-----\n\n");
 print("It takes 3 to 5 minutes to deploy III-DevOps services. Please wait.. \n");
 
 # check deploy status
-#NAME                                  READY   STATUS    RESTARTS   AGE
-#redmine-7cdd59f44c-hz4qz              1/1     Running   2          40m
-#redmine-postgresql-6989b6c4d4-tw2bc   1/1     Running   1          40m
-#sonarqube-server-5788564ddc-ld4mp     1/1     Running   1          40m
 $isChk=1;
 while($isChk) {
 	$isChk = 0;
