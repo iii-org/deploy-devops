@@ -143,78 +143,69 @@ print("-----\n$cmd_msg\n-----\n");
 
 # Check if Gitlab/Rancher/Harbor/Redmine services are running well
 # GitLab
-$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"gitlab\"";
-$running=0;
-foreach $line (split(/\n/, `$cmd`)) {
-	($l_id, $l_image, $l_state) = split(/: /, $line);
-	if ($l_state ne 'running') {
-		print("[$l_image][$l_state]\n");
-	}
-	else {
-		$running ++;
-	}
+$isChk=1;
+$count=0;
+while($isChk && $count<10) {
+	print('.');
+	$cmd_msg = `nc -z -v $gitlab_url 80 2>&1`;
+	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
+	$count ++;
+	sleep($isChk);
 }
-$cmd_msg = `$cmd`;
 print("-----Check GitLab-----\n$cmd_msg");
-if ($running<1) {
+if ($isChk) {
 	print("GitLab is not working well!\n");
 	exit;
 }
 
 # Rancher
-$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"rancher\"";
-$running=0;
-foreach $line (split(/\n/, `$cmd`)) {
-	($l_id, $l_image, $l_state) = split(/: /, $line);
-	if ($l_state ne 'running') {
-		print("[$l_image][$l_state]\n");
-	}
-	else {
-		$running ++;
-	}
+$isChk=1;
+$count=0;
+while($isChk && $count<10) {
+	print('.');
+	$cmd_msg = `nc -z -v $rancher_url 6443 2>&1`;
+	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
+	$count ++;
+	sleep($isChk);
 }
-$cmd_msg = `$cmd`;
 print("-----Check Rancher-----\n$cmd_msg");
-if ($running<1) {
+if ($isChk) {
 	print("Rancher is not working well!\n");
 	exit;
 }
 
 # Harbor
-$cmd = "sudo docker ps --format \"{{.ID}}: {{.Image}}: {{.State}}\" | grep \"goharbor\"";
-$running=0;
-foreach $line (split(/\n/, `$cmd`)) {
-	($l_id, $l_image, $l_state) = split(/: /, $line);
-	if ($l_state ne 'running') {
-		print("[$l_image][$l_state]\n");
-	}
-	else {
-		$running ++;
-	}
+$isChk=1;
+$count=0;
+while($isChk && $count<10) {
+	print('.');
+	$cmd_msg = `nc -z -v $harbor_url 5443 2>&1`;
+	# Connection to 10.20.0.71 5443 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
+	$count ++;
+	sleep($isChk);
 }
-$cmd_msg = `$cmd`;
 print("-----Check Harbor-----\n$cmd_msg");
-if ($running<8) {
+if ($isChk) {
 	print("Harbor is not working well!\n");
 	exit;
 }
 
 # Redmine
-$cmd = "kubectl get pod | grep redmine";
-$running=0;
-foreach $line (split(/\n/, `$cmd`)) {
-	$line =~ s/( )+/ /g;
-	($l_name, $l_ready, $l_status, $l_restarts, $l_age) = split(/ /, $line);
-	if ($l_status ne 'Running') {
-		print("[$l_name][$l_status]\n");
-	}
-	else {
-		$running ++;
-	}
+$isChk=1;
+$count=0;
+while($isChk && $count<10) {
+	print('.');
+	$cmd_msg = `nc -z -v $redmine_ip 32748 2>&1`;
+	# Connection to 10.20.0.72 32748 port [tcp/*] succeeded!
+	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
+	$count ++;
+	sleep($isChk);
 }
-$cmd_msg = `$cmd`;
 print("-----Check Redmine-----\n$cmd_msg");
-if ($running<2) {
+if ($isChk) {
 	print("Redmine is not working well!\n");
 	exit;
 }
