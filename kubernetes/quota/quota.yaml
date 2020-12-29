@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: quota-test
+spec:
+  hard:
+    cpu: "10"
+    memory: "10G"
+    pods: "20"
+    persistentvolumeclaims: "0"
+    resourcequotas: "10"
+    configmaps: "1"
+    services: "10"
+    secrets: "10"
