@@ -9,6 +9,6 @@ spec:
     pods: "20"
     persistentvolumeclaims: "0"
     resourcequotas: "10"
-    configmaps: "1"
+    configmaps: "60"
     services: "10"
-    secrets: "10"
+    secrets: "60"
