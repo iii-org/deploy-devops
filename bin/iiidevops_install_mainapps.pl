@@ -2,7 +2,8 @@
 # Install iiidevops master node script
 #
 use FindBin qw($Bin);
-my $p_config = "$Bin/../env.pl";
+$p_config = "$Bin/../env.pl";
+$wait_sec = 600;
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
 	exit;
@@ -19,7 +20,7 @@ $cmd_msg = `$cmd`;
 
 $isChk=1;
 $count=0;
-while($isChk && $count<60) {
+while($isChk && $count<$wait_sec) {
 	print('.');
 	$cmd_msg = `nc -z -v $gitlab_url 80 2>&1`;
 	# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
@@ -46,7 +47,7 @@ print("-----\n$cmd_msg\n-----\n");
 
 $isChk=1;
 $count=0;
-while($isChk && $count<180) {
+while($isChk && $count<$wait_sec) {
 	print('.');
 	$cmd_msg = `nc -z -v $harbor_url 5443 2>&1`;
 	# Connection to 10.20.0.71 5443 port [tcp/*] succeeded!
@@ -74,7 +75,7 @@ print("-----\n$cmd_msg\n-----\n");
 
 $isChk=1;
 $count=0;
-while($isChk && $count<120) {
+while($isChk && $count<$wait_sec) {
 	print('.');
 	$cmd_msg = `nc -z -v $rancher_url 6443 2>&1`;
 	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
