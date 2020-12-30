@@ -108,8 +108,15 @@
 >   * Node Options: Chose etcd, Control plane, worker
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
-## Copy command to run on VM2
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher_cluster_cmd.png?raw=true)  
+## Copy command to /iiidevopsNFS/deploy-config/add_k8s.sh for VM2
+>
+> ```bash
+> vi /iiidevopsNFS/deploy-config/add_k8s.sh
+> ```
+> * Excute the command on VM1 to let VM2 as a K8S node
+> ```bash
+> ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.72
+> ```
 >
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster. The command 'sudo docker ps' is helpful to check working status. 
 >
