@@ -113,25 +113,12 @@
 > ```bash
 > vi /iiidevopsNFS/deploy-config/add_k8s.sh
 > ```
-> * Excute the command on VM1 to let VM2 as a K8S node
+> * Excute the following command on VM1 to make VM2 a K8S node.
 > ```bash
 > ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.72
 > ```
 >
-> * After executing this command, it takes about 5 to 10 minutes to build the cluster. The command 'sudo docker ps' is helpful to check working status. 
->
-> ```bash
-> localadmin@iiidevops-72:~$ sudo docker ps
-> CONTAINER ID   IMAGE                                 COMMAND                  CREATED          STATUS          PORTS     NAMES
-> e07030df28a8   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   14 seconds ago   Up 13 seconds             kube-proxy
-> ec609e7c4aed   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   25 seconds ago   Up 24 seconds             kubelet
-> c38c1e7e2b06   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   31 seconds ago   Up 30 seconds             kube-scheduler
-> 9004d6316561   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   37 seconds ago   Up 36 seconds             kube-controller-manager
-> 72e32adc984b   rancher/hyperkube:v1.18.12-rancher1   "/opt/rke-tools/entr…"   48 seconds ago   Up 47 seconds             kube-apiserver
-> d1380406d63e   rancher/coreos-etcd:v3.4.3-rancher1   "/usr/local/bin/etcd…"   50 seconds ago   Up 49 seconds             etcd
-> 05e8e1e4eaa8   rancher/rancher-agent:v2.4.5          "run.sh --server htt…"   3 minutes ago    Up 3 minutes              great_hawking
-> ```
->
+> * After executing this command, it takes about 5 to 10 minutes to build the cluster.  
 > * Rancher Web UI will automatically refresh to use the new SSL certificate. You need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
 >
 
@@ -139,8 +126,8 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig file to **~/.kube/config** and **/iiidevopsNFS/kube-config/config** on VM1, and also keep it.  
 > ```bash
->  vi ~/.kube/config 
->  cp ~/.kube/config /iiidevopsNFS/kube-config/ 
+>  vi /iiidevopsNFS/kube-config/config
+>  ln -s /iiidevopsNFS/kube-config/config ~/.kube/config
 > ```
 >
 > Use the following command to check if the config is working
