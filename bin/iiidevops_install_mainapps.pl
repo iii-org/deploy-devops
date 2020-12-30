@@ -2,6 +2,7 @@
 # Install iiidevops master node script
 #
 use FindBin qw($Bin);
+use MIME::Base64;
 $p_config = "$Bin/../env.pl";
 $wait_sec = 600;
 if (!-e $p_config) {
@@ -49,9 +50,9 @@ $isChk=1;
 $count=0;
 while($isChk && $count<$wait_sec) {
 	print('.');
-	$cmd_msg = `nc -z -v $harbor_url 5443 2>&1`;
-	# Connection to 10.20.0.71 5443 port [tcp/*] succeeded!
-	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
+	$cmd_msg = `curl -k --location --request POST 'https://$harbor_url:5443/api/v2.0/registries' 2>&1`;
+	#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+	$isChk = index($cmd_msg, 'UNAUTHORIZED')<0?1:0;
 	$count ++;
 	sleep($isChk);
 }
@@ -66,6 +67,42 @@ else {
 	print("Successfully deployed Harbor!\n");
 }
 
+# Add dockerhub Registry & create dockerhub Proxy Cache Project
+$harbor_key = encode_base64("admin:$harbor_admin_password");
+$harbor_key =~ s/\n|\r//;
+$cmd =<<END;
+curl -k --location --request POST 'https://$harbor_url:5443/api/v2.0/registries' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
+  "name": "dockerhub",
+  "url": "https://hub.docker.com",
+  "insecure": false,
+  "type": "docker-hub",
+  "description": "Default Harbor Projcet Proxy Cache"
+}'
+END
+$cmd_msg = `$cmd`;
+if ($cmd_msg ne '') {
+	print("Add dockerhub Registry Error: $cmd_msg");
+}
+
+sleep(5);
+$cmd =<<END;
+curl -k --location --request POST 'https://$harbor_url:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
+  "project_name": "dockerhub",
+  "registry_id": 1,
+  "storage_limit": -1,
+  "metadata": {
+    "enable_content_trust": "false",
+	"auto_scan": "true",
+	"reuse_sys_cve_whitelist": "true",
+	"public": "true"
+  },
+  "public": true
+}'
+END
+$cmd_msg = `$cmd`;
+if ($cmd_msg ne '') {
+	print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+}
 
 # Rancher
 $cmd = "sudo $home/deploy-devops/bin/ubuntu20lts_install_rancher.pl";
