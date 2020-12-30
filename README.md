@@ -169,9 +169,7 @@
 * Harbor - https://10.20.0.71:5443/
 * Use **admin** and the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to harbour
 
-* New Project - iiidevops (Access Level : **Public**)
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_new_project.png?raw=true)  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_project_list.png?raw=true)  
+* Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added. 
 
 # Step 7. Check NFS Client and Harbor cert of the Kubernetes worker node
 > * You can run the check-k8s-node.pl script on VM1 to check all k8s nodes
