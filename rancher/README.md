@@ -10,4 +10,6 @@
 ![07_add_gitlab_token](img/07_add_gitlab_token.png)
 ![08_add_jwt_token](img/08_add_jwt_token.png)
 # Add Registry Credentials for all namespace
-
+![09_select_registry_cre](img/09_select_registry_cre.png)
+![10_add_registry](img/10_add_registry.png)
+![11_add_harbor-63](img/11_add_harbor-63.png)
