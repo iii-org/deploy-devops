@@ -18,7 +18,6 @@ if ($cmd_msg ne '') {
 	exit;
 }
 
-
 $home = "$Bin/../../";
 
 # GitLab
