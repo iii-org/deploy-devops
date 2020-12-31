@@ -145,14 +145,16 @@
 >
 > Use the following command to check if the config is working
 >
-> > <code> kubectl top node </code>
+> > <code> kubectl cluster-info </code>
 >
 > It should display as below.
 >
 > ```bash
-> localadmin@iiidevops-71:~$ kubectl top node
-> NAME           CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%
-> iiidevops-72   258m         12%    2008Mi          25%
+> localadmin@iiidevops-71:~$ kubectl cluster-info
+> Kubernetes master is running at https://10.20.0.71:6443/k8s/clusters/c-fg42q
+> CoreDNS is running at https://10.20.0.71:6443/k8s/clusters/c-fg42q/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+> 
+> To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 > ```
 
 ## setting Gitlab and Rancher pipline hook  
