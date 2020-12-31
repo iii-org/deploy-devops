@@ -22,7 +22,7 @@ log_print(`TZ='Asia/Taipei' date`);
 
 $home_dir = "$data_dir/harbor";
 
-log_print("Install Harbor URL: https://$harbor_ip\n");
+log_print("Install Harbor URL: https://$harbor_ip:5443\n");
 $cmd_msg = `/usr/local/bin/docker-compose -v`;
 if (index($cmd_msg, 'version')<0) {
 	$os_m = `uname -m`;

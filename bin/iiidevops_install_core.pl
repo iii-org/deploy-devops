@@ -164,7 +164,7 @@ $isChk=1;
 $count=0;
 while($isChk && $count<10) {
 	print('.');
-	$cmd_msg = `nc -z -v $rancher_url 6443 2>&1`;
+	$cmd_msg = `nc -z -v $rancher_ip 6443 2>&1`;
 	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
 	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
 	$count ++;
@@ -260,7 +260,7 @@ $template =~ s/{{redmine_api_key}}/$redmine_api_key/g;
 $template =~ s/{{gitlab_url}}/$gitlab_ip/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
-$template =~ s/{{rancher_url}}/$rancher_url/g;
+$template =~ s/{{rancher_ip}}/$rancher_ip/g;
 $template =~ s/{{rancher_admin_password}}/$rancher_admin_password/g;
 $template =~ s/{{harbor_ip}}/$harbor_ip/g;
 $template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;

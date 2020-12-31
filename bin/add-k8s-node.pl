@@ -26,7 +26,7 @@ if (!-e $p_addk8s_sh) {
 	exit;
 }
 
-$rancher_chk = "https://$rancher_url:6443";
+$rancher_chk = "https://$rancher_ip:6443";
 $addk8s_cmd = `cat $p_addk8s_sh`;
 if (index($addk8s_cmd, $rancher_chk)<0) {
 	log_print("The addk8s_sh file [$p_config] may be wrong! [$rancher_chk] is not exist!\n");
