@@ -9,9 +9,9 @@ else {
 	exit;
 }
 
-print("Install GitLab URL: http://$gitlab_url\n");
+print("Install GitLab URL: http://$gitlab_ip\n");
 $cmd =
-"sudo docker run --env GITLAB_OMNIBUS_CONFIG=\"external_url 'http://$gitlab_url';\"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $HOME/gitlab/config:/etc/gitlab --volume $HOME/gitlab/logs:/var/log/gitlab --volume $HOME/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0";
+"sudo docker run --env GITLAB_OMNIBUS_CONFIG=\"external_url 'http://$gitlab_ip';\"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $data_dir/gitlab/config:/etc/gitlab --volume $data_dir/gitlab/logs:/var/log/gitlab --volume $data_dir/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0";
 print("-----\n$cmd\n\n");
 
 $cmd_msg = `$cmd`;

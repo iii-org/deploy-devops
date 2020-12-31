@@ -11,6 +11,14 @@ if (!-e $p_config) {
 }
 require($p_config);
 
+$cmd = "sudo mkdir -p $data_dir";
+$cmd_msg = `$cmd 2 >&1`;
+if ($cmd_msg ne '') {
+	print("Create Data Dir [$data_dir] error!\n$cmd_msg\n-----\n");
+	exit;
+}
+
+
 $home = "$Bin/../../";
 
 # GitLab
@@ -23,7 +31,7 @@ $isChk=1;
 $count=0;
 while($isChk && $count<$wait_sec) {
 	print('.');
-	$cmd_msg = `nc -z -v $gitlab_url 80 2>&1`;
+	$cmd_msg = `nc -z -v $gitlab_ip 80 2>&1`;
 	# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
 	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
 	$count ++;
@@ -145,7 +153,7 @@ if (index($cmd_msg, '/iiidevopsNFS')<0) {
 }
 
 print("\nThe deployment of Gitlab / Rancher / Harbor / NFS services has been completed, These services URL are: \n");
-print("GitLab - http://$gitlab_url/\n");
+print("GitLab - http://$gitlab_ip/\n");
 print("Rancher - https://$rancher_url:6443/\n");
 print("Harbor - https://$harbor_url:5443/\n");
 print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");

@@ -147,7 +147,7 @@ $isChk=1;
 $count=0;
 while($isChk && $count<10) {
 	print('.');
-	$cmd_msg = `nc -z -v $gitlab_url 80 2>&1`;
+	$cmd_msg = `nc -z -v $gitlab_ip 80 2>&1`;
 	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
 	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
 	$count ++;
@@ -256,7 +256,7 @@ $template =~ s/{{jwt_secret_key}}/$jwt_secret_key/g;
 $template =~ s/{{redmine_ip}}/$redmine_ip/g;
 $template =~ s/{{redmine_admin_passwd}}/$redmine_admin_passwd/g;
 $template =~ s/{{redmine_api_key}}/$redmine_api_key/g;
-$template =~ s/{{gitlab_url}}/$gitlab_url/g;
+$template =~ s/{{gitlab_url}}/$gitlab_ip/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
 $template =~ s/{{rancher_url}}/$rancher_url/g;
