@@ -53,6 +53,7 @@ cd deploy-devops/;
 chmod a+x bin/*.pl;
 chmod a+x gitlab/*.pl;
 chmod a+x harbor/*.pl;
+chmod a+x rancher/*.pl;
 END
 log_print("Unziping iiidevops Deploy Package..\n");
 $cmd_msg = `$cmd`;
