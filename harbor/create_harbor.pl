@@ -2,12 +2,18 @@
 # Install Harbor service script
 #
 use FindBin qw($Bin);
+use MIME::Base64;
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
-	print("The configuration file [$p_config] does not exist!\n");
+	print("The configuration file [$p_config] does not exist!\n\n");
 	exit;
 }
 require($p_config);
+
+if ($harbor_ip eq '') {
+	print("The harbor_ip in [$p_config] is ''!\n\n");
+	exit;
+}
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
@@ -45,6 +51,7 @@ if ($isWorking) {
 	exit;
 }
 
+# Download harbor-offline-installer-v2 file
 $cmd_option = "wget -O $data_dir/harbor-offline-installer-v2.1.2.tgz  https://github.com/goharbor/harbor/releases/download/v2.1.2/harbor-offline-installer-v2.1.2.tgz;";
 $chk_file = "$data_dir/harbor-offline-installer-v2.1.2.tgz";
 $md5_value = substr(`md5sum $chk_file`, 0, 32); # 37a84e078504546c24e6fb99f80f6d05
@@ -73,7 +80,41 @@ else {
 	log_print("Use an existing Certificate Authority Certificate.\n");
 }
 
+# Generate install yaml and exec install.sh
+install_harbor();
 
+# Check Harbor service is working
+$cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
+#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+$chk_key = 'UNAUTHORIZED';
+$isChk=1;
+$count=0;
+$wait_sec=600;
+while($isChk && $count<$wait_sec) {
+	log_print('.');
+	$cmd_msg = `$cmd 2>&1`;
+	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
+	$count ++;
+	sleep($isChk);
+}
+log_print("-----\n$cmd_msg-----\n");
+if ($isChk) {
+	log_print("Failed to deploy Harbor!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;
+}
+log_print("Successfully deployed Harbor!\n");
+
+# create service autostart
+create_autostart();
+
+# create dockerhub proxy project
+create_dockerhub_proxy();
+
+exit;
+
+
+sub install_harbor {
 $cmd =<<END;
 sudo mkdir -p /etc/docker/certs.d/$harbor_ip:5443/;
 sudo cp $home_dir/certs/$harbor_ip.cert /etc/docker/certs.d/$harbor_ip:5443/;
@@ -125,41 +166,23 @@ proxy:
     - trivy
 EOF
 
-open(FH, '>', "$home_dir/harbor.yml") or die $!;
-print FH $harbor_yml;
-close(FH);
+	open(FH, '>', "$home_dir/harbor.yml") or die $!;
+	print FH $harbor_yml;
+	close(FH);
 
-log_print("Provide the Certificates to Harbor and Docker\n-----\n$cmd\n\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n\n");
+	log_print("Provide the Certificates to Harbor and Docker\n-----\n$cmd\n\n");
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg\n\n");
 
-$cmd="cd $home_dir; sudo ./install.sh";
-log_print("Install Harbor\n-----\n$cmd\n\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n\n");
+	$cmd="cd $home_dir; sudo ./install.sh";
+	log_print("Install Harbor\n-----\n$cmd\n\n");
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg\n\n");
 
-# Check Harbor service is working
-$cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
-#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-$chk_key = 'UNAUTHORIZED!';
-$isChk=1;
-$count=0;
-$wait_sec=600;
-while($isChk && $count<$wait_sec) {
-	log_print('.');
-	$cmd_msg = `$cmd 2>&1`;
-	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
-	$count ++;
-	sleep($isChk);
+	return;
 }
-log_print("-----\n$cmd_msg-----\n");
-if ($isChk) {
-	log_print("Failed to deploy Harbor!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;
-}
-log_print("Successfully deployed Harbor!\n");
 
+sub create_autostart {
 # Create reboot auto start service
 # Ref - https://stackoverflow.com/questions/43671482/how-to-run-docker-compose-up-d-at-system-start-up
 $docker_compose_app_service =<<EOF;
@@ -181,17 +204,58 @@ WantedBy=multi-user.target
 
 EOF
 
-open(FH, '>', "/etc/systemd/system/docker-compose-app.service") or die $!;
-print FH $docker_compose_app_service;
-close(FH);
+	open(FH, '>', "/etc/systemd/system/docker-compose-app.service") or die $!;
+	print FH $docker_compose_app_service;
+	close(FH);
 
-$cmd = "sudo systemctl enable docker-compose-app";
-log_print("Set the Harbor service to start automatically after the system boot..\n-----\n$cmd\n\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n\n");
+	$cmd = "sudo systemctl enable docker-compose-app";
+	log_print("Set the Harbor service to start automatically after the system boot..\n-----\n$cmd\n\n");
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg\n\n");
 
-exit;
+	return;
+}
 
+sub create_dockerhub_proxy {
+# Add dockerhub Registry & create dockerhub Proxy Cache Project
+	$harbor_key = encode_base64("admin:$harbor_admin_password");
+	$harbor_key =~ s/\n|\r//;
+$cmd =<<END;
+curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
+  "name": "dockerhub",
+  "url": "https://hub.docker.com",
+  "insecure": false,
+  "type": "docker-hub",
+  "description": "Default Harbor Projcet Proxy Cache"
+}'
+END
+	$cmd_msg = `$cmd`;
+	if ($cmd_msg ne '') {
+		log_print("Add dockerhub Registry Error: $cmd_msg");
+	}
+
+	sleep(5);
+$cmd =<<END;
+curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
+  "project_name": "dockerhub",
+  "registry_id": 1,
+  "storage_limit": -1,
+  "metadata": {
+    "enable_content_trust": "false",
+	"auto_scan": "true",
+	"reuse_sys_cve_whitelist": "true",
+	"public": "true"
+  },
+  "public": true
+}'
+END
+	$cmd_msg = `$cmd`;
+	if ($cmd_msg ne '') {
+		log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+	}
+	
+	return;
+}
 
 
 sub gen_harbor_ca {
@@ -219,7 +283,6 @@ DNS.3=iiidevops1
 EOF
 
 	$extfile = "$home_dir/certs/$harbor_ip.v3.ext";
-print("[$extfile]\n");
 	open(FH, '>', $extfile) or die $!;
 	print FH $harbor_ca;
 	close(FH);

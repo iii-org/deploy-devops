@@ -2,7 +2,6 @@
 # Install iiidevops master node script
 #
 use FindBin qw($Bin);
-use MIME::Base64;
 $p_config = "$Bin/../env.pl";
 $wait_sec = 600;
 if (!-e $p_config) {
@@ -51,7 +50,7 @@ $cmd = "nc -z -v $gitlab_ip 80";
 $chk_key = 'succeeded!';
 $cmd_msg = `$cmd 2>&1`;
 # Connection to 10.20.0.71 80 port [tcp/*] succeeded!
-if (index($cmd_msg, 'succeeded!')<0) {
+if (index($cmd_msg, $chk_key)<0) {
 	log_print("Failed to deploy GitLab!\n");
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
@@ -65,63 +64,18 @@ print("\nDeploy and Setting Harbor server..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n");
 
-$isChk=1;
-$count=0;
-while($isChk && $count<$wait_sec) {
-	print('.');
-	$cmd_msg = `curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 2>&1`;
-	#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-	$isChk = index($cmd_msg, 'UNAUTHORIZED')<0?1:0;
-	$count ++;
-	sleep($isChk);
-}
-if ($isChk) {
-	print("Failed to deploy Harbor!\n");
-	print("-----\n$cmd_msg-----\n");
+$cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
+$chk_key = 'UNAUTHORIZED!';
+$cmd_msg = `$cmd 2>&1`;
+#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy Harbor!\n");
+	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-else {
-	print("OK!\n");
-#	print("-----\n$cmd_msg-----\n");
-	print("Successfully deployed Harbor!\n");
-}
+log_print("OK!\n");
+log_print("Successfully deployed Harbor!\n");
 
-# Add dockerhub Registry & create dockerhub Proxy Cache Project
-$harbor_key = encode_base64("admin:$harbor_admin_password");
-$harbor_key =~ s/\n|\r//;
-$cmd =<<END;
-curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
-  "name": "dockerhub",
-  "url": "https://hub.docker.com",
-  "insecure": false,
-  "type": "docker-hub",
-  "description": "Default Harbor Projcet Proxy Cache"
-}'
-END
-$cmd_msg = `$cmd`;
-if ($cmd_msg ne '') {
-	print("Add dockerhub Registry Error: $cmd_msg");
-}
-
-sleep(5);
-$cmd =<<END;
-curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
-  "project_name": "dockerhub",
-  "registry_id": 1,
-  "storage_limit": -1,
-  "metadata": {
-    "enable_content_trust": "false",
-	"auto_scan": "true",
-	"reuse_sys_cve_whitelist": "true",
-	"public": "true"
-  },
-  "public": true
-}'
-END
-$cmd_msg = `$cmd`;
-if ($cmd_msg ne '') {
-	print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
-}
 
 # Rancher
 $cmd = "sudo $home/deploy-devops/rancher/install_rancher.pl";
