@@ -86,8 +86,8 @@ spec:
       - name: kube-config
         nfs:
           server: {{nfs_ip}}
-          path: /iiidevopsNFS/kube-config		  
+          path: /{{nfs_dir}}/kube-config		  
       - name: iii-logs
         nfs:
           server: {{nfs_ip}}
-          path: /iiidevopsNFS/api-logs
+          path: /{{nfs_dir}}/api-logs

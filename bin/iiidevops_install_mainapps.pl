@@ -18,6 +18,22 @@ if ($cmd_msg ne '') {
 	exit;
 }
 
+# NFS
+$cmd = "sudo $home/deploy-devops/bin/ubuntu20lts_install_nfsd.pl";
+print("\nInstall & Setting NFS service..\n");
+$cmd_msg = `$cmd`;
+#print("-----\n$cmd_msg\n-----\n");
+$cmd = "showmount -e $nfs_ip";
+$cmd_msg = `$cmd`;
+print("-----\n$cmd_msg-----\n");
+if (index($cmd_msg, $nfs_dir)<0) {
+	print("NFS configuration failed!\n");
+	exit;	
+}
+
+
+
+
 $home = "$Bin/../../";
 
 # GitLab
@@ -136,19 +152,6 @@ else {
 	print("OK!\n");
 #	print("-----\n$cmd_msg-----\n");
 	print("Successfully deployed Rancher!\n");
-}
-
-# NFS
-$cmd = "sudo $home/deploy-devops/bin/ubuntu20lts_install_nfsd.pl";
-print("\nInstall & Setting NFS service..\n");
-$cmd_msg = `$cmd`;
-#print("-----\n$cmd_msg\n-----\n");
-$cmd = "showmount -e $nfs_ip";
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg-----\n");
-if (index($cmd_msg, '/iiidevopsNFS')<0) {
-	print("NFS configuration failed!\n");
-	exit;	
 }
 
 print("\nThe deployment of Gitlab / Rancher / Harbor / NFS services has been completed, These services URL are: \n");

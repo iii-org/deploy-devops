@@ -20,7 +20,7 @@ if (!-e $p_config) {
 }
 require($p_config);
 
-$p_addk8s_sh = '/iiidevopsNFS/deploy-config/add_k8s.sh';
+$p_addk8s_sh = "$nfs_dir/deploy-config/add_k8s.sh";
 if (!-e $p_addk8s_sh) {
 	log_print("The addk8s_sh file [$p_config] does not exist!\n");
 	exit;
@@ -45,7 +45,7 @@ log_print("-----\n$cmd\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
-$p_kube_config = '/iiidevopsNFS/kube-config/config';
+$p_kube_config = "$nfs_dir/kube-config/config";
 if (!-e $p_kube_config) {
 	log_print("Please goto Rancher Web - $rancher_chk to get the status of added node of k8s cluster!\n");
 	exit;
