@@ -7,7 +7,7 @@ use FindBin qw($Bin);
 
 $prgname = substr($0, rindex($0,"/")+1);
 if (!defined($ARGV[0])) {
-	print("Usage: $prgname local or $prgname user\@remote_ip\n");
+	print("Usage:	$prgname local \n	$prgname user\@remote_ip\n");
 	exit;
 }
 
@@ -71,19 +71,39 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
 sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\";
 sudo apt-get update -y;
 sudo apt-get install docker-ce=5:19.03.14~3-0~ubuntu-focal docker-ce-cli=5:19.03.14~3-0~ubuntu-focal containerd.io -y;
-docker -v;
 END
 log_print("Install docker..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo snap install kubectl --classic;
+sudo snap install kubectl --channel=1.18/stable --classic;
 mkdir -p ~/.kube/;
 END
 log_print("Install kubectl..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
+
+
+#check docker version
+#Docker version 19.03.14, build 5eb3275d40
+$chk_str = '19.03.14';
+$cmd = "docker -v";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install docker Failed! : $cmd_msg");
+}
+log_print("Install docker $chk_str ..OK!\n");
+
+#check kubectl version
+#Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.14", GitCommit:"89182bdd065fbcaffefec691908a739d161efc03", GitTreeState:"clean", BuildDate:"2020-12-22T14:49:29Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
+$chk_str = 'v1.18';
+$cmd = "kubectl version";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install kubectl Failed!\n$cmd_msg");
+}
+log_print("Install kubectl $chk_str ..OK!\n");
 
 exit;
 
