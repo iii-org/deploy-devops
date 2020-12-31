@@ -67,7 +67,7 @@ log_print("\nDeploy and Setting Harbor server..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n");
 $cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
-$chk_key = 'UNAUTHORIZED!';
+$chk_key = 'UNAUTHORIZED';
 $cmd_msg = `$cmd 2>&1`;
 #{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
 if (index($cmd_msg, $chk_key)<0) {
