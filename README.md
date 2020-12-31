@@ -28,6 +28,19 @@
 > perl ./iiidevops_install.pl local
 > perl ./iiidevops_install.pl localadmin@10.20.0.72
 > ```
+> * If everything is correct, you will see that all check items are OK shown below.
+> 
+> ```
+> localadmin@iiidevops-71:~$ perl ./iiidevops_install.pl localadmin@10.20.0.72
+> :
+> :
+> :
+> -----
+> Install docker 19.03.14 ..OK!
+> Install kubectl v1.18 ..OK!
+> 
+> -----
+> ```
 
 # Step 2. Generate configuration setting information file "env.pl" (VM1)
 
