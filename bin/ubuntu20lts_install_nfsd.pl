@@ -28,10 +28,9 @@ if (index($cmd_msg, $nfs_dir)<0) {
 }
 
 $cmd =<<END;
-sudo mkdir $nfs_dir;
+sudo mkdir -p $nfs_dir;
 sudo chmod 777 $nfs_dir;
 sudo systemctl restart nfs-kernel-server;
-sudo showmount -e localhost;
 END
 log_print("Setting & Restart NFS Service..\n");
 $cmd_msg = `$cmd`;
@@ -39,17 +38,17 @@ log_print("-----\n$cmd_msg\n-----\n");
 
 # Create folder for other services  
 $cmd =<<END;
-sudo mkdir $nfs_dir/redmine-postgresql;
+sudo mkdir -p $nfs_dir/redmine-postgresql;
 sudo chmod 777 $nfs_dir/redmine-postgresql;
-sudo mkdir $nfs_dir/devopsdb;
+sudo mkdir -p $nfs_dir/devopsdb;
 sudo chmod 777 $nfs_dir/devopsdb;
-sudo mkdir $nfs_dir/kube-config;
+sudo mkdir -p $nfs_dir/kube-config;
 sudo chmod 777 $nfs_dir/kube-config;
-sudo mkdir $nfs_dir/deploy-config;
+sudo mkdir -p $nfs_dir/deploy-config;
 sudo chmod 777 $nfs_dir/deploy-config;
-sudo mkdir $nfs_dir/api-logs;
+sudo mkdir -p $nfs_dir/api-logs;
 sudo chmod 777 $nfs_dir/api-logs;
-sudo mkdir $nfs_dir/sonarqube;
+sudo mkdir -p $nfs_dir/sonarqube;
 sudo chmod 777 $nfs_dir/sonarqube;
 END
 log_print("Create iiidevops services folder for NFS service..\n");
@@ -86,6 +85,26 @@ else {
 	log_print("Move env.pl to $nfs_dir/deploy-config/ OK!\n");
 }
 
+# Check NFS service is working
+$cmd = "showmount -e $nfs_ip";
+#/iiidevopsNFS *
+$chk_key = $nfs_dir;
+$isChk=1;
+$count=0;
+$wait_sec=60;
+while($isChk && $count<$wait_sec) {
+	log_print('.');
+	$cmd_msg = `$cmd 2>&1`;
+	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
+	$count ++;
+	sleep($isChk);
+}
+log_print("-----\n$cmd_msg-----\n");
+if ($isChk) {
+	log_print("NFS configuration failed!\n");
+	exit;
+}
+log_print("NFS configuration OK!\n");
 exit;
 
 sub log_print {

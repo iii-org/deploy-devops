@@ -181,7 +181,7 @@ $isChk=1;
 $count=0;
 while($isChk && $count<10) {
 	print('.');
-	$cmd_msg = `nc -z -v $harbor_url 5443 2>&1`;
+	$cmd_msg = `nc -z -v $harbor_ip 5443 2>&1`;
 	# Connection to 10.20.0.71 5443 port [tcp/*] succeeded!
 	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
 	$count ++;
@@ -221,6 +221,7 @@ if (!-e $tmpl_file) {
 $template = `cat $tmpl_file`;
 $template =~ s/{{db_passwd}}/$db_passwd/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
+$template =~ s/{{nfs_dir}}/$nfs_dir/g;
 #print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
@@ -261,7 +262,7 @@ $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
 $template =~ s/{{rancher_url}}/$rancher_url/g;
 $template =~ s/{{rancher_admin_password}}/$rancher_admin_password/g;
-$template =~ s/{{harbor_url}}/$harbor_url/g;
+$template =~ s/{{harbor_ip}}/$harbor_ip/g;
 $template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
 $template =~ s/{{checkmarx_origin}}/$checkmarx_origin/g;
 $template =~ s/{{checkmarx_username}}/$checkmarx_username/g;
@@ -273,6 +274,7 @@ $template =~ s/{{admin_init_login}}/$admin_init_login/g;
 $template =~ s/{{admin_init_email}}/$admin_init_email/g;
 $template =~ s/{{admin_init_password}}/$admin_init_password/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
+$template =~ s/{{nfs_dir}}/$nfs_dir/g;
 #print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
