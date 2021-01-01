@@ -56,3 +56,17 @@ log_print("\nThe deployment of Redmine & other services has been completed, Thes
 log_print("Redmine - http://redmine_ip:32748/\n");
 log_print("Sonarqube - http://$sonarqube_ip:31910/\n");
 log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 9. to continue.\n\n");
+
+exit;
+
+sub log_print {
+	my ($p_msg) = @_;
+
+    print "$p_msg";
+	
+	open(FH, '>>', $logfile) or die $!;
+	print FH $p_msg;
+	close(FH);	
+
+    return;
+}
