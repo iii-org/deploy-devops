@@ -41,7 +41,8 @@ cd ~; \
 wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip
 END
 log_print("Getting iiidevops Deploy Package..\n");
-$cmd_msg = `$cmd`;
+#$cmd_msg = `$cmd`;
+system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
@@ -52,16 +53,18 @@ mv deploy-devops-$ins_repo deploy-devops;
 find ~/deploy-devops -type f -name \"*.pl\" -exec chmod a+x {} \\;
 END
 log_print("Unziping iiidevops Deploy Package..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
 sudo apt-get update -y;
 sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y;
 END
 log_print("Install default packages..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
@@ -70,16 +73,18 @@ sudo apt-get update -y;
 sudo apt-get install docker-ce=5:19.03.14~3-0~ubuntu-focal docker-ce-cli=5:19.03.14~3-0~ubuntu-focal containerd.io -y;
 END
 log_print("Install docker..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
 sudo snap install kubectl --channel=1.18/stable --classic;
 mkdir -p ~/.kube/;
 END
 log_print("Install kubectl..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
 
 #check docker version
