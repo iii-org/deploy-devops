@@ -49,11 +49,7 @@ sudo apt-get install unzip nfs-common libterm-readkey-perl -y;
 cd ~; unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
 mv deploy-devops-$ins_repo deploy-devops;
-cd deploy-devops/;
-chmod a+x bin/*.pl;
-chmod a+x gitlab/*.pl;
-chmod a+x harbor/*.pl;
-chmod a+x rancher/*.pl;
+find ~/deploy-devops -type f -name \"*.pl\" -exec chmod a+x {} \\;
 END
 log_print("Unziping iiidevops Deploy Package..\n");
 $cmd_msg = `$cmd`;
