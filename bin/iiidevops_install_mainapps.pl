@@ -27,8 +27,9 @@ log_print("Create data directory OK!\n");
 
 # NFS
 $cmd = "sudo $home/deploy-devops/bin/ubuntu20lts_install_nfsd.pl";
-log_print("\nInstall & Setting NFS service..\n");
-$cmd_msg = `$cmd`;
+log_print("\nInstall & Setting NFS service..");
+#$cmd_msg = `$cmd`;
+system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 # Check NFS service is working
 $cmd = "showmount -e $nfs_ip";
@@ -44,8 +45,9 @@ log_print("NFS configuration OK!\n");
 
 # GitLab
 $cmd = "sudo $home/deploy-devops/gitlab/create_gitlab.pl";
-log_print("Deploy Gitlab..");
-$cmd_msg = `$cmd`;
+log_print("\nDeploy Gitlab..");
+#$cmd_msg = `$cmd`;
+system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 # Check GitLab service is working
 $cmd = "nc -z -v $gitlab_ip 80";
@@ -57,15 +59,15 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-log_print("OK!\n");
 log_print("Successfully deployed GitLab!\n");
 
 
 # Harbor
 $cmd = "sudo $home/deploy-devops/harbor/create_harbor.pl";
-log_print("\nDeploy and Setting Harbor server..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+log_print("\nDeploy and Setting Harbor server..");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 $cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
 $chk_key = 'UNAUTHORIZED';
 $cmd_msg = `$cmd 2>&1`;
@@ -75,15 +77,15 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-log_print("OK!\n");
 log_print("Successfully deployed Harbor!\n");
 
 
 # Rancher
 $cmd = "sudo $home/deploy-devops/rancher/install_rancher.pl";
-log_print("\nInstall Rancher..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+log_print("\nInstall Rancher..");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 $cmd = "nc -z -v $rancher_ip 6443";
 $chk_key = 'succeeded!';
 $cmd_msg = `$cmd 2>&1`;
@@ -93,7 +95,6 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-log_print("OK!\n");
 log_print("Successfully deployed Rancher!\n");
 
 

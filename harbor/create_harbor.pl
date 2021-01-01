@@ -23,6 +23,16 @@ log_print(`TZ='Asia/Taipei' date`);
 $home_dir = "$data_dir/harbor";
 
 log_print("Install Harbor URL: https://$harbor_ip:5443\n");
+# Check Harbor is working
+$cmd_msg = `curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 2>&1`;
+#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+$isWorking = index($cmd_msg, 'UNAUTHORIZED')<0?0:1;
+if ($isWorking) {
+	log_print("Harbor is running, I skip the installation!\n\n");
+	exit;
+}
+
+# Install docker-compose
 $cmd_msg = `/usr/local/bin/docker-compose -v`;
 if (index($cmd_msg, 'version')<0) {
 	$os_m = `uname -m`;
@@ -40,15 +50,6 @@ if (index($cmd_msg, 'version')<0) {
 }
 else {
 	log_print("-----\n$cmd_msg\n\n");
-}
-
-# Check Harbor is working
-$cmd_msg = `curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 2>&1`;
-#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-$isWorking = index($cmd_msg, 'UNAUTHORIZED')<0?0:1;
-if ($isWorking) {
-	log_print("Harbor is running, I skip the installation!\n\n");
-	exit;
 }
 
 # Download harbor-offline-installer-v2 file
