@@ -1,14 +1,14 @@
 #!/usr/bin/perl
-# Install iiidevops master node script
+# Install iiidevops main applications script
 #
 use FindBin qw($Bin);
-$p_config = "$Bin/../env.pl";
-$wait_sec = 600;
+my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
 	exit;
 }
 require($p_config);
+
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");

@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Install nfs service script
+# Install rancher service script
 #
 use FindBin qw($Bin);
 my $p_config = "$Bin/../env.pl";
