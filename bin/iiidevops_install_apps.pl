@@ -53,7 +53,7 @@ log_print("Successfully deployed Sonarqube!\n");
 
 
 log_print("\nThe deployment of Redmine & other services has been completed, These services URL are: \n");
-log_print("Redmine - http://redmine_ip:32748/\n");
+log_print("Redmine - http://$redmine_ip:32748/\n");
 log_print("Sonarqube - http://$sonarqube_ip:31910/\n");
 log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 9. to continue.\n\n");
 
