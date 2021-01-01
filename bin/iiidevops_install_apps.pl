@@ -16,7 +16,7 @@ log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
 
 # Redmine
-$cmd = "sudo $home/deploy-devops/redmine/install_redmine.pl";
+$cmd = "$home/deploy-devops/redmine/install_redmine.pl";
 log_print("Deploy Redmine..");
 $cmd_msg = `$cmd`;
 #log_print("-----\n$cmd_msg\n-----\n");
@@ -34,7 +34,7 @@ log_print("OK!\n");
 log_print("Successfully deployed Redmine!\n");
 
 # Sonarqube
-$cmd = "sudo $home/deploy-devops/sonarqube/install_sonarqube.pl";
+$cmd = "$home/deploy-devops/sonarqube/install_sonarqube.pl";
 log_print("Deploy Sonarqube..");
 $cmd_msg = `$cmd`;
 #log_print("-----\n$cmd_msg\n-----\n");
