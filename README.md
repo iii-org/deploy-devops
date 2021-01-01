@@ -35,11 +35,9 @@
 > :
 > :
 > :
-> -----
+> -----Validation results-----
 > Install docker 19.03.14 ..OK!
 > Install kubectl v1.18 ..OK!
-> 
-> -----
 > ```
 
 # Step 2. Generate configuration setting information file "env.pl" (VM1)
