@@ -29,10 +29,10 @@ if ($OSVer ne '20.04') {
 # Run on remote host 
 if (uc($ARGV[0] ne 'local')) {
 
-	$cmd = "ssh $ARGV[0] \"wget https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; sudo -S perl ./iiidevops_install.pl local $ins_repo\"";
+	$cmd = "ssh $ARGV[0] \"rm -f ./iiidevops_install.pl; wget https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; sudo -S perl ./iiidevops_install.pl local $ins_repo\"";
 	log_print("Run on $ARGV[0] ...\n");
 	$cmd_msg=`$cmd`;
-	log_print("-----\n$cmd_msg\n-----\n");
+	log_print("-----\n$cmd_msg");
 	exit;
 }
 
@@ -86,6 +86,9 @@ log_print("Install kubectl..\n");
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
+
+# Validation results
+log_print("\n-----Validation results-----\n");
 
 #check docker version
 #Docker version 19.03.14, build 5eb3275d40
