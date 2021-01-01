@@ -181,10 +181,11 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
 
 # Step 6. Setting harbor server 
-* Harbor - https://10.20.0.71:5443/
-* Use **admin** and the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to harbour
-
-* Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added. 
+> * Harbor - https://10.20.0.71:5443/
+> * Use **admin** and the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to harbour
+> 
+> * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added. 
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
 
 # Step 7. Check NFS Client and Harbor cert of the Kubernetes worker node
 > * You can run the check-k8s-node.pl script on VM1 to check all k8s nodes
