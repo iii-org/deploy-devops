@@ -17,7 +17,7 @@ $home = "$Bin/../../";
 
 # Create Data Dir
 $cmd = "sudo mkdir -p $data_dir";
-$cmd_msg = `$cmd 2 >&1`;
+$cmd_msg = `$cmd 2>&1`;
 if ($cmd_msg ne '') {
 	log_print("Create data directory [$data_dir] failed!\n$cmd_msg\n-----\n");
 	exit;
