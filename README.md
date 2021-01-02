@@ -205,8 +205,8 @@
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
-> * Redmine - http://192.168.11.205:32748/
-> * Sonarqube - http://192.168.11.205:31910/
+> * Redmine - http://10.20.0.72:32748/
+> * Sonarqube - http://10.20.0.72:31910/
 >
 
 > ## Redmine
