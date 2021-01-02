@@ -2,6 +2,8 @@
 # Install redmine service script
 #
 use FindBin qw($Bin);
+use Digest::SHA qw(sha1_hex);
+use Digest::MD5 qw(md5_hex);
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
@@ -80,8 +82,66 @@ if ($isChk) {
 	exit;
 }
 log_print("Successfully deployed Redmine!\n");
+
+# Check psql version
+chk_psql();
+
+# import initial data
+import_init_data();
+
 exit;
 
+# Check psql version
+# psql --version
+# psql (PostgreSQL) 12.5 (Ubuntu 12.5-0ubuntu0.20.04.1)
+#
+# Command 'psql' not found, but can be installed with:
+# sudo apt install postgresql-client-common
+sub chk_psql {
+	$cmd_msg = `psql --version 2>&1`;
+	if (index($cmd_msg, '(PostgreSQL) 12')<0) {
+		$cmd = "sudo apt install postgresql-client-common postgresql-client-12 -y";
+		system($cmd);
+	}
+	$cmd_msg = `psql --version 2>&1`;
+	log_print("Check psql versioon : $cmd_msg");
+	if (index($cmd_msg, '(PostgreSQL) 12')<0) {
+		log_print("pgsql ..Error!\n\n");
+		exit;
+	}
+	
+	return;
+}
+
+# import initial data
+sub import_init_data {
+
+	$sql_path = "$Bin/../redmine/redmine-postgresql/";
+	$sql_file = $sql_path.'redmine-data.sql';
+	$tmpl_file = $sql_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		exit;
+	}
+	$api_key = $redmine_api_key; # 100f750e76fb671a003ee3859825363095e0162e
+	$salt = md5_hex($redmine_db_passwd); # 0bdb14a0f8068a7c07fc05b738f1558f
+	$hashed_password = sha1_hex($salt.sha1_hex($redmine_admin_passwd)); # 459d496226c2251344c23344fa0aa73a11c2ebee
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{api_key}}/$api_key/g;
+	$template =~ s/{{salt}}/$salt/g;
+	$template =~ s/{{hashed_password}}/$hashed_password/g;
+	#log_print("-----\n$template\n-----\n\n");
+	open(FH, '>', $sql_file) or die $!;
+	print FH $template;
+	close(FH);
+	$cmd = "psql -d 'postgresql://postgres:$redmine_db_passwd\@$redmine_ip:32749/redmine' -f $sql_file -o $sql_file.log";
+	log_print("Import initial data to redmine-postgresql..\n");
+	system($cmd);
+	$cmd_msg = `cat $sql_file.log`;
+	log_print("-----\n$cmd_msg-----\n");
+
+	return;
+}
 
 sub log_print {
 	my ($p_msg) = @_;

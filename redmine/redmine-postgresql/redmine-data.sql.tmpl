@@ -1,0 +1,215 @@
+-- deploy-devops 1.0 for initial redmine data
+INSERT INTO "tokens" ("id", "user_id", "action", "value", "created_on", "updated_on") VALUES
+	(3, 1, 'api', '{{api_key}}', now(), now());
+
+UPDATE "users" SET "hashed_password"='{{hashed_password}}', "last_login_on"=now(), "salt"='{{salt}}', "must_change_passwd" = 'false', "passwd_changed_on"=now() WHERE "id"=1;
+
+INSERT INTO "user_preferences" ("id", "user_id", "others", "hide_mail", "time_zone") VALUES
+	(1, 1, '---
+:no_self_notified: ''1''
+:my_page_layout:
+  left:
+  - issuesassignedtome
+  right:
+  - issuesreportedbyme
+:my_page_settings: {}
+:comments_sorting: asc
+:warn_on_leaving_unsaved: ''1''
+:textarea_font: ''''
+:recently_used_projects: 3
+:history_default_tab: notes
+', 'true', '');
+
+INSERT INTO "enumerations" ("id", "name", "position", "is_default", "type", "active", "project_id", "parent_id", "position_name") VALUES
+	(1, 'Immediate', 1, 'false', 'IssuePriority', 'true', NULL, NULL, 'lowest'),
+	(2, 'High', 2, 'false', 'IssuePriority', 'true', NULL, NULL, 'default'),
+	(3, 'Normal', 3, 'false', 'IssuePriority', 'true', NULL, NULL, 'high2'),
+	(4, 'Low', 4, 'false', 'IssuePriority', 'true', NULL, NULL, 'highest');
+
+INSERT INTO "issue_statuses" ("id", "name", "is_closed", "position", "default_done_ratio") VALUES
+	(1, 'Active', 'false', 1, NULL),
+	(2, 'Assigned', 'false', 2, NULL),
+	(3, 'Solved', 'false', 3, NULL),
+	(4, 'Responded', 'false', 4, NULL),
+	(5, 'Finished', 'false', 5, NULL),
+	(6, 'Closed', 'true', 6, NULL);
+
+INSERT INTO "roles" ("id", "name", "position", "assignable", "builtin", "permissions", "issues_visibility", "users_visibility", "time_entries_visibility", "all_roles_managed", "settings") VALUES
+	(3, 'Engineer', 1, 'true', 0, '---
+- :view_messages
+- :add_messages
+- :edit_messages
+- :edit_own_messages
+- :delete_messages
+- :delete_own_messages
+- :manage_boards
+- :view_calendar
+- :view_documents
+- :add_documents
+- :edit_documents
+- :delete_documents
+- :view_files
+- :manage_files
+- :view_gantt
+- :view_issues
+- :add_issues
+- :edit_issues
+- :edit_own_issues
+- :copy_issues
+- :manage_issue_relations
+- :manage_subtasks
+- :set_issues_private
+- :set_own_issues_private
+- :add_issue_notes
+- :edit_issue_notes
+- :edit_own_issue_notes
+- :view_private_notes
+- :set_notes_private
+- :delete_issues
+- :view_issue_watchers
+- :add_issue_watchers
+- :delete_issue_watchers
+- :import_issues
+- :manage_categories
+- :view_news
+- :manage_news
+- :comment_news
+- :view_changesets
+- :browse_repository
+- :commit_access
+- :manage_related_issues
+- :manage_repository
+- :view_time_entries
+- :log_time
+- :edit_time_entries
+- :edit_own_time_entries
+- :manage_project_activities
+- :log_time_for_other_users
+- :import_time_entries
+- :view_wiki_pages
+- :view_wiki_edits
+- :export_wiki_pages
+- :edit_wiki_pages
+- :rename_wiki_pages
+- :delete_wiki_pages
+- :delete_wiki_pages_attachments
+- :protect_wiki_pages
+- :manage_wiki
+', 'default', 'all', 'all', 'true', '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+permissions_all_trackers: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+  view_issues: ''1''
+  add_issues: ''1''
+  edit_issues: ''1''
+  add_issue_notes: ''1''
+  delete_issues: ''1''
+permissions_tracker_ids: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+  view_issues: []
+  add_issues: []
+  edit_issues: []
+  add_issue_notes: []
+  delete_issues: []
+'),
+	(4, 'Project Manager', 2, 'true', 0, '---
+- :add_project
+- :edit_project
+- :close_project
+- :select_project_modules
+- :manage_members
+- :manage_versions
+- :add_subprojects
+- :manage_public_queries
+- :save_queries
+- :view_messages
+- :add_messages
+- :edit_messages
+- :edit_own_messages
+- :delete_messages
+- :delete_own_messages
+- :manage_boards
+- :view_calendar
+- :view_documents
+- :add_documents
+- :edit_documents
+- :delete_documents
+- :view_files
+- :manage_files
+- :view_gantt
+- :view_issues
+- :add_issues
+- :edit_issues
+- :edit_own_issues
+- :copy_issues
+- :manage_issue_relations
+- :manage_subtasks
+- :set_issues_private
+- :set_own_issues_private
+- :add_issue_notes
+- :edit_issue_notes
+- :edit_own_issue_notes
+- :view_private_notes
+- :set_notes_private
+- :delete_issues
+- :view_issue_watchers
+- :add_issue_watchers
+- :delete_issue_watchers
+- :import_issues
+- :manage_categories
+- :view_news
+- :manage_news
+- :comment_news
+- :view_changesets
+- :browse_repository
+- :commit_access
+- :manage_related_issues
+- :manage_repository
+- :view_time_entries
+- :log_time
+- :edit_time_entries
+- :edit_own_time_entries
+- :manage_project_activities
+- :log_time_for_other_users
+- :import_time_entries
+- :view_wiki_pages
+- :view_wiki_edits
+- :export_wiki_pages
+- :edit_wiki_pages
+- :rename_wiki_pages
+- :delete_wiki_pages
+- :delete_wiki_pages_attachments
+- :protect_wiki_pages
+- :manage_wiki
+', 'default', 'all', 'all', 'true', '--- !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+permissions_all_trackers: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+  view_issues: ''1''
+  add_issues: ''1''
+  edit_issues: ''1''
+  add_issue_notes: ''1''
+  delete_issues: ''1''
+permissions_tracker_ids: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+  view_issues: []
+  add_issues: []
+  edit_issues: []
+  add_issue_notes: []
+  delete_issues: []
+');
+
+INSERT INTO "settings" ("id", "name", "value", "updated_on") VALUES
+	(1, 'rest_api_enabled', '1', now()),
+	(2, 'jsonp_enabled', '0', now()),
+	(3, 'app_title', 'Redmine', now()),
+	(4, 'welcome_text', '', now()),
+	(5, 'per_page_options', '25,50,100', now()),
+	(6, 'search_results_per_page', '10', now()),
+	(7, 'activity_days_default', '30', now()),
+	(8, 'host_name', 'localhost:3000', now()),
+	(9, 'protocol', 'http', now()),
+	(10, 'text_formatting', 'markdown', now()),
+	(11, 'cache_formatted_text', '0', now()),
+	(12, 'wiki_compression', '', now()),
+	(13, 'feeds_limit', '15', now());
+
+INSERT INTO "trackers" ("id", "name", "is_in_chlog", "position", "is_in_roadmap", "fields_bits", "default_status_id", "description") VALUES
+	(1, 'Feature', 'false', 1, 'true', 0, 1, ''),
+	(2, 'Bug', 'false', 2, 'true', 0, 1, ''),
+	(3, 'Document', 'false', 3, 'true', 0, 1, ''),
+	(4, 'Research', 'false', 4, 'true', 0, 1, '');
