@@ -58,7 +58,18 @@
 > * Rancher - https://10.20.0.71:6443/
 > * Harbor - https://10.20.0.71:5443/
 
-# Step 4. Set up GitLab from the web UI
+# Step 4. Setting Harbor server
+> * Harbor - https://10.20.0.71:5443/
+> * Use **admin** and the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to Harbor
+> 
+> * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
+> * If the project dockerhub is not created, you can exectue the command to manually create it.   
+> 
+>   ```sudo ~/deploy-devops/harbor/create_harbor.pl create_dockerhub_proxy```
+>
+
+# Step 5. Set up GitLab from the web UI
 > * GitLab - http://10.20.0.71/ 
 > * **Use the $gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab new password** 
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
@@ -98,7 +109,7 @@
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
 
-# Step 5. Set up Rancher from the web UI
+# Step 6. Set up Rancher from the web UI
 > * Rancher - https://10.20.0.71:6443/
 > * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
@@ -183,13 +194,6 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true)  
 > Done  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
-
-# Step 6. Setting harbor server 
-> * Harbor - https://10.20.0.71:5443/
-> * Use **admin** and the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to harbour
-> 
-> * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added. 
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
 
 # Step 7. Check NFS Client and Harbor cert of the Kubernetes worker node
 > * You can run the check-k8s-node.pl script on VM1 to check all k8s nodes
