@@ -53,9 +53,13 @@ $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
 # Check remote k8s node info
+$docker_check = (index($cmd_msg, "Install docker 19.03.14 ..OK!")<0)?"ERROR!":"OK!";
+$kubectl_check = (index($cmd_msg, "Install kubectl v1.18 ..OK!")<0)?"ERROR!":"OK!";
 $nfs_check = (index($cmd_msg, "$nfs_dir *")<0)?"ERROR!":"OK!";
 $harbor_cert_check = (index($cmd_msg, "$harbor_ip.pem")<0)?"ERROR!":"OK!";
 log_print("-----Validation results-----\n");
+log_print("Docker 		: $docker_check\n");
+log_print("Kubectl		: $kubectl_check\n");
 log_print("NFS Client	: $nfs_check\n");
 log_print("Harbor Cert	: $harbor_cert_check\n");
 

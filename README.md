@@ -141,8 +141,12 @@
 >   :
 >   :
 >   :
->   Status: Downloaded newer image for rancher/rancher-agent:v2.4.5
->   75bc21ba8f143c639bb538543320f4ea27defec6f0bea26c1ba1eafba4496954
+>   -----Validation results-----
+>   Docker          : OK!
+>   Kubectl         : OK!
+>   NFS Client      : OK!
+>   Harbor Cert     : OK!
+>
 >   Please goto Rancher Web - https://10.20.0.71:6443 to get the status of added node of k8s cluster!
 >   ```
 >
@@ -195,42 +199,7 @@
 > Done  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
 
-# Step 7. Check NFS Client and Harbor cert of the Kubernetes worker node
-> * You can run the check-k8s-node.pl script on VM1 to check all k8s nodes
->
->   ``` ~/deploy-devops/bin/check-k8s-node.pl [user@k8s_ip] ```
->
->   If everything in the k8s node is correct, you will see that all check items are OK in the verification result shown below.
->   ```bash
->   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/check-k8s-node.pl localadmin@10.20.0.72
->   :
->   :
->   :
->   -----Validation results-----
->   NFS Client      : OK!
->   Harbor Cert     : OK!
->   ```
-
-# Step 8. Install kubectl (On user client if you need)
-> https://kubernetes.io/docs/tasks/tools/install-kubectl/  
-> ## All virtual machines have been installed in Step 1.
->
-> ## Used Mac 
-> > Example: Mac install kubectl by brew  
-> > <code> brew install kubectl </code>  
-> > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/mac-brew-install-kubectl.png?raw=true)  
-> > <code> kubectl version --client </code>  
-> > Example: Mac install kubectl by curl  
-> > <code> curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" </code>  
-> > <code> chmod +x ./kubectl </code>  
-> > <code> sudo mv ./kubectl /usr/local/bin/kubectl </code>  
-> > <code> kubectl version --client </code>  
-
-> ## Used Windows, install kubectl by curl 
->> <code> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/windows/amd64/kubectl.exe </code>  
->> Execute kubectl.exe
-
-# Step 9. Deploy Redmine on kubernetes cluster
+# Step 7. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 >
 > After running the script, you should wait 1 to 3 minutes for these services to start running.
@@ -274,7 +243,7 @@
 >     * Immediate, High, Normal, Low
 >     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
 
-# Step 10. Deploy III-DevOps
+# Step 8. Deploy III-DevOps
 > <code> ~/deploy-devops/bin/iiidevops_install_core.pl </code>
 >
 > You should wait 3 to 5 minutes to complete the deployment and initial system setup. Then, you can access the URL as shown below.
