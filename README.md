@@ -127,9 +127,10 @@
 >   * Node Options: Chose etcd, Control plane, worker
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
-## Copy command to /iiidevopsNFS/deploy-config/add_k8s.sh for VM2
+## Copy the command to add-k8s.sh and make VM2 join the K8S cluster
+> * Copy the command to /iiidevopsNFS/deploy-config/add_k8s.sh 
 >
-> ```vi /iiidevopsNFS/deploy-config/add_k8s.sh```
+>   ```vi /iiidevopsNFS/deploy-config/add_k8s.sh```
 >
 > * Execute the following command on VM1 to make VM2 join the K8S cluster.
 >
