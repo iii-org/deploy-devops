@@ -247,6 +247,12 @@ END
 			$isRun=1;
 		}
 	}
+	if (index($cmd_msg, "'dockerhub' is already used")>0) {
+		log_print("The dockerhub Registry is already exists, skip adding.\n");
+	}
+	else {
+		log_print("Add dockerhub Registry OK.\n");
+	}
 	
 $cmd =<<END;
 curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
@@ -267,12 +273,18 @@ END
 	while ($isRun && $count<10) {
 		$isRun=0;
 		$cmd_msg = `$cmd`;
-		if ($cmd_msg ne '' && $run_idx<10) {
+		if ($cmd_msg ne '' && index($cmd_msg, "The project named dockerhub already exists")<=0) {
 			log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
 			sleep(5);
 			$count ++;
 			$isRun=1;
 		}
+	}
+	if (index($cmd_msg, "The project named dockerhub already exists")>0) {
+		log_print("The dockerhub Projcet is already exists, skip adding.\n");
+	}
+	else {
+		log_print("Add dockerhub Projcet OK.\n");
 	}
 	
 	return;
