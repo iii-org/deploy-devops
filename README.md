@@ -100,7 +100,7 @@
 
 # Step 5. Set up Rancher from the web UI
 > * Rancher - https://10.20.0.71:6443/
-> * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password**
+> * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
 > * set **Rancher Server URL**  
