@@ -22,6 +22,11 @@ log_print(`TZ='Asia/Taipei' date`);
 
 $home_dir = "$data_dir/harbor";
 
+if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
+	create_dockerhub_proxy();
+	exit;
+}
+
 log_print("Install Harbor URL: https://$harbor_ip:5443\n");
 # Check Harbor is working
 $cmd_msg = `curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 2>&1`;
@@ -230,12 +235,19 @@ curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 
   "description": "Default Harbor Projcet Proxy Cache"
 }'
 END
-	$cmd_msg = `$cmd`;
-	if ($cmd_msg ne '') {
-		log_print("Add dockerhub Registry Error: $cmd_msg");
+	$isRun=1;
+	$count=0;
+	while ($isRun && $count<10) {
+		$isRun=0;
+		$cmd_msg = `$cmd`;
+		if ($cmd_msg ne '' && index($cmd_msg, "'dockerhub' is already used")<=0) {
+			log_print("Add dockerhub Registry Error: $cmd_msg");
+			sleep(5);
+			$count ++;
+			$isRun=1;
+		}
 	}
-
-	sleep(5);
+	
 $cmd =<<END;
 curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
   "project_name": "dockerhub",
@@ -250,9 +262,17 @@ curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --
   "public": true
 }'
 END
-	$cmd_msg = `$cmd`;
-	if ($cmd_msg ne '') {
-		log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+	$isRun=1;
+	$count=0;
+	while ($isRun && $count<10) {
+		$isRun=0;
+		$cmd_msg = `$cmd`;
+		if ($cmd_msg ne '' && $run_idx<10) {
+			log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+			sleep(5);
+			$count ++;
+			$isRun=1;
+		}
 	}
 	
 	return;
