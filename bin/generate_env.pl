@@ -4,6 +4,7 @@
 use Socket;
 use Sys::Hostname;
 use FindBin qw($Bin);
+use Digest::SHA qw(sha1_hex);
 
 $p_config = "$Bin/../env.pl";
 $p_config_bak = $p_config.".bak";
@@ -304,8 +305,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 #\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 	if (!defined($ARGV[1])) {
-		$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '{{ask_redmine_api_key}}' && $ask_redmine_api_key ne '' && lc($ask_redmine_api_key) ne 'skip')?$ask_redmine_api_key:'';
-		if ($ask_redmine_api_key ne '' || (defined($ARGV[0]) && !defined($ARGV[1]))) {
+		$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '{{ask_redmine_api_key}}' && $ask_redmine_api_key ne '')?$ask_redmine_api_key:'';
+		if ($ask_redmine_api_key ne '') {
 			$question = "Q7. Do you want to change Redmine API key?(y/N)";
 			$answer = "A7. Skip Set Redmine API key!";
 			$Y_N = prompt_for_input($question);
@@ -314,16 +315,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 		else {
 			$isAsk=1;
 		}
-		while ($isAsk) {
-			$question = "Q7. Please enter the Redmine API key:(If your Redmine has not been set up, please enter 'SKIP')";
-			$ask_redmine_api_key = prompt_for_input($question);
-			$isAsk = ($ask_redmine_api_key eq '');
-			if ($isAsk) {
-				print("A7. The API key is empty, please re-enter!\n");
-			}
-			else {
-				$answer = "A7. Set Redmine API key OK!";
-			}
+		if ($isAsk) {
+			$ask_redmine_api_key = sha1_hex(random_password(20));
+			$answer = "A7. Set Redmine API key OK!";
 		}
 	}
 	else {
@@ -434,8 +428,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 	if (!defined($ARGV[1])) {
 		$random_key = (defined($random_key) && $random_key ne '{{random_key}}' && $random_key ne '')?$random_key:'';
 		if ($random_key ne '') {
-			$question = "Q10b. Do you want to change auto password?(y/N)";
-			$answer = "A10b. Skip Set auto password!";
+			$question = "Q10b. Do you want to change random key?(y/N)";
+			$answer = "A10b. Skip Set random key!";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
 		}
