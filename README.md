@@ -120,13 +120,19 @@
 >
 > ```vi /iiidevopsNFS/deploy-config/add_k8s.sh```
 >
-> * Excute the following command on VM1 to make VM2 a K8S node.
+> * Execute the following command on VM1 to make VM2 join the K8S cluster.
 >
 >   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm2_ip]```
 >
 >   It should display as below.
 >   ```bash
 >   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.72
+>   :
+>   :
+>   :
+>   Status: Downloaded newer image for rancher/rancher-agent:v2.4.5
+>   75bc21ba8f143c639bb538543320f4ea27defec6f0bea26c1ba1eafba4496954
+>   Please goto Rancher Web - https://10.20.0.71:6443 to get the status of added node of k8s cluster!
 >   ```
 >
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster.  
