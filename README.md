@@ -26,12 +26,11 @@
 > ```bash
 > wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
 > perl ./iiidevops_install.pl local
-> perl ./iiidevops_install.pl localadmin@10.20.0.72
 > ```
 > * If everything is correct, you will see that all check items are OK shown below.
 > 
 > ```
-> localadmin@iiidevops-71:~$ perl ./iiidevops_install.pl localadmin@10.20.0.72
+> localadmin@iiidevops-71:~$ perl ./iiidevops_install.pl local
 > :
 > :
 > :
@@ -62,72 +61,79 @@
 # Step 4. Set up GitLab from the web UI
 > * GitLab - http://10.20.0.71/ 
 > * **Use the $gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab new password** 
->![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
->   
-
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
+>   * After setting a new password for GitLab, you should log in again with **root** and the **new password**
 >
->* After setting a new password for GitLab, you should log in again with **root** and the **new password**
->
->* Generate **root personal access tokens**  
->
->
-> * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
+> * Generate **root personal access tokens**  
+>   * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 >
->  * Access Tokens / Name : root-pat / Scopes : Check all / Create personal access token  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
+>   * Access Tokens / Name : root-pat / Scopes : Check all / Create personal access token  
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 >
-> * Keep Your New Personal Access Token 
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
+>   * Keep Your New Personal Access Token 
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
 >
->* Enable Outbound requests from web hooks
+> * Modify the **$gitlab_private_token** value in env.pl
 >
+>   ```~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token [Personal Access Token]```
 >
-> * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
+>   It should display as below.
+>   ```bash
+>   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token 535wZnCJDTL5y22xYYzv
+>   A4. Set GitLab Token OK!
+> 
+>   Q21. Do you want to generate env.pl based on the above information?(Y/n)
+>   The original env.pl has been backed up as /home/localadmin/deploy-devops/bin/../env.pl.bak
+>   -----
+>   11c11
+>   < $gitlab_private_token = '535wZnCJDTL5y22xYYzv'; # Get from GitLab Web
+>   ---
+>   > $gitlab_private_token = 'skip'; # Get from GitLab Web
+>   -----
+>   ```
+>
+> * Enable Outbound requests from web hooks
+>   * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
->* Modify the **$gitlab_private_token** value in env.pl
->
->> ```~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token```
->
-> It should display as below.
->```bash
-> localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token
-> Q4. Please enter the GitLab Token:(If your GitLab has not been set up, please enter 'SKIP')GexxxxWxxxdJyCyz4knt
-> A4. Set GitLab Token OK!
->
-> Q21. Do you want to generate env.pl based on the above information?(y/N)y
-> The original env.pl has been backed up as /home/localadmin/deploy-devops/bin/../env.pl.bak
->```
 
 # Step 5. Set up Rancher from the web UI
 > * Rancher - https://10.20.0.71:6443/
-> * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) as admin password**
->![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
+> * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
->* set **Rancher Server URL**  
+> * set **Rancher Server URL**  
 
 ## Create a Kubernetes by rancher
-> ## Add cluster
 > * add cluster/ From existing nodes(Custom)  
 >   * Cluster name:  **iiidevops-k8s**
 >   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.12-rancher1-1 **
 >   * Network provider: **Calico**  
 >   * CNI Plugin MTU Override: **1440**  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
 >   * Click Next to  save the setting (It will take a while. If  you receive the error message "Failed while: Wait for Condition: InitialRolesPopulated: True", just click 'Next' again.)
 >   * Node Options: Chose etcd, Control plane, worker
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
 
 ## Copy command to /iiidevopsNFS/deploy-config/add_k8s.sh for VM2
 >
-> ```bash
-> vi /iiidevopsNFS/deploy-config/add_k8s.sh
-> ```
-> * Excute the following command on VM1 to make VM2 a K8S node.
-> ```bash
-> ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.72
-> ```
+> ```vi /iiidevopsNFS/deploy-config/add_k8s.sh```
+>
+> * Execute the following command on VM1 to make VM2 join the K8S cluster.
+>
+>   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm2_ip]```
+>
+>   It should display as below.
+>   ```bash
+>   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.72
+>   :
+>   :
+>   :
+>   Status: Downloaded newer image for rancher/rancher-agent:v2.4.5
+>   75bc21ba8f143c639bb538543320f4ea27defec6f0bea26c1ba1eafba4496954
+>   Please goto Rancher Web - https://10.20.0.71:6443 to get the status of added node of k8s cluster!
+>   ```
 >
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster.  
 > * Rancher Web UI will automatically refresh to use the new SSL certificate. You need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
