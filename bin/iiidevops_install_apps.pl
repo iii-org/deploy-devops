@@ -18,7 +18,8 @@ $home = "$Bin/../../";
 # Redmine
 $cmd = "$home/deploy-devops/redmine/install_redmine.pl";
 log_print("Deploy Redmine..");
-$cmd_msg = `$cmd`;
+#$cmd_msg = `$cmd`;
+system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 # Check Redmine service is working
 $cmd = "nc -z -v $redmine_ip 32748";
@@ -30,13 +31,13 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-log_print("OK!\n");
-log_print("Successfully deployed Redmine!\n");
+log_print("Redmine..OK!\n\n");
 
 # Sonarqube
 $cmd = "$home/deploy-devops/sonarqube/install_sonarqube.pl";
 log_print("Deploy Sonarqube..");
-$cmd_msg = `$cmd`;
+#$cmd_msg = `$cmd`;
+system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 # Check Sonarqube service is working
 $cmd = "nc -z -v $sonarqube_ip 31910";
@@ -48,14 +49,12 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-log_print("OK!\n");
-log_print("Successfully deployed Sonarqube!\n");
+log_print("Sonarqube ..OK!\n\n");
 
-
-log_print("\nThe deployment of Redmine & other services has been completed, These services URL are: \n");
+log_print("The deployment of Redmine & other services has been completed, These services URL are: \n");
 log_print("Redmine - http://$redmine_ip:32748/\n");
 log_print("Sonarqube - http://$sonarqube_ip:31910/\n");
-log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 9. to continue.\n\n");
+log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 7. to continue.\n\n");
 
 exit;
 

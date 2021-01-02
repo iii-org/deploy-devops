@@ -35,7 +35,7 @@ close(FH);
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy redmine-postgresql..\n");
 $cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n\n");
+log_print("-----\n$cmd_msg-----\n");
 
 # Modify redmine/redmine/redmine-deployment.yml.tmpl <- {{redmine_db_passwd}}
 $yaml_path = "$Bin/../redmine/redmine/";
@@ -54,7 +54,7 @@ close(FH);
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy redmine..\n");
 $cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n\n");
+log_print("-----\n$cmd_msg-----\n");
 
 # Display Wait 3 min. message
 log_print("It takes 1 to 3 minutes to deploy Redmine service. Please wait.. \n");
@@ -73,7 +73,7 @@ while($isChk && $count<$wait_sec) {
 	$count ++;
 	sleep($isChk);
 }
-log_print("-----\n$cmd_msg-----\n");
+log_print("\n$cmd_msg-----\n");
 if ($isChk) {
 	log_print("Failed to deploy Redmine!\n");
 	log_print("-----\n$cmd_msg-----\n");

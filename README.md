@@ -203,7 +203,10 @@
 # Step 7. Deploy Redmine on kubernetes cluster
 > <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
 >
-> After running the script, you should wait 1 to 3 minutes for these services to start running.
+> After the deployment is complete, you should be able to see the URL information of these services as shown below.
+>
+> * Redmine - http://192.168.11.205:32748/
+> * Sonarqube - http://192.168.11.205:31910/
 >
 
 > ## Redmine

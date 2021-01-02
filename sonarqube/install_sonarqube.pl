@@ -34,7 +34,7 @@ close(FH);
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy sonarqube..\n");
 $cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n\n");
+log_print("-----\n$cmd_msg-----\n");
 
 # Display Wait 3 min. message
 log_print("It takes 1 to 3 minutes to deploy Sonarqube service. Please wait.. \n");
@@ -53,7 +53,7 @@ while($isChk && $count<$wait_sec) {
 	$count ++;
 	sleep($isChk);
 }
-log_print("-----\n$cmd_msg-----\n");
+log_print("\n$cmd_msg-----\n");
 if ($isChk) {
 	log_print("Failed to deploy Sonarqube!\n");
 	log_print("-----\n$cmd_msg-----\n");
