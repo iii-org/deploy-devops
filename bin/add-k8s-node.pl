@@ -2,6 +2,12 @@
 # remote add Kubernetes worker node script
 #
 use FindBin qw($Bin);
+my $p_config = "$Bin/../env.pl";
+if (!-e $p_config) {
+	print("The configuration file [$p_config] does not exist!\n");
+	exit;
+}
+require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
@@ -12,13 +18,6 @@ if (!defined($ARGV[0])) {
 
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
-
-$p_config = "$Bin/../env.pl";
-if (!-e $p_config) {
-	log_print("The configuration file [$p_config] does not exist!\n");
-	exit;
-}
-require($p_config);
 
 $p_addk8s_sh = "$nfs_dir/deploy-config/add_k8s.sh";
 if (!-e $p_addk8s_sh) {
@@ -33,17 +32,18 @@ if (index($addk8s_cmd, $rancher_chk)<0) {
 	exit;
 }
 
-# copy add_k8s_node_sh to remote k8s node
-$cmd = "scp $p_addk8s_sh $ARGV[0]:~";
+# copy iiidevops_install.pl, add_k8s_node_sh to remote k8s node
+$cmd = "scp $Bin/iiidevops_install.pl $p_addk8s_sh $ARGV[0]:~";
 log_print("-----\n$cmd\n");
 $cmd_msg = `$cmd`;
 log_print("\n");
 
 # run and get remote k8s node info
-$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S ~/add_k8s.sh\"";
+$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; sudo -S ~/add_k8s.sh\"";
 log_print("-----\n$cmd\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n\n");
 
 $p_kube_config = "$nfs_dir/kube-config/config";
 if (!-e $p_kube_config) {
