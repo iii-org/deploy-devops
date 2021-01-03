@@ -10,13 +10,13 @@ if (!-e $p_config) {
 }
 require($p_config);
 
-# Check kubernetes cluster info.
-$cmd = "kubectl cluster-info";
-print("Check kubernetes cluster info..\n");
+# Check kubernetes status.
+$cmd = "kubectl get pod | grep redmine | tail -1";
+print("Check kubernetes status..\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n\n");
-$cmd_msg =~  s/\e\[[\d;]*[a-zA-Z]//g; # Remove ANSI color
-if (index($cmd_msg, 'Kubernetes control plane is running')<0 || index($cmd_msg, 'CoreDNS is running')<0) {
+#$cmd_msg =~  s/\e\[[\d;]*[a-zA-Z]//g; # Remove ANSI color
+if (index($cmd_msg, 'Running')<0) {
 	print("The Kubernetes cluster is not working properly!\n");
 	exit;
 }
@@ -31,114 +31,115 @@ if (index($cmd_msg, 'namespace/account created')<0 && index($cmd_msg, 'namespace
 	exit;
 }
 print("Create namespace on kubernetes cluster OK!\n");
-# Create Quota on kubernetes cluster
-$cmd = "kubectl apply -f $Bin/../kubernetes/quota/";
-print("Create Quota on kubernetes cluster..\n");
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n\n");
-#limitrange/resouce-limit-range created
-#resourcequota/quota-test created
-#
-#limitrange/resouce-limit-range configured
-#resourcequota/quota-test unchanged
-if ((index($cmd_msg, 'limitrange/resouce-limit-range created')>=0 || index($cmd_msg, 'limitrange/resouce-limit-range configured')>=0) && (index($cmd_msg, 'resourcequota/quota-test created')>=0 || index($cmd_msg, 'resourcequota/quota-test unchanged')>=0)) {
-	print("Create quota on kubernetes cluster OK!\n");
-}
-else {
-	print("Failed to create quota on kubernetes cluster!\n");
-	exit;
-}
-# Create Secrets on kubernetes cluster
-$yaml_path = "$Bin/../kubernetes/secrets/";
-# api-origin.yaml
-$yaml_file = $yaml_path.'api-origin.yaml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	print("The template file [$tmpl_file] does not exist!\n");
-	exit;
-}
-$template = `cat $tmpl_file`;
-$string = encode_base64($iiidevops_api);
-$string =~ s/\n|\r//;
-$template =~ s/{{iiidevops_api}}/$string/g;
-#print("-----\n$template\n-----\n\n");
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
-$cmd = "kubectl apply -f $yaml_file";
-print("Create Secrets $yaml_file..\n");
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n");
-# checkmarx-secret.yaml
-$yaml_file = $yaml_path.'checkmarx-secret.yaml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	print("The template file [$tmpl_file] does not exist!\n");
-	exit;
-}
-$template = `cat $tmpl_file`;
-$check_interval = 3000;
-$string = encode_base64($check_interval);
-$string =~ s/\n|\r//;
-$template =~ s/{{check_interval}}/$string/g;
-$string = encode_base64($checkmarx_secret);
-$string =~ s/\n|\r//;
-$template =~ s/{{checkmarx_secret}}/$string/g;
-$string = encode_base64($checkmarx_origin);
-$string =~ s/\n|\r//;
-$template =~ s/{{checkmarx_origin}}/$string/g;
-$string = encode_base64($checkmarx_username);
-$string =~ s/\n|\r//;
-$template =~ s/{{checkmarx_username}}/$string/g;
-$string = encode_base64($checkmarx_password);
-$string =~ s/\n|\r//;
-$template =~ s/{{checkmarx_password}}/$string/g;
-#print("-----\n$template\n-----\n\n");
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
-$cmd = "kubectl apply -f $yaml_file";
-print("Create Secrets $yaml_file..\n");
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n");
-# gitlab-token.yaml
-$yaml_file = $yaml_path.'gitlab-token.yaml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	print("The template file [$tmpl_file] does not exist!\n");
-	exit;
-}
-$template = `cat $tmpl_file`;
-$string = encode_base64($gitlab_private_token);
-$string =~ s/\n|\r//;
-$template =~ s/{{gitlab_private_token}}/$string/g;
-#print("-----\n$template\n-----\n\n");
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
-$cmd = "kubectl apply -f $yaml_file";
-print("Create Secrets $yaml_file..\n");
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n");
-# jwt-token.yaml
-$yaml_file = $yaml_path.'jwt-token.yaml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	print("The template file [$tmpl_file] does not exist!\n");
-	exit;
-}
-$template = `cat $tmpl_file`;
-$string = encode_base64($jwt_secret_key);
-$string =~ s/\n|\r//;
-$template =~ s/{{jwt_secret_key}}/$string/g;
-#print("-----\n$template\n-----\n\n");
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
-$cmd = "kubectl apply -f $yaml_file";
-print("Create Secrets $yaml_file..\n");
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n");
+
+# # Create Quota on kubernetes cluster
+# $cmd = "kubectl apply -f $Bin/../kubernetes/quota/";
+# print("Create Quota on kubernetes cluster..\n");
+# $cmd_msg = `$cmd`;
+# print("-----\n$cmd_msg\n-----\n\n");
+# #limitrange/resouce-limit-range created
+# #resourcequota/quota-test created
+# #
+# #limitrange/resouce-limit-range configured
+# #resourcequota/quota-test unchanged
+# if ((index($cmd_msg, 'limitrange/resouce-limit-range created')>=0 || index($cmd_msg, 'limitrange/resouce-limit-range configured')>=0) && (index($cmd_msg, 'resourcequota/quota-test created')>=0 || index($cmd_msg, 'resourcequota/quota-test unchanged')>=0)) {
+	# print("Create quota on kubernetes cluster OK!\n");
+# }
+# else {
+	# print("Failed to create quota on kubernetes cluster!\n");
+	# exit;
+# }
+# # Create Secrets on kubernetes cluster
+# $yaml_path = "$Bin/../kubernetes/secrets/";
+# # api-origin.yaml
+# $yaml_file = $yaml_path.'api-origin.yaml';
+# $tmpl_file = $yaml_file.'.tmpl';
+# if (!-e $tmpl_file) {
+	# print("The template file [$tmpl_file] does not exist!\n");
+	# exit;
+# }
+# $template = `cat $tmpl_file`;
+# $string = encode_base64($iiidevops_api);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{iiidevops_api}}/$string/g;
+# #print("-----\n$template\n-----\n\n");
+# open(FH, '>', $yaml_file) or die $!;
+# print FH $template;
+# close(FH);
+# $cmd = "kubectl apply -f $yaml_file";
+# print("Create Secrets $yaml_file..\n");
+# $cmd_msg = `$cmd`;
+# print("-----\n$cmd_msg\n-----\n");
+# # checkmarx-secret.yaml
+# $yaml_file = $yaml_path.'checkmarx-secret.yaml';
+# $tmpl_file = $yaml_file.'.tmpl';
+# if (!-e $tmpl_file) {
+	# print("The template file [$tmpl_file] does not exist!\n");
+	# exit;
+# }
+# $template = `cat $tmpl_file`;
+# $check_interval = 3000;
+# $string = encode_base64($check_interval);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{check_interval}}/$string/g;
+# $string = encode_base64($checkmarx_secret);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{checkmarx_secret}}/$string/g;
+# $string = encode_base64($checkmarx_origin);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{checkmarx_origin}}/$string/g;
+# $string = encode_base64($checkmarx_username);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{checkmarx_username}}/$string/g;
+# $string = encode_base64($checkmarx_password);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{checkmarx_password}}/$string/g;
+# #print("-----\n$template\n-----\n\n");
+# open(FH, '>', $yaml_file) or die $!;
+# print FH $template;
+# close(FH);
+# $cmd = "kubectl apply -f $yaml_file";
+# print("Create Secrets $yaml_file..\n");
+# $cmd_msg = `$cmd`;
+# print("-----\n$cmd_msg\n-----\n");
+# # gitlab-token.yaml
+# $yaml_file = $yaml_path.'gitlab-token.yaml';
+# $tmpl_file = $yaml_file.'.tmpl';
+# if (!-e $tmpl_file) {
+	# print("The template file [$tmpl_file] does not exist!\n");
+	# exit;
+# }
+# $template = `cat $tmpl_file`;
+# $string = encode_base64($gitlab_private_token);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{gitlab_private_token}}/$string/g;
+# #print("-----\n$template\n-----\n\n");
+# open(FH, '>', $yaml_file) or die $!;
+# print FH $template;
+# close(FH);
+# $cmd = "kubectl apply -f $yaml_file";
+# print("Create Secrets $yaml_file..\n");
+# $cmd_msg = `$cmd`;
+# print("-----\n$cmd_msg\n-----\n");
+# # jwt-token.yaml
+# $yaml_file = $yaml_path.'jwt-token.yaml';
+# $tmpl_file = $yaml_file.'.tmpl';
+# if (!-e $tmpl_file) {
+	# print("The template file [$tmpl_file] does not exist!\n");
+	# exit;
+# }
+# $template = `cat $tmpl_file`;
+# $string = encode_base64($jwt_secret_key);
+# $string =~ s/\n|\r//;
+# $template =~ s/{{jwt_secret_key}}/$string/g;
+# #print("-----\n$template\n-----\n\n");
+# open(FH, '>', $yaml_file) or die $!;
+# print FH $template;
+# close(FH);
+# $cmd = "kubectl apply -f $yaml_file";
+# print("Create Secrets $yaml_file..\n");
+# $cmd_msg = `$cmd`;
+# print("-----\n$cmd_msg\n-----\n");
 
 
 # Check if Gitlab/Rancher/Harbor/Redmine services are running well

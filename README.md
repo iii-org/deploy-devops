@@ -211,41 +211,8 @@
 
 > ## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
-> * **login by admin/ admin, and reset the administrator password using $redmine_admin_passwd entered in Step 2.(~/deploy-devops/env.pl)**
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/reset-redmine-admin-password.png?raw=true)  
-> * Enable REST API
->   * Administration/ Settings/ API/ Enable REST web service
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/enable-redmine-rest.png?raw=true)  
-> * Generate redmine admin token
->   * My account/ API access key/ Show
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-admin-apikey.png?raw=true)  
-> * set API access key to env.pl
->   
->   ``` ~/deploy-devops/bin/generate_env.pl ask_redmine_api_key```
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine_set_API_access_key.png?raw=true)
-> * wiki set markdown  
->   * Administration/ Setting/ Gereral/ Text formatting  
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-testformat-markdown.png?raw=true)  
-> * Create issue status  
->   * Administration/ Issues statuses / New status
->     * Active, Assigned, Solved, Responded, Finished, Closed
->     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-issue-status.png?raw=true)  
-> * Create Trackers  
->   * Administration/ Trackers / New tracker
->     * Feature, Bug, Document, Research
->     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-set-trackers.png?raw=true)  
-> * Create roles
->   * Administration/ Roles and permissions / New role
->   * Engineer, Project Manager
->     * Engineer Permissions : Check all and then uncheck all project permissions 
->     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-engineer-permissions.png?raw=true)
->     * Project Manager Permissions :  Check all 
->     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-pm-permissions.png?raw=true)
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-roles.png?raw=true)  
-> * Create priority
->   * Administration/ Enumerations/ Issue priorities / New value
->     * Immediate, High, Normal, Low
->     ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/redmine-create-priority.png?raw=true)  
+> * **Log in with the account admin and password ($redmine_admin_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
+>
 
 # Step 8. Deploy III-DevOps
 > <code> ~/deploy-devops/bin/iiidevops_install_core.pl </code>
