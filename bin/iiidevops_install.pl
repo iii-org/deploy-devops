@@ -47,7 +47,7 @@ system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo apt-get install unzip nfs-common libterm-readkey-perl postgresql-client-common postgresql-client-12 -y;
+sudo apt-get install unzip nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client-12 -y;
 cd ~; unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
 mv deploy-devops-$ins_repo deploy-devops;
