@@ -14,6 +14,15 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+log_print("Install NFS : $nfs_ip - $nfs_dir\n");
+# Check NFS is working
+$cmd_msg = `showmount -e $nfs_ip 2>&1`;
+$isWorking = index($cmd_msg, $nfs_dir)<0?0:1;
+if ($isWorking) {
+	log_print("NFS is running, I skip the installation!\n\n");
+	exit;
+}
+
 $cmd = "sudo apt install nfs-kernel-server -y";
 log_print("Install NFS service Package..\n");
 $cmd_msg = `$cmd`;

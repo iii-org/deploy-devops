@@ -29,10 +29,10 @@ if ($OSVer ne '20.04') {
 # Run on remote host 
 if (uc($ARGV[0] ne 'local')) {
 
-	$cmd = "ssh $ARGV[0] \"wget https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; sudo -S perl ./iiidevops_install.pl local $ins_repo\"";
+	$cmd = "ssh $ARGV[0] \"rm -f ./iiidevops_install.pl; wget https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; sudo -S perl ./iiidevops_install.pl local $ins_repo\"";
 	log_print("Run on $ARGV[0] ...\n");
 	$cmd_msg=`$cmd`;
-	log_print("-----\n$cmd_msg\n-----\n");
+	log_print("-----\n$cmd_msg");
 	exit;
 }
 
@@ -41,7 +41,8 @@ cd ~; \
 wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip
 END
 log_print("Getting iiidevops Deploy Package..\n");
-$cmd_msg = `$cmd`;
+#$cmd_msg = `$cmd`;
+system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
@@ -49,23 +50,21 @@ sudo apt-get install unzip nfs-common libterm-readkey-perl -y;
 cd ~; unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
 mv deploy-devops-$ins_repo deploy-devops;
-cd deploy-devops/;
-chmod a+x bin/*.pl;
-chmod a+x gitlab/*.pl;
-chmod a+x harbor/*.pl;
-chmod a+x rancher/*.pl;
+find ~/deploy-devops -type f -name \"*.pl\" -exec chmod a+x {} \\;
 END
 log_print("Unziping iiidevops Deploy Package..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
 sudo apt-get update -y;
 sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y;
 END
 log_print("Install default packages..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
@@ -74,17 +73,22 @@ sudo apt-get update -y;
 sudo apt-get install docker-ce=5:19.03.14~3-0~ubuntu-focal docker-ce-cli=5:19.03.14~3-0~ubuntu-focal containerd.io -y;
 END
 log_print("Install docker..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
 sudo snap install kubectl --channel=1.18/stable --classic;
 mkdir -p ~/.kube/;
 END
 log_print("Install kubectl..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
 
+
+# Validation results
+log_print("\n-----Validation results-----\n");
 
 #check docker version
 #Docker version 19.03.14, build 5eb3275d40

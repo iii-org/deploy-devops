@@ -15,6 +15,14 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 log_print("Install GitLab URL: http://$gitlab_ip\n");
+# Check GitLab is working
+$cmd_msg = `nc -z -v $gitlab_ip 80 2>&1`;
+$isWorking = index($cmd_msg, 'succeeded!')<0?0:1;
+if ($isWorking) {
+	log_print("GitLab is running, I skip the installation!\n\n");
+	exit;
+}
+
 $cmd =
 "sudo docker run --env GITLAB_OMNIBUS_CONFIG=\"external_url 'http://$gitlab_ip';\"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $data_dir/gitlab/config:/etc/gitlab --volume $data_dir/gitlab/logs:/var/log/gitlab --volume $data_dir/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0";
 log_print("-----\n$cmd\n\n");

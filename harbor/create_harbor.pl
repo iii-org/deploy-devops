@@ -22,7 +22,22 @@ log_print(`TZ='Asia/Taipei' date`);
 
 $home_dir = "$data_dir/harbor";
 
+if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
+	create_dockerhub_proxy();
+	exit;
+}
+
 log_print("Install Harbor URL: https://$harbor_ip:5443\n");
+# Check Harbor is working
+$cmd_msg = `curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 2>&1`;
+#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+$isWorking = index($cmd_msg, 'UNAUTHORIZED')<0?0:1;
+if ($isWorking) {
+	log_print("Harbor is running, I skip the installation!\n\n");
+	exit;
+}
+
+# Install docker-compose
 $cmd_msg = `/usr/local/bin/docker-compose -v`;
 if (index($cmd_msg, 'version')<0) {
 	$os_m = `uname -m`;
@@ -40,15 +55,6 @@ if (index($cmd_msg, 'version')<0) {
 }
 else {
 	log_print("-----\n$cmd_msg\n\n");
-}
-
-# Check Harbor is working
-$cmd_msg = `curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 2>&1`;
-#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-$isWorking = index($cmd_msg, 'UNAUTHORIZED')<0?0:1;
-if ($isWorking) {
-	log_print("Harbor is running, I skip the installation!\n\n");
-	exit;
 }
 
 # Download harbor-offline-installer-v2 file
@@ -229,12 +235,25 @@ curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' 
   "description": "Default Harbor Projcet Proxy Cache"
 }'
 END
-	$cmd_msg = `$cmd`;
-	if ($cmd_msg ne '') {
-		log_print("Add dockerhub Registry Error: $cmd_msg");
+	$isRun=1;
+	$count=0;
+	while ($isRun && $count<10) {
+		$isRun=0;
+		$cmd_msg = `$cmd`;
+		if ($cmd_msg ne '' && index($cmd_msg, "'dockerhub' is already used")<=0) {
+			log_print("Add dockerhub Registry Error: $cmd_msg");
+			sleep(5);
+			$count ++;
+			$isRun=1;
+		}
 	}
-
-	sleep(5);
+	if (index($cmd_msg, "'dockerhub' is already used")>0) {
+		log_print("The dockerhub Registry is already exists, skip adding.\n");
+	}
+	else {
+		log_print("Add dockerhub Registry OK.\n");
+	}
+	
 $cmd =<<END;
 curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
   "project_name": "dockerhub",
@@ -249,9 +268,23 @@ curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --
   "public": true
 }'
 END
-	$cmd_msg = `$cmd`;
-	if ($cmd_msg ne '') {
-		log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+	$isRun=1;
+	$count=0;
+	while ($isRun && $count<10) {
+		$isRun=0;
+		$cmd_msg = `$cmd`;
+		if ($cmd_msg ne '' && index($cmd_msg, "The project named dockerhub already exists")<=0) {
+			log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+			sleep(5);
+			$count ++;
+			$isRun=1;
+		}
+	}
+	if (index($cmd_msg, "The project named dockerhub already exists")>0) {
+		log_print("The dockerhub Projcet is already exists, skip adding.\n");
+	}
+	else {
+		log_print("Add dockerhub Projcet OK.\n");
 	}
 	
 	return;

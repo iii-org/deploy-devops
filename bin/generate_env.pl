@@ -4,6 +4,7 @@
 use Socket;
 use Sys::Hostname;
 use FindBin qw($Bin);
+use Digest::SHA qw(sha1_hex);
 
 $p_config = "$Bin/../env.pl";
 $p_config_bak = $p_config.".bak";
@@ -13,11 +14,13 @@ if (!-e $p_config_tmpl) {
 	exit;
 }
 
-if (-e '/iiidevopsNFS/deploy-config/env.pl') {
-	$cmd_msg = `rm -f $p_config; ln -s /iiidevopsNFS/deploy-config/env.pl $p_config`; 
+$nfs_dir = defined($nfs_dir)?$nfs_dir:'/iiidevopsNFS';
+
+if (-e "$nfs_dir/deploy-config/env.pl") {
+	$cmd_msg = `rm -f $p_config; ln -s $nfs_dir/deploy-config/env.pl $p_config`; 
 }
-if (-e '/iiidevopsNFS/deploy-config/env.pl.ans') {
-	$cmd_msg = `rm -f $p_config.ans; ln -s /iiidevopsNFS/deploy-config/env.pl.ans $p_config.ans`; 
+if (-e "$nfs_dir/deploy-config/env.pl.ans") {
+	$cmd_msg = `rm -f $p_config.ans; ln -s $nfs_dir/deploy-config/env.pl.ans $p_config.ans`; 
 }
 
 $ans_tmpl = <<END;
@@ -63,10 +66,10 @@ if (defined($ARGV[0])) {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	if (!defined($ARGV[1])) {
 		$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
-		$question = "Q1. Do you want to set [$vm1_ip] as the URL of the main service?(GitLab, Harbor...)? (Y/n)";
+		$question = "Q1. Do you want to set VM1 IP [$vm1_ip] as the URL of the main services?(GitLab, Harbor...)? (Y/n)";
 		$Y_N = prompt_for_input($question);
 		while (lc($Y_N) eq 'n') {	
-			$question = "Q1. Please enter the IP or domain name of the main service?(GitLab, Harbor...):";
+			$question = "Q1. Please enter the IP or domain name of the main services?(GitLab, Harbor...):";
 			$vm1_ip = prompt_for_input($question, $vm1_ip);
 			$Y_N = ($vm1_ip eq '')?'n':'Y';
 		}
@@ -74,7 +77,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	else {
 		$vm1_ip = $ARGV[1];
 	}
-	$answer = "A1. Set [$vm1_ip] for the main service";
+	$answer = "A1. Set [$vm1_ip] for the main services";
 	print ("$answer\n\n");
 	if ($vm1_ip ne '') {
 		if (-e $p_config_tmpl_ans) {
@@ -90,14 +93,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	if (!defined($ARGV[1])) {
 		$vm2_ip = (defined($vm2_ip) && $vm2_ip ne '{{vm2_ip}}' && $vm2_ip ne '')?$vm2_ip:$host_ip;
-		$question = "Q2. Please enter the IP or domain name of the application service?(Redmine, Sonarqube...):($vm2_ip)";
+		$question = "Q2. Please enter the VM2 IP or domain name of the application services?(Redmine, Sonarqube, iiidevops...):($vm2_ip)";
 		$ans_ip = prompt_for_input($question);
 		$vm2_ip = ($ans_ip ne '')?$ans_ip:$vm2_ip;
 	}
 	else {
 		$vm2_ip = $ARGV[1];
 	}
-	$answer = "A2. Set [$vm2_ip] for the application service";
+	$answer = "A2. Set [$vm2_ip] for the application services";
 	print ("$answer\n\n");
 	if ($vm2_ip ne '') {
 		if (-e $p_config_tmpl_ans) {
@@ -109,7 +112,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	}
 }
 
-# 3. set GitLab root password(No longer needed)
+# 3. set GitLab root password
 #\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_root_password') {
 	if (!defined($ARGV[1])) {
@@ -124,7 +127,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_root_password') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q3. Please enter the GitLab root password:";
+			$question = "Q3. Please enter the GitLab root password:(Must be 8-20 characters long with at least 1 uppercase, 1 lowercase and 1 number)";
 			$password1 = prompt_for_password($question);
 			$question = "Q3. Please re-enter the GitLab root password:";
 			$password2 = prompt_for_password($question);
@@ -152,6 +155,10 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_root_password') {
 		write_ans();
 	}
 }
+
+# Set same_passwd for another password 
+$same_passwd = $ask_gitlab_root_password;
+
 
 # 4. set GitLab Token
 #\$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
@@ -209,11 +216,17 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_rancher_admin_password') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q5. Please enter the Rancher admin password:";
+			$question = "Q5. Please enter the Rancher admin password:(If it is the same as GitLab, please enter 'SAME')";
 			$password1 = prompt_for_password($question);
-			$question = "Q5. Please re-enter the Rancher admin password:";
-			$password2 = prompt_for_password($question);
-			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			if (lc($password1) eq 'same') {
+				$password1 = $same_passwd;
+				$isAsk = 0;
+			}
+			else {
+				$question = "Q5. Please re-enter the Rancher admin password:";
+				$password2 = prompt_for_password($question);
+				$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			}
 			if ($isAsk) {
 				print("A5. The password is not the same, please re-enter!\n");
 			}
@@ -253,11 +266,17 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q6. Please enter the Redmine admin password:";
+			$question = "Q6. Please enter the Redmine admin password:(If it is the same as GitLab, please enter 'SAME')";
 			$password1 = prompt_for_password($question);
-			$question = "Q6. Please re-enter the Redmine admin password:";
-			$password2 = prompt_for_password($question);
-			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			if (lc($password1) eq 'same') {
+				$password1 = $same_passwd;
+				$isAsk = 0;
+			}
+			else {
+				$question = "Q6. Please re-enter the Redmine admin password:";
+				$password2 = prompt_for_password($question);
+				$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			}
 			if ($isAsk) {
 				print("A6. The password is not the same, please re-enter!\n");
 			}
@@ -286,8 +305,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 #\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 	if (!defined($ARGV[1])) {
-		$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '{{ask_redmine_api_key}}' && $ask_redmine_api_key ne '' && lc($ask_redmine_api_key) ne 'skip')?$ask_redmine_api_key:'';
-		if ($ask_redmine_api_key ne '' || (defined($ARGV[0]) && !defined($ARGV[1]))) {
+		$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '{{ask_redmine_api_key}}' && $ask_redmine_api_key ne '')?$ask_redmine_api_key:'';
+		if ($ask_redmine_api_key ne '') {
 			$question = "Q7. Do you want to change Redmine API key?(y/N)";
 			$answer = "A7. Skip Set Redmine API key!";
 			$Y_N = prompt_for_input($question);
@@ -296,16 +315,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 		else {
 			$isAsk=1;
 		}
-		while ($isAsk) {
-			$question = "Q7. Please enter the Redmine API key:(If your Redmine has not been set up, please enter 'SKIP')";
-			$ask_redmine_api_key = prompt_for_input($question);
-			$isAsk = ($ask_redmine_api_key eq '');
-			if ($isAsk) {
-				print("A7. The API key is empty, please re-enter!\n");
-			}
-			else {
-				$answer = "A7. Set Redmine API key OK!";
-			}
+		if ($isAsk) {
+			$ask_redmine_api_key = sha1_hex(random_password(20));
+			$answer = "A7. Set Redmine API key OK!";
 		}
 	}
 	else {
@@ -338,11 +350,17 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_harbor_admin_password') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q8. Please enter the Harbor admin password:";
+			$question = "Q8. Please enter the Harbor admin password:(If it is the same as GitLab, please enter 'SAME')";
 			$password1 = prompt_for_password($question);
-			$question = "Q8. Please re-enter the Harbor admin password:";
-			$password2 = prompt_for_password($question);
-			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			if (lc($password1) eq 'same') {
+				$password1 = $same_passwd;
+				$isAsk = 0;
+			}
+			else {
+				$question = "Q8. Please re-enter the Harbor admin password:";
+				$password2 = prompt_for_password($question);
+				$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			}
 			if ($isAsk) {
 				print("A8. The password is not the same, please re-enter!\n");
 			}
@@ -410,8 +428,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 	if (!defined($ARGV[1])) {
 		$random_key = (defined($random_key) && $random_key ne '{{random_key}}' && $random_key ne '')?$random_key:'';
 		if ($random_key ne '') {
-			$question = "Q10b. Do you want to change auto password?(y/N)";
-			$answer = "A10b. Skip Set auto password!";
+			$question = "Q10b. Do you want to change random key?(y/N)";
+			$answer = "A10b. Skip Set random key!";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
 		}
@@ -561,18 +579,24 @@ sub prompt_for_input {
 # Ref - https://stackoverflow.com/questions/39801195/how-can-perl-prompt-for-a-password-without-showing-it-in-the-terminal
 sub prompt_for_password {
 	my ($p_question) = @_;
+	# Check password rule
+	my $regex = qr/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])^[\w!@#$%^&*()+|{}\[\]`~\-\'\";:\/?.\\>,<]{8,20}$/mp;	
 
 	require Term::ReadKey;
-    # Tell the terminal not to show the typed chars
-    Term::ReadKey::ReadMode('noecho');
-    print "$p_question";
-    my $password = Term::ReadKey::ReadLine(0);
-    # Rest the terminal to what it was previously doing
-    Term::ReadKey::ReadMode('restore');
-    print "\n";
+	
+	my $password = '';
+	while(!($password =~ /$regex/g) && lc($password) ne 'same') {
+		# Tell the terminal not to show the typed chars
+		Term::ReadKey::ReadMode('noecho');
+		print "$p_question";
+		$password = Term::ReadKey::ReadLine(0);
+		# Rest the terminal to what it was previously doing
+		Term::ReadKey::ReadMode('restore');
+		print "\n";
 
-    # get rid of that pesky line ending (and works on Windows)
-    $password =~ s/\R\z//;
+		# get rid of that pesky line ending (and works on Windows)
+		$password =~ s/\R\z//;
+	}
 
     return $password;
 }

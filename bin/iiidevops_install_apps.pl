@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Install iiidevops applications script
+# Install iiidevops applications on kubernetes cluster script
 #
 use FindBin qw($Bin);
 my $p_config = "$Bin/../env.pl";
@@ -9,92 +9,63 @@ if (!-e $p_config) {
 }
 require($p_config);
 
-# Deploy Redmine on kubernetes cluster
-# Modify redmine/redmine-postgresql/redmine-postgresql.yml.tmpl <- {{redmine_db_passwd}} {{nfs_ip}}
-$yaml_path = "$Bin/../redmine/redmine-postgresql/";
-$yaml_file = $yaml_path.'redmine-postgresql.yml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	print("The template file [$tmpl_file] does not exist!\n");
-	exit;
-}
-$template = `cat $tmpl_file`;
-$template =~ s/{{redmine_db_passwd}}/$redmine_db_passwd/g;
-$template =~ s/{{nfs_ip}}/$nfs_ip/g;
-$template =~ s/{{nfs_dir}}/$nfs_dir/g;
-#print("-----\n$template\n-----\n\n");
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
-$cmd = "kubectl apply -f $yaml_path";
-print("Deploy redmine-postgresql..\n");
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n\n");
+$prgname = substr($0, rindex($0,"/")+1);
+$logfile = "$Bin/$prgname.log";
+log_print("\n----------------------------------------\n");
+log_print(`TZ='Asia/Taipei' date`);
+$home = "$Bin/../../";
 
-# Modify redmine/redmine/redmine-deployment.yml.tmpl <- {{redmine_db_passwd}}
-$yaml_path = "$Bin/../redmine/redmine/";
-$yaml_file = $yaml_path.'redmine-deployment.yml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	print("The template file [$tmpl_file] does not exist!\n");
-	exit;
-}
-$template = `cat $tmpl_file`;
-$template =~ s/{{redmine_db_passwd}}/$redmine_db_passwd/g;
-#print("-----\n$template\n-----\n\n");
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
-$cmd = "kubectl apply -f $yaml_path";
-print("Deploy redmine..\n");
-$cmd_msg = `$cmd`;
-print("-----\n$cmd_msg\n-----\n\n");
-
-# **Have to confirm**
-## Deploy SonarQube Server on kubernetes cluster
-## Modify sonarqube/sonar-server-deployment.yaml.tmpl <- {{nfs_ip}}
-#$yaml_path = "$Bin/../sonarqube/";
-#$yaml_file = $yaml_path.'sonar-server-deployment.yaml';
-#$tmpl_file = $yaml_file.'.tmpl';
-#if (!-e $tmpl_file) {
-#	print("The template file [$tmpl_file] does not exist!\n");
-#	exit;
-#}
-#$template = `cat $tmpl_file`;
-#$template =~ s/{{nfs_ip}}/$nfs_ip/g;
-#$template =~ s/{{nfs_dir}}/$nfs_dir/g;
-##print("-----\n$template\n-----\n\n");
-#open(FH, '>', $yaml_file) or die $!;
-#print FH $template;
-#close(FH);
-#$cmd = "kubectl apply -f $yaml_path";
-#print("Deploy sonarqube..\n");
+# Redmine
+$cmd = "$home/deploy-devops/redmine/install_redmine.pl";
+log_print("Deploy Redmine..");
 #$cmd_msg = `$cmd`;
-#print("-----\n$cmd_msg\n-----\n\n");
-
-# Display Wait 3 min. message
-print("It takes 1 to 3 minutes to deploy Redmine & other services. Please wait.. \n");
-
-# check deploy status
-#NAME                                  READY   STATUS    RESTARTS   AGE
-#redmine-7cdd59f44c-pznd2              1/1     Running   2          124m
-#redmine-postgresql-6989b6c4d4-tw2bc   1/1     Running   4          47h
-#sonarqube-server-5788564ddc-qn4lf     1/1     Running   1          118m
-$isChk=1;
-$cmd = "kubectl get pod";
-while($isChk) {
-	$isChk = 0;
-	foreach $line (split(/\n/, `$cmd`)) {
-		$line =~ s/( )+/ /g;
-		($l_name, $l_ready, $l_status, $l_restarts, $l_age) = split(/ /, $line);
-		if ($l_name eq 'NAME') {next;}
-		if ($l_status ne 'Running') {
-			print("[$l_name][$l_status]\n");
-			$isChk ++;
-		}
-	}
-	sleep($isChk);
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
+# Check Redmine service is working
+$cmd = "nc -z -v $redmine_ip 32748";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+# Connection to 10.20.0.72 32748 port [tcp/*] succeeded!
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy Redmine!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
 }
-$cmd_msg = `$cmd`;
-print("$cmd_msg");
-print("\nThe deployment of Redmine & other services has been completed. Please Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 9. to continue.\n\n");
+log_print("Redmine..OK!\n\n");
+
+# Sonarqube
+$cmd = "$home/deploy-devops/sonarqube/install_sonarqube.pl";
+log_print("Deploy Sonarqube..");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
+# Check Sonarqube service is working
+$cmd = "nc -z -v $sonarqube_ip 31910";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+# Connection to 10.20.0.72 31910 port [tcp/*] succeeded!
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy Sonarqube!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+log_print("Sonarqube ..OK!\n\n");
+
+log_print("The deployment of Redmine & other services has been completed, These services URL are: \n");
+log_print("Redmine - http://$redmine_ip:32748/\n");
+log_print("Sonarqube - http://$sonarqube_ip:31910/\n");
+log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 7. to continue.\n\n");
+
+exit;
+
+sub log_print {
+	my ($p_msg) = @_;
+
+    print "$p_msg";
+	
+	open(FH, '>>', $logfile) or die $!;
+	print FH $p_msg;
+	close(FH);	
+
+    return;
+}

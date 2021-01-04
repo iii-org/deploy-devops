@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Install nfs service script
+# Install rancher service script
 #
 use FindBin qw($Bin);
 my $p_config = "$Bin/../env.pl";
@@ -15,6 +15,14 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 log_print("Install Rancher URL: https://$rancher_ip:6443\n");
+# Check Rancher is working
+$cmd_msg = `nc -z -v $rancher_ip 6443 2>&1`;
+$isWorking = index($cmd_msg, 'succeeded!')<0?0:1;
+if ($isWorking) {
+	log_print("Rancher is running, I skip the installation!\n\n");
+	exit;
+}
+
 $cmd = "sudo mkdir $data_dir/rancher; sudo chmod 755 $data_dir/rancher &";
 log_print("-----\n$cmd\n");
 $cmd_msg = `$cmd`;

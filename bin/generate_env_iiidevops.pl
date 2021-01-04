@@ -21,9 +21,10 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_login') {
 		while ($isAsk) {
 			$question = "Q9a. Please enter the III-DevOps super user account:";
 			$ask_admin_init_login = prompt_for_input($question);
-			$isAsk = ($ask_admin_init_login eq '' || $ask_admin_init_login eq 'admin' || $ask_admin_init_login eq 'root');
+			$regex = qr/^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,58}[a-zA-Z0-9]$/mp;
+			$isAsk = ($ask_admin_init_login eq '' || $ask_admin_init_login eq 'admin' || $ask_admin_init_login eq 'root' || !($ask_admin_init_login =~ /$regex/g));
 			if ($isAsk) {
-				print("A9a. The III-DevOps super user account is 'admin' or 'root' or empty, please re-enter!\n");
+				print("A9a. III-DevOps super user account is not allowed to use 'admin' or 'root' or blank, and must be 2-60 characters, and \"._-\" can be accepted in the middle of the string, please enter again!\n");
 			}
 			else {
 				$answer = "A9a. Set III-DevOps super user account OK!";
@@ -99,11 +100,17 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_password') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q9c. Please enter the III-DevOps super user password:";
+			$question = "Q9c. Please enter the III-DevOps super user password:(If it is the same as GitLab, please enter 'SAME')";
 			$password1 = prompt_for_password($question);
-			$question = "Q9c. Please re-enter the III-DevOps super user password:";
-			$password2 = prompt_for_password($question);
-			$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			if (lc($password1) eq 'same') {
+				$password1 = $same_passwd;
+				$isAsk = 0;
+			}
+			else {
+				$question = "Q9c. Please re-enter the III-DevOps super user password:";
+				$password2 = prompt_for_password($question);
+				$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			}
 			if ($isAsk) {
 				print("A9c. The password is not the same, please re-enter!\n");
 			}
