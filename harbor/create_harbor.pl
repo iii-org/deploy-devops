@@ -180,7 +180,7 @@ EOF
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg\n\n");
 
-	$cmd="cd $home_dir; sudo ./install.sh  --with-trivy";
+	$cmd="cd $home_dir; sudo ./install.sh --with-trivy";
 	log_print("Install Harbor\n-----\n$cmd\n\n");
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg\n\n");
