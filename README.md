@@ -1,7 +1,7 @@
 # deploy-devops
 ## Environment  
 
-* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD)
+* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD; however, for large clusters, it should be 8 vcore, 16G ram, 120G SSD HD)
   * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
   * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)
 * Before installation, you should decide on these configuration settings
@@ -14,17 +14,16 @@
   7. III-devops super user E-Mail
   8. III-devops super user password
 
-* After installation, you should be able to get the following setup information through Redmine and GitLab Web UI
+* During the installation process, you should be able to get the following setup information through GitLab Web UI
   1. GitLab private token
-  2. Redmine API key
-
+  
 * You can scale out the Kubernetes nodes (VM3, VM4, VM5...) or scale up the VM1 according to actual performance requirements.
 
 
 # Step 1. Download deploy-devops and Install docker (VM1)
 
 > ```bash
-> wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl
+> wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl;
 > perl ./iiidevops_install.pl local
 > ```
 > * If everything is correct, you will see that all check items are OK shown below.
