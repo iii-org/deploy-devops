@@ -4,6 +4,7 @@
 # Usage: iiidevops_install.pl <local|user@remote_ip>
 #
 use FindBin qw($Bin);
+$|=-1;
 
 $prgname = substr($0, rindex($0,"/")+1);
 if (!defined($ARGV[0])) {
@@ -46,7 +47,7 @@ system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo apt-get install unzip nfs-common libterm-readkey-perl -y;
+sudo apt-get install unzip nfs-common libterm-readkey-perl postgresql-client-common postgresql-client-12 -y;
 cd ~; unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
 mv deploy-devops-$ins_repo deploy-devops;
