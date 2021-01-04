@@ -1,7 +1,7 @@
 # deploy-devops
 ## Environment  
 
-* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD; however, for large clusters, it should be 8 vcore, 16G ram, 120G SSD HD)
+* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD; however, for large clusters, it should be 8 vcore, 16G ram, 120G SSD)
   * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
   * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)
 * Before installation, you should decide on these configuration settings
