@@ -214,6 +214,20 @@ while($isChk) {
 	sleep($isChk);
 }
 
+# check iiidevops-api ready
+$cmd = "curl -s --location --request POST '$iiidevops_api/user/login'";
+#{ "message": {
+#        "username": "Missing required parameter in the JSON body or the post body or the query string" }}
+$isChk=1;
+while($isChk) {
+	print('.');
+	$isChk = 0;
+	$cmd_msg = `$cmd`;
+	$isChk = (index($cmd_msg, 'username')<0)?1:0;
+	sleep($isChk);
+}
+print("\n");
+
 # Add secrets for Rancher all projects
 system("$Bin/../devops-api/add_secrets.pl");
 
