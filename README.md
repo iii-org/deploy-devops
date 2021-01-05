@@ -223,3 +223,26 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
 >
 > Use the **$admin_init_login** and **$admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III-DevOps
+
+# Step 9. Scale-out K8s Node
+> * Execute the following command on VM1 to make VM3 join the K8s cluster.
+>
+>   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm2_ip]```
+>
+>   It should display as below.
+>   ```bash
+>   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.73
+>   :
+>   :
+>   :
+>   -----Validation results-----
+>   Docker          : OK!
+>   Kubectl         : OK!
+>   NFS Client      : OK!
+>   Harbor Cert     : OK!
+>   -----
+>   NAME           STATUS   ROLES                      AGE   VERSION
+>   iiidevops-72   Ready    controlplane,etcd,worker   23h   v1.18.12
+>   ```
+>   * After executing this command, it will take about 3 to 5 minutes for the node to join the cluster.
+
