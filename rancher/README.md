@@ -24,5 +24,5 @@
 # Add Registry Credentials for all namespace
 ![09_select_registry_cre](img/09_select_registry_cre.png)
 ![10_add_registry](img/10_add_registry.png)
-> Name: `harbor-63`
+> Name: `harbor-63` 會改用 `harbor-local` 
 ![11_add_harbor-63](img/11_add_harbor-63.png)
