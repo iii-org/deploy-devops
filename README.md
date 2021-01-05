@@ -218,6 +218,26 @@
 >
 > You should wait 3 to 5 minutes to complete the deployment and initial system setup. Then, you can access the URL as shown below.
 >
+> ```
+> :
+> :
+> .
+> 
+> Add Secrets Credentials
+> -----
+> nexus : Create Secrets /home/localadmin/deploy-devops/devops-api/secrets/nexus-secret.json..OK!
+> checkmarx : Create Secrets /home/localadmin/deploy-devops/devops-api/secrets/checkmarx-secret.json..OK!
+> webinspect : Create Secrets /home/localadmin/deploy-devops/devops-api/secrets/webinspect-secret.json..OK!
+> 
+> Add Registry Credentials
+> -----
+> harbor-local : Create Registry /home/localadmin/deploy-devops/devops-api/secrets/harbor-local-registry.json..OK!
+> 
+> The deployment of III-DevOps services has been completed. Please try to connect to the following URL.
+> III-DevOps URL - http://10.20.0.72:30775
+>
+> ```
+>
 > ## Go to Web UI to login 
 > * III-DevOps URL -  http://10.20.0.72:30775/ 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
