@@ -100,8 +100,8 @@ log_print("Successfully deployed Rancher!\n");
 
 log_print("\nThe deployment of NFS / Harbor / Gitlab / Rancher services has been completed, These services URL are: \n");
 log_print("Harbor - https://$harbor_ip:5443/\n");
-log_print("GitLab - http://$gitlab_ip/\n");
 log_print("Rancher - https://$rancher_ip:6443/\n");
+log_print("GitLab - http://$gitlab_ip/\n");
 log_print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
 
 exit;

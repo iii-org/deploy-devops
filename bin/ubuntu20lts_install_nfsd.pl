@@ -57,8 +57,8 @@ sudo mkdir -p $nfs_dir/deploy-config;
 sudo chmod 777 $nfs_dir/deploy-config;
 sudo mkdir -p $nfs_dir/api-logs;
 sudo chmod 777 $nfs_dir/api-logs;
-sudo mkdir -p $nfs_dir/sonarqube;
-sudo chmod 777 $nfs_dir/sonarqube;
+sudo mkdir -p $nfs_dir/sonarqube-postgresql;
+sudo chmod 777 $nfs_dir/sonarqube-postgresql;
 END
 log_print("Create iiidevops services folder for NFS service..\n");
 $cmd_msg = `$cmd`;
