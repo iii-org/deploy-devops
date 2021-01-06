@@ -1,0 +1,35 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: sonarqube-postgresql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube-postgresql
+  template:
+    metadata:
+      labels:
+        app: sonarqube-postgresql
+    spec:
+      containers:
+      - name: sonarqube-postgresql
+        image: postgres:10
+        env:
+        - name: POSTGRES_PASSWORD
+          value: qazwsxedc
+        - name: POSTGRES_DB
+          value: sonarqube
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: sonarqube-db-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: sonarqube-db-data
+        hostpath: 
+        nfs:
+          server: 140.92.4.4
+          path: /iiidevopsNFS/sonarqube-postgresql
+
