@@ -1,3 +1,4 @@
+# Secrets
 Initial secrets needed by https://github.com/iii-org/newman-runner, https://github.com/iii-org/checkmarx-runner, https://github.com/iii-org/webinspect-runner
 
 ## nexus
@@ -13,3 +14,6 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 
 ## webinspect
 - wi-base-url
+
+# Registry Credentials
+- harbor-local
