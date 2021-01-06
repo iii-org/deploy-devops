@@ -24,7 +24,7 @@ if ($isWorking) {
 }
 
 $cmd =
-"sudo docker run --env GITLAB_OMNIBUS_CONFIG=\"external_url 'http://$gitlab_ip';\"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $data_dir/gitlab/config:/etc/gitlab --volume $data_dir/gitlab/logs:/var/log/gitlab --volume $data_dir/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0";
+"sudo docker run --env GITLAB_OMNIBUS_CONFIG=\"external_url 'http://$gitlab_ip';gitlab_rails['initial_root_password'] = '$gitlab_root_passwd'\"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $data_dir/gitlab/config:/etc/gitlab --volume $data_dir/gitlab/logs:/var/log/gitlab --volume $data_dir/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0";
 log_print("-----\n$cmd\n\n");
 
 $cmd_msg = `$cmd`;
