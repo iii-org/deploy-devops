@@ -247,7 +247,7 @@
 # Step 9. Scale-out K8s Node
 > * Execute the following command on VM1 to make VM3 join the K8s cluster.
 >
->   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm2_ip]```
+>   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm3_ip]```
 >
 >   It should display as below.
 >   ```bash
