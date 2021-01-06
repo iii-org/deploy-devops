@@ -4,7 +4,7 @@
 # Usage: iiidevops_install.pl <local|user@remote_ip>
 #
 use FindBin qw($Bin);
-$|=-1;
+$|=-1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
 if (!defined($ARGV[0])) {
@@ -45,6 +45,17 @@ log_print("Getting iiidevops Deploy Package..\n");
 #$cmd_msg = `$cmd`;
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
+
+# Check iiidevops_install.pl version
+if ($prgname eq 'iiidevops_install.pl') {
+	($my_md5) = split(/ /, `md5sum $Bin/$prgname`);
+	($dl_md5) = split(/ /, `md5sum $Bin/deploy-devops/bin/$prgname`);
+	if ($my_md5 ne $dl_md5) {
+		log_print("Got the new version of iiidevops_install.pl, execute the downloaded version..\n"); 
+		exec("$Bin/deploy-devops/bin/$prgname local");
+		exit;
+	}
+}
 
 $cmd = <<END;
 sudo apt-get install unzip nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client-12 -y;
