@@ -17,7 +17,7 @@ spec:
         image: postgres:10
         env:
         - name: POSTGRES_PASSWORD
-          value: qazwsxedc
+          value: {{sonarqube_db_passwd}}
         - name: POSTGRES_DB
           value: sonarqube
         ports:
@@ -30,6 +30,6 @@ spec:
       - name: sonarqube-db-data
         hostpath: 
         nfs:
-          server: 140.92.4.4
-          path: /iiidevopsNFS/sonarqube-postgresql
+          server: {{nfs_ip}}
+          path: /{{nfs_dir}}/sonarqube-postgresql
 

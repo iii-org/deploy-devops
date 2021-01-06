@@ -16,17 +16,39 @@ log_print(`TZ='Asia/Taipei' date`);
 
 log_print("Install Sonarqube URL: http://$sonarqube_ip:31910\n");
 # Deploy Sonarqube on kubernetes cluster
-# Modify sonarqube/sonar-server-deployment.yaml.tmpl <- {{nfs_ip}}
-$yaml_path = "$Bin/../sonarqube/";
-$yaml_file = $yaml_path.'sonar-server-deployment.yaml';
+
+# Modify sonarqube/sonarqube-postgresql/sonarqube-postgresql.yml.tmpl
+$yaml_path = "$Bin/../sonarqube/sonarqube-postgresql";
+$yaml_file = $yaml_path.'/sonarqube-postgresql.yml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
 	exit;
 }
 $template = `cat $tmpl_file`;
+$template =~ s/{{sonarqube_db_passwd}}/$sonarqube_db_passwd/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
 $template =~ s/{{nfs_dir}}/$nfs_dir/g;
+#log_print("-----\n$template\n-----\n\n");
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
+$cmd = "kubectl apply -f $yaml_path";
+log_print("Deploy sonarqube-postgresql..\n");
+$cmd_msg = `$cmd`;
+log_print("-----\n$cmd_msg-----\n");
+
+
+# Modify sonarqube/sonarqube/sonar-server-deployment.yaml.tmpl
+$yaml_path = "$Bin/../sonarqube/sonarqube";
+$yaml_file = $yaml_path.'/sonar-server-deployment.yaml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	log_print("The template file [$tmpl_file] does not exist!\n");
+	exit;
+}
+$template = `cat $tmpl_file`;
+$template =~ s/{{sonarqube_db_passwd}}/$sonarqube_db_passwd/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
