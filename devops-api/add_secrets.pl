@@ -27,9 +27,9 @@ foreach $item (@{ $hash_secrets->{'data'} }) {
 
 # nexus
 $name = 'nexus';
-$key_value{'iiidevops_api'} = $iiidevops_api;
-$key_value{'admin_init_login'} = $admin_init_login;
-$key_value{'admin_init_password'} = $admin_init_password;
+$key_value{'api-origin'} = $iiidevops_api;
+$key_value{'username'} = $admin_init_login;
+$key_value{'password'} = $admin_init_password;
 if (index($secrets_name_list, $name)<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
@@ -40,10 +40,10 @@ else {
 
 # checkmarx
 $name = 'checkmarx';
-$key_value{'checkmarx_secret'} = $checkmarx_secret;
-$key_value{'checkmarx_origin'} = $checkmarx_origin;
-$key_value{'checkmarx_username'} = $checkmarx_username;
-$key_value{'checkmarx_password'} = $checkmarx_password;
+$key_value{'client-secret'} = $checkmarx_secret;
+$key_value{'cm-url'} = $checkmarx_origin;
+$key_value{'username'} = $checkmarx_username;
+$key_value{'password'} = $checkmarx_password;
 if (index($secrets_name_list, $name)<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
@@ -80,7 +80,7 @@ foreach $item (@{ $hash_secrets->{'data'} }) {
 # harbor-local
 $name = 'harbor-local';
 $key_value{'harbor_ip'} = $harbor_ip;
-$key_value{'harbor_admin_password'} = $harbor_admin_password;
+$key_value{'password'} = $harbor_admin_password;
 if (index($registry_name_list, $name)<0) {
 	$ret_msg = add_registry($name, %key_value);
 	print("$name : $ret_msg\n");
