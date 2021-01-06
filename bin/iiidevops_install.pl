@@ -47,7 +47,7 @@ system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo apt-get install unzip nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client-12 -y;
+sudo apt-get install unzip -y;
 cd ~; unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
 mv deploy-devops-$ins_repo deploy-devops;
@@ -69,10 +69,29 @@ if ($prgname eq 'iiidevops_install.pl' && -e "$Bin/deploy-devops/bin/$prgname") 
 	}
 }
 
+# check /etc/sysctl.conf vm.max_map_count=262144 for Sonarqube
+$cmd_msg = `cat /etc/sysctl.conf | grep vm.max_map_count`;
+if ($cmd_msg eq '') {
+	`echo '########## iiidevops for Sonarqube ##########' | sudo tee -a /etc/sysctl.conf`;
+	`echo 'vm.max_map_count=262144' | sudo tee -a /etc/sysctl.conf`;
+	`echo '##########' | sudo tee -a /etc/sysctl.conf`;
+	$cmd_msg = `cat /etc/sysctl.conf | grep vm.max_map_count`;
+	if (index($cmd_msg, 'vm.max_map_count=262144')<0) {
+		log_print("ERROR! Failed to set vm.max_map for Sonarqube, please set it manually!\n");
+	}
+	else {
+		log_print("Successfully set the system parameter vm.max_map for Sonarqube!\n");
+		$cmd_msg = `sudo sysctl -w vm.max_map_count=262144`;
+		log_print("Enable the system parameter vm.max_map. Result: ".$cmd_msg); 
+	}
+}
+else {
+	log_print("The system parameter vm.max_map has been set!\n");
+}
 
 $cmd = <<END;
 sudo apt-get update -y;
-sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y;
+sudo apt-get install nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client-12 apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y;
 END
 log_print("Install default packages..\n");
 #$cmd_msg = `$cmd`;
