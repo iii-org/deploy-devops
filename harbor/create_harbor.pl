@@ -90,7 +90,7 @@ else {
 install_harbor();
 
 # Check Harbor service is working
-$cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
+$cmd = "curl -s -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
 #{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
 $chk_key = 'UNAUTHORIZED';
 $isChk=1;
@@ -103,7 +103,7 @@ while($isChk && $count<$wait_sec) {
 	$count ++;
 	sleep($isChk);
 }
-log_print("-----\n$cmd_msg-----\n");
+log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy Harbor!\n");
 	log_print("-----\n$cmd_msg-----\n");
@@ -176,7 +176,7 @@ EOF
 	print FH $harbor_yml;
 	close(FH);
 
-	log_print("Provide the Certificates to Harbor and Docker\n-----\n$cmd\n\n");
+	log_print("Provide the Certificates to Harbor and Docker\n-----\n$cmd");
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg\n\n");
 
@@ -215,7 +215,7 @@ EOF
 	close(FH);
 
 	$cmd = "sudo systemctl enable docker-compose-app";
-	log_print("Set the Harbor service to start automatically after the system boot..\n-----\n$cmd\n\n");
+	log_print("Set the Harbor service to start automatically after the system boot..\n-----\n$cmd\n");
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg\n\n");
 
@@ -227,7 +227,7 @@ sub create_dockerhub_proxy {
 	$harbor_key = encode_base64("admin:$harbor_admin_password");
 	$harbor_key =~ s/\n|\r//;
 $cmd =<<END;
-curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
+curl -s -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
   "name": "dockerhub",
   "url": "https://hub.docker.com",
   "insecure": false,
@@ -255,7 +255,7 @@ END
 	}
 	
 $cmd =<<END;
-curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
+curl -s -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
   "project_name": "dockerhub",
   "registry_id": 1,
   "storage_limit": -1,
