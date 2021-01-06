@@ -15,5 +15,11 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 ## webinspect
 - wi-base-url
 
+## jwt-token
+- jwt-token
+
+## gitlab-token
+- git-token
+
 # Registry Credentials
 - harbor-local
