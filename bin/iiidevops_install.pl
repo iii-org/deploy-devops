@@ -47,7 +47,7 @@ system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 # Check iiidevops_install.pl version
-if ($prgname eq 'iiidevops_install.pl') {
+if ($prgname eq 'iiidevops_install.pl' && -e "$Bin/deploy-devops/bin/$prgname") {
 	($my_md5) = split(/ /, `md5sum $Bin/$prgname`);
 	($dl_md5) = split(/ /, `md5sum $Bin/deploy-devops/bin/$prgname`);
 	if ($my_md5 ne $dl_md5) {
