@@ -1,7 +1,7 @@
 # deploy-devops
 ## Environment  
 
-* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of the virtual machine is 4 vcore, 8G ram, 32G HD; however, for large clusters, it should be 8 vcore, 16G ram, 120G SSD)
+* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of a virtual machine is 4 vcore, 8G ram, 32G HD; however, for production environment, it should be 3 or more VMs with 8 vcore, 16G ram, 120G SSD)
   * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
   * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)
 * Before installation, you should decide on these configuration settings
@@ -53,13 +53,14 @@
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
-> * GitLab - http://10.20.0.71/ 
-> * Rancher - https://10.20.0.71:6443/
 > * Harbor - https://10.20.0.71:5443/
+> * Rancher - https://10.20.0.71:6443/
+> * GitLab - http://10.20.0.71/ 
 
 # Step 4. Setting Harbor server
+
 > * Harbor - https://10.20.0.71:5443/
-> * Use **admin** and the **$harbour_admin_password** entered in Step 2.(~/deploy-devops/env.pl) to login to Harbor
+> * **Log in with the account admin and password ($harbour_admin_password) you entered in step 2.(~/deploy-devops/env.pl)**
 > 
 > * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
@@ -68,47 +69,7 @@
 >   ```sudo ~/deploy-devops/harbor/create_harbor.pl create_dockerhub_proxy```
 >
 
-# Step 5. Set up GitLab from the web UI
-> * GitLab - http://10.20.0.71/ 
-> * **Use the $gitlab_root_passwd entered in Step 2.(~/deploy-devops/env.pl) as GitLab new password** 
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-gitlab-new-password.png?raw=true)  
->   * After setting a new password for GitLab, you should log in again with **root** and the **new password**
->
-> * Generate **root personal access tokens**  
->   * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
->
->   * Access Tokens / Name : root-pat / Scopes : Check all / Create personal access token  
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
->
->   * Keep Your New Personal Access Token 
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
->
-> * Modify the **$gitlab_private_token** value in env.pl
->
->   ```~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token [Personal Access Token]```
->
->   It should display as below.
->   ```bash
->   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token 535wZnCJDTL5y22xYYzv
->   A4. Set GitLab Token OK!
-> 
->   Q21. Do you want to generate env.pl based on the above information?(Y/n)
->   The original env.pl has been backed up as /home/localadmin/deploy-devops/bin/../env.pl.bak
->   -----
->   11c11
->   < $gitlab_private_token = '535wZnCJDTL5y22xYYzv'; # Get from GitLab Web
->   ---
->   > $gitlab_private_token = 'skip'; # Get from GitLab Web
->   -----
->   ```
->
-> * Enable Outbound requests from web hooks
->   * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
->
-
-# Step 6. Set up Rancher from the web UI
+# Step 5. Set up Rancher from the web UI
 > * Rancher - https://10.20.0.71:6443/
 > * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
@@ -164,7 +125,7 @@
 >
 > Use the following command to check if the config is working
 >
-> > <code> kubectl cluster-info </code>
+> > ```kubectl cluster-info ```
 >
 > It should display as below.
 >
@@ -176,15 +137,21 @@
 > To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 > ```
 
-## setting Gitlab and Rancher pipline hook  
-> ## Rancher  
-> Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
+## Set up Rancher pipeline and Gitlab hook
+> * Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
-> Choose Tools/Pipline, select Gitlab  
+> * Choose Tools/Pipline, select Gitlab  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
-> Get the "Redirect URI"  
+> Get the "Redirect URI" and then open GitLab web UI
 >
-> ## Gitlab  
+
+# Step 5. Set up GitLab from the web UI
+
+> * GitLab - http://10.20.0.71/ 
+> * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
+>
+
+## Set up Rancher pipeline and Gitlab hook(continue)
 > Use root account/ settings/ Applications
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
@@ -198,17 +165,56 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true)  
 > Done  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
+>
+> Switch back to GitLab web UI
+
+
+## Generate **root personal access tokens** 
+> * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
+>
+> * Access Tokens / Name : root-pat / Scopes : Check all / Create personal access token  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
+>
+> * Keep Your New Personal Access Token 
+>   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
+>
+> * Modify the **$gitlab_private_token** value in env.pl
+>
+>   ```~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token [Personal Access Token]```
+>
+>   It should display as below.
+>   ```bash
+>   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token 535wZnCJDTL5y22xYYzv
+>   A4. Set GitLab Token OK!
+> 
+>   Q21. Do you want to generate env.pl based on the above information?(Y/n)
+>   The original env.pl has been backed up as /home/localadmin/deploy-devops/bin/../env.pl.bak
+>   -----
+>   11c11
+>   < $gitlab_private_token = '535wZnCJDTL5y22xYYzv'; # Get from GitLab Web
+>   ---
+>   > $gitlab_private_token = 'skip'; # Get from GitLab Web
+>   -----
+>   ```
+>
+
+## Enable Outbound requests from web hooks
+> * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
+>
 
 # Step 7. Deploy Redmine on kubernetes cluster
-> <code> ~/deploy-devops/bin/iiidevops_install_apps.pl </code>
+>
+> ```~/deploy-devops/bin/iiidevops_install_apps.pl```
+>
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
 > * Redmine - http://10.20.0.72:32748/
-> * Sonarqube - http://10.20.0.72:31910/
 >
 
-> ## Redmine
+## Redmine
 > * Redmine URL - http://10.20.0.72:32748/
 > * **Log in with the account admin and password ($redmine_admin_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
 >
