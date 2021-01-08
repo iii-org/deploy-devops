@@ -34,73 +34,67 @@ print("Create namespace on kubernetes cluster OK!\n");
 
 
 # Check if Gitlab/Rancher/Harbor/Redmine services are running well
-# GitLab
-$isChk=1;
-$count=0;
-while($isChk && $count<10) {
-	print('.');
-	$cmd_msg = `nc -z -v $gitlab_ip 80 2>&1`;
-	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
-	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
-	$count ++;
-	sleep($isChk);
+# Check GitLab service is working
+$cmd = "nc -z -v $gitlab_ip 80";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
+if (index($cmd_msg, $chk_key)<0) {
+	print("GitLab is not working!\n");
+	print("-----\n$cmd_msg-----\n");
+	exit;	
 }
-print("-----Check GitLab-----\n$cmd_msg");
-if ($isChk) {
-	print("GitLab is not working well!\n");
-	exit;
+# Check token-key 
+#curl --silent --location --request GET 'http://10.50.1.53/api/v4/users' \
+#--header 'PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP'
+# OK -> ,"username":
+# Error -> {"message":"
+$cmd = "curl --silent --location --request GET 'http://$gitlab_ip/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+$chk_key = ',"username":';
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_key)<0) {
+	print("GitLab private-token is not working!\n");
+	print("-----\n$cmd_msg-----\n");
+	exit;	
 }
+print("GitLab is working well!\n");
 
-# Rancher
-$isChk=1;
-$count=0;
-while($isChk && $count<10) {
-	print('.');
-	$cmd_msg = `nc -z -v $rancher_ip 6443 2>&1`;
-	# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
-	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
-	$count ++;
-	sleep($isChk);
+# Check Rancher service is working
+$cmd = "nc -z -v $rancher_ip 6443";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
+if (index($cmd_msg, $chk_key)<0) {
+	print("Rancher is not working!\n");
+	print("-----\n$cmd_msg-----\n");
+	exit;	
 }
-print("-----Check Rancher-----\n$cmd_msg");
-if ($isChk) {
-	print("Rancher is not working well!\n");
-	exit;
-}
+print("Rancher is working well!\n");
 
-# Harbor
-$isChk=1;
-$count=0;
-while($isChk && $count<10) {
-	print('.');
-	$cmd_msg = `nc -z -v $harbor_ip 5443 2>&1`;
-	# Connection to 10.20.0.71 5443 port [tcp/*] succeeded!
-	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
-	$count ++;
-	sleep($isChk);
+# Check Harbor service is working
+$cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
+$chk_key = 'UNAUTHORIZED';
+$cmd_msg = `$cmd 2>&1`;
+#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+if (index($cmd_msg, $chk_key)<0) {
+	print("Harbor is not working!\n");
+	print("-----\n$cmd_msg-----\n");
+	exit;	
 }
-print("-----Check Harbor-----\n$cmd_msg");
-if ($isChk) {
-	print("Harbor is not working well!\n");
-	exit;
-}
+print("Harbor is working well!\n");
 
-# Redmine
-$isChk=1;
-$count=0;
-while($isChk && $count<10) {
-	print('.');
-	$cmd_msg = `nc -z -v $redmine_ip 32748 2>&1`;
-	# Connection to 10.20.0.72 32748 port [tcp/*] succeeded!
-	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
-	$count ++;
-	sleep($isChk);
+# Check Redmine service is working
+$cmd = "nc -z -v $redmine_ip 32748";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+# Connection to 10.20.0.72 32748 port [tcp/*] succeeded!
+if (index($cmd_msg, $chk_key)<0) {
+	print("Redmine is not working!\n");
+	print("-----\n$cmd_msg-----\n");
+	exit;	
 }
-print("-----Check Redmine-----\n$cmd_msg");
-if ($isChk) {
-	print("Redmine is not working well!\n");
-	exit;
-}
+print("Redmine is working well!\n");
+
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster
 $yaml_path = "$Bin/../devops-db/";
