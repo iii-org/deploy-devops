@@ -26,3 +26,32 @@
 ![10_add_registry](img/10_add_registry.png)
 > Name: `harbor-63` 會改用 `harbor-local` 
 ![11_add_harbor-63](img/11_add_harbor-63.png)
+
+# Pipeline 變數取代參考 
+參考來源: [rancher pipeline](https://rancher.com/docs/rancher/v2.x/en/pipelines/config/)
+| VARIABLE NAME  | DESCRIPTION  | 
+|---|---|
+| CICD_GIT_REPO_NAME  | Repository name (Github organization omitted).  |
+| CICD_GIT_URL  | URL of the Git repository.  |
+| CICD_GIT_COMMIT  | Git commit ID being executed.  |   
+| CICD_GIT_BRANCH  | Git branch of this event.  |
+| CICD_GIT_REF  | Git reference specification of this event.  |
+| CICD_GIT_TAG  | Git tag name, set on tag event.  |
+| CICD_EVENT  | Event that triggered the build (push, pull_request or tag).  |
+| CICD_PIPELINE_ID  | Rancher ID for the pipeline.  |
+| CICD_EXECUTION_SEQUENCE  | Build number of the pipeline.  |	
+| CICD_EXECUTION_ID  | Combination of {CICD_PIPELINE_ID}-{CICD_EXECUTION_SEQUENCE}.  |
+| CICD_REGISTRY  | Address for the Docker registry for the previous publish image step, available in the Kubernetes manifest file of a Deploy YAML step.  |
+| CICD_IMAGE  | Name of the image built from the previous publish image step, available in the Kubernetes manifest file of a Deploy YAML step. It does not contain the image tag.  |	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
