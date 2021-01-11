@@ -49,6 +49,9 @@ END
 # No longer needed key
 
 $p_config_tmpl_ans = $p_config.".ans";
+if (-e $p_config_tmpl_ans) {
+	require($p_config_tmpl_ans);
+}
 
 # 0. get host IP
 $host = hostname();
@@ -66,12 +69,18 @@ if (defined($ARGV[0])) {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	if (!defined($ARGV[1])) {
 		$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
-		$question = "Q1. Do you want to set VM1 IP [$vm1_ip] as the URL of the main services?(GitLab, Harbor...)? (Y/n)";
-		$Y_N = prompt_for_input($question);
-		while (lc($Y_N) eq 'n') {	
-			$question = "Q1. Please enter the IP or domain name of the main services?(GitLab, Harbor...):";
-			$vm1_ip = prompt_for_input($question, $vm1_ip);
-			$Y_N = ($vm1_ip eq '')?'n':'Y';
+		$question = "Q1. Please enter the VM1 IP or domain name of the main services?(GitLab, Harbor, NFS...):($vm1_ip)";
+		$isAsk = 1;
+		while($isAsk) {
+			$ans_ip = prompt_for_input($question);
+			$ans_ip = ($ans_ip eq '')?$vm1_ip:$ans_ip;
+			if ($ans_ip ne '' && index($ans_ip, '127.')!=0) {
+				$vm1_ip = $ans_ip;
+				$isAsk = 0;
+			}
+			else {
+				print("A1. This IP $ans_ip is not allowed, please re-enter!\n");
+			}		
 		}
 	}
 	else {
@@ -94,8 +103,18 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	if (!defined($ARGV[1])) {
 		$vm2_ip = (defined($vm2_ip) && $vm2_ip ne '{{vm2_ip}}' && $vm2_ip ne '')?$vm2_ip:$host_ip;
 		$question = "Q2. Please enter the VM2 IP or domain name of the application services?(Redmine, Sonarqube, iiidevops...):($vm2_ip)";
-		$ans_ip = prompt_for_input($question);
-		$vm2_ip = ($ans_ip ne '')?$ans_ip:$vm2_ip;
+		$isAsk = 1;
+		while($isAsk) {
+			$ans_ip = prompt_for_input($question);
+			$ans_ip = ($ans_ip eq '')?$vm2_ip:$ans_ip;
+			if ($ans_ip ne '' && index($ans_ip, '127.')!=0 && $ans_ip ne $vm1_ip) {
+				$vm2_ip = $ans_ip;
+				$isAsk = 0;
+			}
+			else {
+				print("A2. This IP $ans_ip is not allowed, please re-enter!\n");
+			}		
+		}
 	}
 	else {
 		$vm2_ip = $ARGV[1];
