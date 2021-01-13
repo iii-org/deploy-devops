@@ -5,11 +5,11 @@ metadata:
   labels: 
     app: devopsui
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: devopsui
   ports:
     - name: webport
       protocol: TCP
       port: 80
-      nodePort: 30775
+      #nodePort: 30775
