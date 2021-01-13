@@ -79,8 +79,8 @@ log_print("It takes 1 to 3 minutes to deploy Sonarqube service. Please wait.. \n
 
 # Check Sonarqube service is working
 $cmd = "curl -q -I http://$sonarqube_domain_name";
-# HTTP/1.1 200 OK
-$chk_key = '200 OK';
+# Content-Type: text/html;charset=utf-8
+$chk_key = 'Content-Type: text/html;charset=utf-8';
 $isChk=1;
 $count=0;
 $wait_sec=600;

@@ -43,9 +43,9 @@ system($cmd);
 # Check Sonarqube service is working
 $sonarqube_domain_name = ($sonarqube_domain_name eq '')?"sonarqube.iiidevops.$sonarqube_ip.xip.io":$sonarqube_domain_name;
 $cmd = "curl -q -I http://$sonarqube_domain_name";
-$chk_key = '200 OK';
+$chk_key = 'Content-Type: text/html;charset=utf-8';
 $cmd_msg = `$cmd 2>&1`;
-# HTTP/1.1 200 OK
+# Content-Type: text/html;charset=utf-8
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Failed to deploy Sonarqube!\n");
 	log_print("-----\n$cmd_msg-----\n");
