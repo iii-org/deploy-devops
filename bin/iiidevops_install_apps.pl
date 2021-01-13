@@ -22,10 +22,11 @@ log_print("Deploy Redmine..");
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 # Check Redmine service is working
-$cmd = "nc -z -v $redmine_ip 32748";
-$chk_key = 'succeeded!';
+$redmine_domain_name = ($redmine_domain_name eq '')?"redmine.iiidevops.$redmine_ip.xip.io":$redmine_domain_name;
+$cmd = "curl -q -I http://$redmine_domain_name";
+$chk_key = '200 OK';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.72 32748 port [tcp/*] succeeded!
+# HTTP/1.1 200 OK
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Failed to deploy Redmine!\n");
 	log_print("-----\n$cmd_msg-----\n");
@@ -40,10 +41,11 @@ log_print("Deploy Sonarqube..");
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 # Check Sonarqube service is working
-$cmd = "nc -z -v $sonarqube_ip 31910";
-$chk_key = 'succeeded!';
+$sonarqube_domain_name = ($sonarqube_domain_name eq '')?"sonarqube.iiidevops.$sonarqube_ip.xip.io":$sonarqube_domain_name;
+$cmd = "curl -q -I http://$sonarqube_domain_name";
+$chk_key = '200 OK';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.72 31910 port [tcp/*] succeeded!
+# HTTP/1.1 200 OK
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Failed to deploy Sonarqube!\n");
 	log_print("-----\n$cmd_msg-----\n");
