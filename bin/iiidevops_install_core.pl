@@ -84,10 +84,11 @@ if (index($cmd_msg, $chk_key)<0) {
 print("Harbor is working well!\n");
 
 # Check Redmine service is working
-$cmd = "nc -z -v $redmine_ip 32748";
-$chk_key = 'succeeded!';
+$redmine_domain_name = ($redmine_domain_name eq '')?"redmine.iiidevops.$redmine_ip.xip.io":$redmine_domain_name;
+$cmd = "curl -q -I http://$redmine_domain_name";
+$chk_key = '200 OK';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.72 32748 port [tcp/*] succeeded!
+# HTTP/1.1 200 OK
 if (index($cmd_msg, $chk_key)<0) {
 	print("Redmine is not working!\n");
 	print("-----\n$cmd_msg-----\n");
@@ -172,6 +173,8 @@ print("-----\n$cmd_msg\n-----\n\n");
 
 
 # Deploy DevOps UI (VueJS) on kubernetes cluster
+$iiidevops_domain_name = ($iiidevops_domain_name eq '')?"iiidevops.$iiidevops_ip.xip.io":$iiidevops_domain_name;
+
 $yaml_path = "$Bin/../devops-ui/";
 $yaml_file = $yaml_path.'devopsui-deployment.yaml';
 $tmpl_file = $yaml_file.'.tmpl';
@@ -180,6 +183,19 @@ if (!-e $tmpl_file) {
 	exit;
 }
 $template = `cat $tmpl_file`;
+#print("-----\n$template\n-----\n\n");
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
+$yaml_path = "$Bin/../devops-ui/";
+$yaml_file = $yaml_path.'devopsui-ingress.yaml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	print("The template file [$tmpl_file] does not exist!\n");
+	exit;
+}
+$template = `cat $tmpl_file`;
+$template =~ s/{{iiidevops_domain_name}}/$iiidevops_domain_name/g;
 #print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
@@ -225,4 +241,4 @@ print("\n");
 # Add secrets for Rancher all projects
 system("$Bin/../devops-api/add_secrets.pl");
 
-print("\nThe deployment of III-DevOps services has been completed. Please try to connect to the following URL.\nIII-DevOps URL - $iiidevops_url\n");
+print("\nThe deployment of III-DevOps services has been completed. Please try to connect to the following URL.\nIII-DevOps URL - http://$iiidevops_domain_name\n");

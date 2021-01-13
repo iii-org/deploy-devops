@@ -27,6 +27,11 @@ $ans_tmpl = <<END;
 # generate_env_answer
 \$vm1_ip = '{{vm1_ip}}';
 \$vm2_ip = '{{vm2_ip}}';
+\$gitlab_domain_name = '{{ask_gitlab_domain_name}}';
+\$harbor_domain_name = '{{ask_harbor_domain_name}}';
+\$redmine_domain_name = '{{ask_redmine_domain_name}}';
+\$sonarqube_domain_name = '{{ask_sonarqube_domain_name}}';
+\$iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
 \$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
 \$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
 \$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';

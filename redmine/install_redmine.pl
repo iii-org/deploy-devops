@@ -16,8 +16,11 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-log_print("Install Redmine URL: http://$redmine_ip:32748\n");
+$redmine_domain_name = ($redmine_domain_name eq '')?"redmine.iiidevops.$redmine_ip.xip.io":$redmine_domain_name;
+
+log_print("Install Redmine URL: http://$redmine_domain_name\n");
 # Deploy Redmine on kubernetes cluster
+
 # Modify redmine/redmine-postgresql/redmine-postgresql.yml.tmpl <- {{redmine_db_passwd}} {{nfs_ip}}
 $yaml_path = "$Bin/../redmine/redmine-postgresql/";
 $yaml_file = $yaml_path.'redmine-postgresql.yml';
@@ -53,6 +56,20 @@ $template =~ s/{{redmine_db_passwd}}/$redmine_db_passwd/g;
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
+# Modify redmine/redmine/redmine-ingress.yaml.tmpl <- {{redmine_domain_name}}
+$yaml_path = "$Bin/../redmine/redmine/";
+$yaml_file = $yaml_path.'redmine-ingress.yml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	log_print("The template file [$tmpl_file] does not exist!\n");
+	exit;
+}
+$template = `cat $tmpl_file`;
+$template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
+#log_print("-----\n$template\n-----\n\n");
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy redmine..\n");
 $cmd_msg = `$cmd`;
@@ -62,9 +79,9 @@ log_print("-----\n$cmd_msg-----\n");
 log_print("It takes 1 to 3 minutes to deploy Redmine service. Please wait.. \n");
 
 # Check Redmine service is working
-$cmd = "nc -z -v $redmine_ip 32748";
-# Connection to 10.20.0.72 32748 port [tcp/*] succeeded!
-$chk_key = 'succeeded!';
+$cmd = "curl -q -I http://$redmine_domain_name";
+# HTTP/1.1 200 OK
+$chk_key = '200 OK';
 $isChk=1;
 $count=0;
 $wait_sec=600;

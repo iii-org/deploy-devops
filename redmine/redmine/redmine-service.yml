@@ -5,11 +5,11 @@ metadata:
   labels: 
     app: redmine
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: redmine
   ports:
     - name: ui
       protocol: TCP
       port: 3000
-      nodePort: 32748
+      #nodePort: 32748

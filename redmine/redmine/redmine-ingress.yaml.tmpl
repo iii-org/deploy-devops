@@ -2,16 +2,16 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: devopsui-xip-ing
+  name: redmine-ing
   annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
   rules:
-  - host: "XXXXXXXXXXXXXXXXXXXXXX.任意Node的IP.xip.io"
+  - host: "{{redmine_domain_name}}"
     http:
       paths:
       - backend:
-          serviceName: devopsui-service
-          servicePort: 80
+          serviceName: redmine-service
+          servicePort: 3000
         path: "/"
         pathType: "ImplementationSpecific"

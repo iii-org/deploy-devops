@@ -14,7 +14,9 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-log_print("Install Sonarqube URL: http://$sonarqube_ip:31910\n");
+$sonarqube_domain_name = ($sonarqube_domain_name eq '')?"sonarqube.iiidevops.$sonarqube_ip.xip.io":$sonarqube_domain_name;
+
+log_print("Install Sonarqube URL: http://$sonarqube_domain_name\n");
 # Deploy Sonarqube on kubernetes cluster
 
 # Modify sonarqube/sonarqube-postgresql/sonarqube-postgresql.yml.tmpl
@@ -53,6 +55,20 @@ $template =~ s/{{sonarqube_db_passwd}}/$sonarqube_db_passwd/g;
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
+# Modify sonarqube/sonarqube/sonar-server-ingress.yaml.tmpl
+$yaml_path = "$Bin/../sonarqube/sonarqube";
+$yaml_file = $yaml_path.'/sonar-server-ingress.yaml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	log_print("The template file [$tmpl_file] does not exist!\n");
+	exit;
+}
+$template = `cat $tmpl_file`;
+$template =~ s/{{sonarqube_domain_name}}/$sonarqube_domain_name/g;
+#log_print("-----\n$template\n-----\n\n");
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy sonarqube..\n");
 $cmd_msg = `$cmd`;
@@ -62,9 +78,9 @@ log_print("-----\n$cmd_msg-----\n");
 log_print("It takes 1 to 3 minutes to deploy Sonarqube service. Please wait.. \n");
 
 # Check Sonarqube service is working
-$cmd = "nc -z -v $sonarqube_ip 31910";
-# Connection to 10.20.0.72 31910 port [tcp/*] succeeded!
-$chk_key = 'succeeded!';
+$cmd = "curl -q -I http://$sonarqube_domain_name";
+# HTTP/1.1 200 OK
+$chk_key = '200 OK';
 $isChk=1;
 $count=0;
 $wait_sec=600;
