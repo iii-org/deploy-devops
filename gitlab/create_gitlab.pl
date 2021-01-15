@@ -14,7 +14,8 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-log_print("Install GitLab URL: http://$gitlab_ip\n");
+$gitlab_domain_name = ($gitlab_domain_name eq '')?"gitlab.iiidevops.$gitlab_ip.xip.io":$gitlab_domain_name;
+log_print("Install GitLab URL: http://$gitlab_domain_name\n");
 # Check GitLab is working
 $cmd_msg = `nc -z -v $gitlab_ip 80 2>&1`;
 $isWorking = index($cmd_msg, 'succeeded!')<0?0:1;
@@ -24,16 +25,16 @@ if ($isWorking) {
 }
 
 $cmd =
-"sudo docker run --env GITLAB_OMNIBUS_CONFIG=\"external_url 'http://$gitlab_ip';gitlab_rails['initial_root_password'] = '$gitlab_root_passwd'\"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $data_dir/gitlab/config:/etc/gitlab --volume $data_dir/gitlab/logs:/var/log/gitlab --volume $data_dir/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0";
+"sudo docker run --env GITLAB_OMNIBUS_CONFIG=\"external_url 'http://$gitlab_domain_name';gitlab_rails['initial_root_password'] = '$gitlab_root_passwd'\"  --detach --publish 443:443 --publish 80:80 --publish 10022:22 --name gitlab --restart always --volume $data_dir/gitlab/config:/etc/gitlab --volume $data_dir/gitlab/logs:/var/log/gitlab --volume $data_dir/gitlab/data:/var/opt/gitlab gitlab/gitlab-ce:12.10.6-ce.0";
 log_print("-----\n$cmd\n\n");
 
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
 # Check GitLab service is working
-$cmd = "nc -z -v $gitlab_ip 80";
-# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
-$chk_key = 'succeeded!';
+$cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
+#HTTP/1.1 200 OK
+$chk_key = '200 OK';
 $isChk=1;
 $count=0;
 $wait_sec=600;

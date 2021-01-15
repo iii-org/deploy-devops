@@ -35,10 +35,11 @@ print("Create namespace on kubernetes cluster OK!\n");
 
 # Check if Gitlab/Rancher/Harbor/Redmine services are running well
 # Check GitLab service is working
-$cmd = "nc -z -v $gitlab_ip 80";
-$chk_key = 'succeeded!';
+$gitlab_domain_name = ($gitlab_domain_name eq '')?"gitlab.iiidevops.$gitlab_ip.xip.io":$gitlab_domain_name;
+$cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
+$chk_key = '200 OK';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
+#HTTP/1.1 200 OK
 if (index($cmd_msg, $chk_key)<0) {
 	print("GitLab is not working!\n");
 	print("-----\n$cmd_msg-----\n");
@@ -49,7 +50,7 @@ if (index($cmd_msg, $chk_key)<0) {
 #--header 'PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP'
 # OK -> ,"username":
 # Error -> {"message":"
-$cmd = "curl --silent --location --request GET 'http://$gitlab_ip/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+$cmd = "curl --silent --location --request GET 'http://$gitlab_domain_name/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = ',"username":';
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_key)<0) {
@@ -144,7 +145,7 @@ $template =~ s/{{jwt_secret_key}}/$jwt_secret_key/g;
 $template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
 $template =~ s/{{redmine_admin_passwd}}/$redmine_admin_passwd/g;
 $template =~ s/{{redmine_api_key}}/$redmine_api_key/g;
-$template =~ s/{{gitlab_url}}/$gitlab_ip/g;
+$template =~ s/{{gitlab_url}}/$gitlab_domain_name/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
 $template =~ s/{{rancher_ip}}/$rancher_ip/g;
