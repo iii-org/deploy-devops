@@ -17,7 +17,7 @@ spec:
         image: gitlab/gitlab-ce:12.10.6-ce.0
         env:
         - name: GITLAB_OMNIBUS_CONFIG
-          value: "external_url 'http://{{redmine_domain_name}};"
+          value: "external_url 'http://{{gitlab_domain_name}};"
         - name: gitlab_rails['initial_root_password']
           value: {{gitlab_root_passwd}}
         - name: gitlab_rails['gitlab_default_projects_features_builds']
