@@ -25,6 +25,8 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 
 $ans_tmpl = <<END;
 # generate_env_answer
+\$deploy_mode = '{{deploy_mode}}';
+\$iiidevops_ver = '{{iiidevops_ver}}';
 \$vm1_ip = '{{vm1_ip}}';
 \$vm2_ip = '{{vm2_ip}}';
 \$gitlab_domain_name = '{{ask_gitlab_domain_name}}';
@@ -525,6 +527,8 @@ if (lc($Y_N) ne 'n') {
 	}
 	
 	$env_template = `cat $p_config_tmpl`;
+	$env_template =~ s/{{deploy_mode}}/$deploy_mode/g;
+	$env_template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
 	$env_template =~ s/{{vm1_ip}}/$vm1_ip/g;
 	$env_template =~ s/{{vm2_ip}}/$vm2_ip/g;
 	$env_template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;
@@ -568,6 +572,8 @@ exit;
 sub write_ans {
 
 	$ans_file = $ans_tmpl;
+	$ans_file =~ s/{{deploy_mode}}/$deploy_mode/;
+	$ans_file =~ s/{{iiidevops_ver}}/$iiidevops_ver/;
 	$ans_file =~ s/{{vm1_ip}}/$vm1_ip/;
 	$ans_file =~ s/{{vm2_ip}}/$vm2_ip/;
 	$ans_file =~ s/{{ask_gitlab_domain_name}}/$gitlab_domain_name/g;
