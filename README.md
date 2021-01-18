@@ -5,20 +5,20 @@
   * VM1(iiidevops1, 10.20.0.71): Harbor 2.1 Server, Rancher Server, NFS Server  
   * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node), used to run GitLab ce-12.10.6 Server, Redmine 4.1.1, etc.
 * Before installation, you should decide on these configuration settings
-  1. IP of VM1 and VM2
-  2. Deploy mode:IP(2.1) or DNS(2.2)
-  2.1 External access IP of VM1 and VM2
-  2.2 Domain names of III DevOps, GitLab, Redmine, Harbor. (If you choose DNS deployment mode but do not provide a domain name, it will automatically use the xip.io service to become your domain name)
-  3. GitLab root password
-  4. Rancher admin password
-  5. Redmine admin password
-  6. Harbor admin passowrd
-  7. III-devops super user account ('admin' and 'root' are not allowed)
-  8. III-devops super user E-Mail
-  9. III-devops super user password
+  * IP of VM1 and VM2
+  * Deploy mode:IP or DNS
+    - IP : External access IP of VM1 and VM2
+    - DNS: Domain names of III DevOps, GitLab, Redmine, Harbor. (If you choose DNS deployment mode but do not provide a domain name, it will automatically use the xip.io service to become your domain name)
+  * GitLab root password
+  * Rancher admin password
+  * Redmine admin password
+  * Harbor admin passowrd
+  * III-devops super user account ('admin' and 'root' are not allowed)
+  * III-devops super user E-Mail
+  * III-devops super user password
 
 * During the installation process, you should be able to get the following setup information through GitLab Web UI
-  1. GitLab private token
+  * GitLab private token
 
 * You can scale out the Kubernetes nodes (VM3, VM4, VM5...) and scale up the VM1 according to actual performance requirements.
 
