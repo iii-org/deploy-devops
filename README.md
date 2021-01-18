@@ -1,23 +1,26 @@
 # deploy-devops
-## Environment  
+## Environment
 
 * 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of a virtual machine is 4 vcore, 8G ram, 32G HD; however, for production environment, it should be 3 or more VMs with 8 vcore, 16G ram, 120G SSD)
-  * VM1(iiidevops1, 10.20.0.71): GitLab ce-12.10.6 Server, Harbor 2.1 Server, Rancher Server, NFS Server  
-  * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node)
+  * VM1(iiidevops1, 10.20.0.71): Harbor 2.1 Server, Rancher Server, NFS Server  
+  * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node), used to run GitLab ce-12.10.6 Server, Redmine 4.1.1, etc.
 * Before installation, you should decide on these configuration settings
-  1. External access IP or domain name of VM1 and VM2
-  2. GitLab root password
-  3. Rancher admin password
-  4. Redmine admin password
-  5. Harbor admin passowrd
-  6. III-devops super user account ('admin' and 'root' are not allowed)
-  7. III-devops super user E-Mail
-  8. III-devops super user password
+  1. IP of VM1 and VM2
+  2. Deploy mode:IP(2.1) or DNS(2.2)
+  2.1 External access IP of VM1 and VM2
+  2.2 Domain names of III DevOps, GitLab, Redmine, Harbor. (If you choose DNS deployment mode but do not provide a domain name, it will automatically use the xip.io service to become your domain name)
+  3. GitLab root password
+  4. Rancher admin password
+  5. Redmine admin password
+  6. Harbor admin passowrd
+  7. III-devops super user account ('admin' and 'root' are not allowed)
+  8. III-devops super user E-Mail
+  9. III-devops super user password
 
 * During the installation process, you should be able to get the following setup information through GitLab Web UI
   1. GitLab private token
-  
-* You can scale out the Kubernetes nodes (VM3, VM4, VM5...) or scale up the VM1 according to actual performance requirements.
+
+* You can scale out the Kubernetes nodes (VM3, VM4, VM5...) and scale up the VM1 according to actual performance requirements.
 
 
 # Step 1. Download deploy-devops and Install docker (VM1)
@@ -47,19 +50,18 @@
 >
 >   ``` vi ~/deploy-devops/env.pl```
 
-# Step 3. Deploy Gitlab / Harbor / Rancher / NFS (VM1)
+# Step 3. Deploy Harbor / Rancher / NFS (VM1)
 
 > ``` sudo ~/deploy-devops/bin/iiidevops_install_mainapps.pl```
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
-> * Harbor - https://10.20.0.71:5443/
+> * Harbor - https://10.20.0.71/ or https://harbor.iiidevops.10.20.0.71.xip.io/
 > * Rancher - https://10.20.0.71:6443/
-> * GitLab - http://10.20.0.71/ 
 
 # Step 4. Setting Harbor server
 
-> * Harbor - https://10.20.0.71:5443/
+> * Harbor - https://10.20.0.71/ or https://harbor.iiidevops.10.20.0.71.xip.io/
 > * **Log in with the account admin and password ($harbour_admin_password) you entered in step 2.(~/deploy-devops/env.pl)**
 > 
 > * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
@@ -70,13 +72,15 @@
 >
 
 # Step 5. Set up Rancher from the web UI
+
 > * Rancher - https://10.20.0.71:6443/
 > * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
 > * set **Rancher Server URL**  
 
-## Create a Kubernetes by rancher
+# Step 6. Create a Kubernetes by Rancher
+
 > * add cluster/ From existing nodes(Custom)  
 >   * Cluster name:  **iiidevops-k8s**
 >   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.12-rancher1-1 **
@@ -137,6 +141,23 @@
 > To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 > ```
 
+# Step 7. Deploy GitLab, Redmine, Sonarqube on kubernetes cluster
+
+> ```~/deploy-devops/bin/iiidevops_install_apps.pl```
+>
+>
+> After the deployment is complete, you should be able to see the URL information of these services as shown below.
+>
+> * GitLab - http://10.20.0.72:32080/ or http://gitlab.iiidevops.10.20.0.72.xip.io/ 
+> * Redmine - http://10.20.0.72:32748/ or http://redmine.iiidevops.10.20.0.72.xip.io/
+> * Sonarqube - http://10.20.0.72:31910/ or http://sonarqube.iiidevops.10.20.0.72.xip.io/
+
+# Step 8. Set up GitLab from the web UI
+
+> * GitLab - http://10.20.0.72:32080/ or http://gitlab.iiidevops.10.20.0.72.xip.io/ 
+> * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
+>
+
 ## Set up Rancher pipeline and Gitlab hook
 > * Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
@@ -145,13 +166,6 @@
 > Get the "Redirect URI" and then open GitLab web UI
 >
 
-# Step 5. Set up GitLab from the web UI
-
-> * GitLab - http://10.20.0.71/ 
-> * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
->
-
-## Set up Rancher pipeline and Gitlab hook(continue)
 > Use root account/ settings/ Applications
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
@@ -204,23 +218,9 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
 
-# Step 7. Deploy Redmine on kubernetes cluster
->
-> ```~/deploy-devops/bin/iiidevops_install_apps.pl```
->
->
-> After the deployment is complete, you should be able to see the URL information of these services as shown below.
->
-> * Redmine - http://10.20.0.72:32748/
->
+# Step 9. Deploy III-DevOps
 
-## Redmine
-> * Redmine URL - http://10.20.0.72:32748/
-> * **Log in with the account admin and password ($redmine_admin_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
->
-
-# Step 8. Deploy III-DevOps
-> <code> ~/deploy-devops/bin/iiidevops_install_core.pl </code>
+> ```~/deploy-devops/bin/iiidevops_install_core.pl```
 >
 > You should wait 3 to 5 minutes to complete the deployment and initial system setup. Then, you can access the URL as shown below.
 >
@@ -240,17 +240,18 @@
 > harbor-local : Create Registry /home/localadmin/deploy-devops/devops-api/secrets/harbor-local-registry.json..OK!
 > 
 > The deployment of III-DevOps services has been completed. Please try to connect to the following URL.
-> III-DevOps URL - http://10.20.0.72:30775
+> III-DevOps URL - http://10.20.0.72:30775 or http://iiidevops.10.20.0.72.xip.io/
 >
 > ```
->
-> ## Go to Web UI to login 
-> * III-DevOps URL -  http://10.20.0.72:30775/ 
+
+## Go to Web UI to login 
+> * III-DevOps URL -  http://10.20.0.72:30775/ or http://iiidevops.10.20.0.72.xip.io/ 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
 >
 > Use the **$admin_init_login** and **$admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III-DevOps
 
-# Step 9. Scale-out K8s Node
+# Step 10. Scale-out K8s Node
+
 > * Execute the following command on VM1 to make VM3 join the K8s cluster.
 >
 >   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm3_ip]```
