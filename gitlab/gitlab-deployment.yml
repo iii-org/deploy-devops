@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ce:12.10.6-ce.0
+        env:
+        - name: GITLAB_OMNIBUS_CONFIG
+          value: "external_url 'http://{{redmine_domain_name}};"
+        - name: gitlab_rails['initial_root_password']
+          value: {{gitlab_root_passwd}}
+        - name: gitlab_rails['gitlab_default_projects_features_builds']
+          value: 'false'
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        volumeMounts:
+        - name: gitlab-log-storage
+          value: /var/log/gitlab
+        - name: gitlab-opt-storage
+          value: /var/opt/gitlab
+        - name: gitlab-etc-storage
+          value: /etc/gitlab
+      volumes:
+      - name: gitlab-log-storage
+        nfs:
+        server: {{nfs_ip}}
+        path: /{{nfs_dir}}/gitlab/log
+      - name: gitlab-opt-storage
+        nfs:
+        server: {{nfs_ip}}
+        path: /{{nfs_dir}}/gitlab/opt
+      - name: gitlab-etc-storage
+        nfs:
+        server: {{nfs_ip}}
+        path: /{{nfs_dir}}/gitlab/etc
