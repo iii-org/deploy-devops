@@ -56,12 +56,12 @@
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
-> * Harbor - https://10.20.0.71/ or https://harbor.iiidevops.10.20.0.71.xip.io/
+> * Harbor - https://10.20.0.71/
 > * Rancher - https://10.20.0.71:6443/
 
 # Step 4. Setting Harbor server
 
-> * Harbor - https://10.20.0.71/ or https://harbor.iiidevops.10.20.0.71.xip.io/
+> * Harbor - https://10.20.0.71/
 > * **Log in with the account admin and password ($harbour_admin_password) you entered in step 2.(~/deploy-devops/env.pl)**
 > 
 > * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
