@@ -79,9 +79,8 @@
 >   
 > * set **Rancher Server URL**  
 
-# Step 6. Create a Kubernetes by Rancher
-
-> * add cluster/ From existing nodes(Custom)  
+## Create a Kubernetes by Rancher
+> * Add Cluster/ From existing nodes(Custom)  
 >   * Cluster name:  **iiidevops-k8s**
 >   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.12-rancher1-1 **
 >   * Network provider: **Calico**  
@@ -119,7 +118,7 @@
 > * Rancher Web UI will automatically refresh to use the new SSL certificate. You need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
 >
 
-## Get Kubeconfig File
+## Get iiidevops-k8s Kubeconfig File
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig file to **~/.kube/config** and **/iiidevopsNFS/kube-config/config** on VM1, and also keep it.  
 > ```bash
@@ -141,7 +140,7 @@
 > To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 > ```
 
-# Step 7. Deploy GitLab, Redmine, Sonarqube on kubernetes cluster
+# Step 6. Deploy GitLab, Redmine, Sonarqube on kubernetes cluster
 
 > ```~/deploy-devops/bin/iiidevops_install_cpnt.pl```
 >
@@ -152,7 +151,7 @@
 > * Redmine - http://10.20.0.72:32748/ or http://redmine.iiidevops.10.20.0.72.xip.io/
 > * Sonarqube - http://10.20.0.72:31910/ or http://sonarqube.iiidevops.10.20.0.72.xip.io/
 
-# Step 8. Set up GitLab from the web UI
+# Step 7. Set up GitLab from the web UI
 
 > * GitLab - http://10.20.0.72:32080/ or http://gitlab.iiidevops.10.20.0.72.xip.io/ 
 > * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
@@ -218,7 +217,7 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
 
-# Step 9. Deploy III-DevOps
+# Step 8. Deploy III-DevOps
 
 > ```~/deploy-devops/bin/iiidevops_install_core.pl```
 >
@@ -250,7 +249,7 @@
 >
 > Use the **$admin_init_login** and **$admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III-DevOps
 
-# Step 10. Scale-out K8s Node
+# Step 9. Scale-out K8s Node
 
 > * Execute the following command on VM1 to make VM3 join the K8s cluster.
 >

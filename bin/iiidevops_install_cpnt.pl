@@ -16,16 +16,17 @@ log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
 
 # GitLab
-$cmd = "sudo $home/deploy-devops/gitlab/create_gitlab.pl";
+$cmd = "sudo $home/deploy-devops/gitlab/install_gitlab.pl";
 log_print("\nDeploy Gitlab..");
 #$cmd_msg = `$cmd`;
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 # Check GitLab service is working
-$cmd = "nc -z -v $gitlab_ip 80";
-$chk_key = 'succeeded!';
+$gitlab_domain_name = ($gitlab_domain_name eq '')?"gitlab.iiidevops.$redmine_ip.xip.io":$gitlab_domain_name;
+$cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
+$chk_key = '200 OK';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
+# HTTP/1.1 200 OK
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Failed to deploy GitLab!\n");
 	log_print("-----\n$cmd_msg-----\n");
