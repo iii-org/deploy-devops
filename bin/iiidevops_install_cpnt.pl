@@ -16,7 +16,7 @@ log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
 
 # GitLab
-$cmd = "sudo $home/deploy-devops/gitlab/install_gitlab.pl";
+$cmd = "$home/deploy-devops/gitlab/install_gitlab.pl";
 log_print("\nDeploy Gitlab..");
 #$cmd_msg = `$cmd`;
 system($cmd);

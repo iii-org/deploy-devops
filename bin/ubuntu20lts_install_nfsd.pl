@@ -47,6 +47,10 @@ log_print("-----\n$cmd_msg\n-----\n");
 
 # Create folder for other services  
 $cmd =<<END;
+sudo mkdir -p $nfs_dir/gitlab/config;
+sudo mkdir -p $nfs_dir/gitlab/data;
+sudo mkdir -p $nfs_dir/gitlab/logs;
+sudo chmod -R 777 $nfs_dir/gitlab;
 sudo mkdir -p $nfs_dir/redmine-postgresql;
 sudo chmod 777 $nfs_dir/redmine-postgresql;
 sudo mkdir -p $nfs_dir/devopsdb;
