@@ -67,10 +67,10 @@ log_print("\nInstall Rancher..");
 #$cmd_msg = `$cmd`;
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
-$cmd = "nc -z -v $rancher_ip 6443";
+$cmd = "nc -z -v $rancher_ip 3443";
 $chk_key = 'succeeded!';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.71 6443 port [tcp/*] succeeded!
+# Connection to 10.20.0.71 3443 port [tcp/*] succeeded!
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Failed to deploy Rancher!\n");
 	log_print("-----\n$cmd_msg-----\n");
@@ -81,7 +81,7 @@ log_print("Successfully deployed Rancher!\n");
 
 log_print("\nThe deployment of NFS / Harbor / Rancher services has been completed, These services URL are: \n");
 log_print("Harbor - https://$harbor_ip/\n");
-log_print("Rancher - https://$rancher_ip:6443/\n");
+log_print("Rancher - https://$rancher_ip:3443/\n");
 log_print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
 
 exit;

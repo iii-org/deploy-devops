@@ -57,7 +57,7 @@
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
 > * Harbor - https://10.20.0.71/
-> * Rancher - https://10.20.0.71:6443/
+> * Rancher - https://10.20.0.71:3443/
 
 # Step 4. Setting Harbor server
 
@@ -73,7 +73,7 @@
 
 # Step 5. Set up Rancher from the web UI
 
-> * Rancher - https://10.20.0.71:6443/
+> * Rancher - https://10.20.0.71:3443/
 > * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
 >   
@@ -111,7 +111,7 @@
 >   NFS Client      : OK!
 >   Harbor Cert     : OK!
 >
->   Please goto Rancher Web - https://10.20.0.71:6443 to get the status of added node of k8s cluster!
+>   Please goto Rancher Web - https://10.20.0.71:3443 to get the status of added node of k8s cluster!
 >   ```
 >
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster.  
@@ -134,8 +134,8 @@
 >
 > ```bash
 > localadmin@iiidevops-71:~$ kubectl cluster-info
-> Kubernetes master is running at https://10.20.0.71:6443/k8s/clusters/c-fg42q
-> CoreDNS is running at https://10.20.0.71:6443/k8s/clusters/c-fg42q/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+> Kubernetes master is running at https://10.20.0.71:3443/k8s/clusters/c-fg42q
+> CoreDNS is running at https://10.20.0.71:3443/k8s/clusters/c-fg42q/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 > 
 > To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 > ```
