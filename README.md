@@ -52,7 +52,7 @@
 
 # Step 3. Deploy Harbor / Rancher / NFS (VM1)
 
-> ``` sudo ~/deploy-devops/bin/iiidevops_install_mainapps.pl```
+> ``` sudo ~/deploy-devops/bin/iiidevops_install_base.pl```
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
@@ -143,7 +143,7 @@
 
 # Step 7. Deploy GitLab, Redmine, Sonarqube on kubernetes cluster
 
-> ```~/deploy-devops/bin/iiidevops_install_apps.pl```
+> ```~/deploy-devops/bin/iiidevops_install_cpnt.pl```
 >
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
