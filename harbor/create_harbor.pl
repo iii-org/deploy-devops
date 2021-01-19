@@ -133,7 +133,7 @@ hostname: $harbor_ip
 http:
   port: 5080
 https:
-  port: 443
+  port: 5443
   certificate: $home_dir/certs/$harbor_ip.crt
   private_key: $home_dir/certs/$harbor_ip.key
 harbor_admin_password: $harbor_admin_password
