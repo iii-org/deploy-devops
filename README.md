@@ -1,7 +1,7 @@
 # deploy-devops
 ## Environment
 
-* 2 Ubuntu20.04 LTS VM  (The minimum resource configuration of a virtual machine is 4 vcore, 8G ram, 32G HD; however, for production environment, it should be 3 or more VMs with 8 vcore, 16G ram, 120G SSD)
+* 1 Ubuntu20.04 LTS VM  (The minimum resource configuration of a virtual machine is 4 vcore, 8G ram, 32G HD; however, for production environment, it should be 3 or more VMs with 8 vcore, 16G ram, 120G SSD)
   * VM1(iiidevops1, 10.20.0.71): Harbor 2.1 Server, Rancher Server, NFS Server  
   * VM2(iiidevops2, 10.20.0.72): Kubernetes node(control plane + etcd + worker node), used to run GitLab ce-12.10.6 Server, Redmine 4.1.1, etc.
 * Before installation, you should decide on these configuration settings
@@ -56,7 +56,7 @@
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
-> * Harbor - https://10.20.0.71/
+> * Harbor - https://10.20.0.71:5443/
 > * Rancher - https://10.20.0.71:3443/
 
 # Step 4. Setting Harbor server
@@ -82,7 +82,7 @@
 ## Create a Kubernetes by Rancher
 > * Add Cluster/ From existing nodes(Custom)  
 >   * Cluster name:  **iiidevops-k8s**
->   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.12-rancher1-1 **
+>   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.12-rancher1-1**
 >   * Network provider: **Calico**  
 >   * CNI Plugin MTU Override: **1440**  
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
@@ -95,27 +95,26 @@
 >
 >   ```vi /iiidevopsNFS/deploy-config/add_k8s.sh```
 >
-> * Execute the following command on VM1 to make VM2 join the K8S cluster.
+> * Execute the following command to build the K8s cluster.
 >
->   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm2_ip]```
+>   ```sh /iiidevopsNFS/deploy-config/add_k8s.sh```
 >
 >   It should display as below.
 >   ```bash
->   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.72
+>   localadmin@iiidevops-71:~$ sh /iiidevopsNFS/deploy-config/add_k8s.sh
+>   Unable to find image 'rancher/rancher-agent:v2.4.5' locally
+>   v2.4.5: Pulling from rancher/rancher-agent
+>   d7c3167c320d: Already exists
 >   :
 >   :
 >   :
->   -----Validation results-----
->   Docker          : OK!
->   Kubectl         : OK!
->   NFS Client      : OK!
->   Harbor Cert     : OK!
->
->   Please goto Rancher Web - https://10.20.0.71:3443 to get the status of added node of k8s cluster!
+>   Digest: sha256:f263b6df0dccfafe5249618498287cae19673999face1a1555ac58f665974418
+>   Status: Downloaded newer image for rancher/rancher-agent:v2.4.5
+>   73f824ccd94f5e7b871bcd13f1a0023c6f63af0036cb9a73927f61461a75b3ae
 >   ```
 >
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster.  
-> * Rancher Web UI will automatically refresh to use the new SSL certificate. You need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
+> * Rancher Web UI will automatically refresh to use the new SSL certificate. You could need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
 >
 
 ## Get iiidevops-k8s Kubeconfig File
@@ -157,31 +156,6 @@
 > * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
 >
 
-## Set up Rancher pipeline and Gitlab hook
-> * Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
-> * Choose Tools/Pipline, select Gitlab  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
-> Get the "Redirect URI" and then open GitLab web UI
->
-
-> Use root account/ settings/ Applications
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
-> Setting Applications  
-> insert Name : iiidevops-k8s, Redirect URI: [from Rancher] and chose all optional, and save application.
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
-> Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url.  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true)  
-> Authorize  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true)  
-> Done  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
->
-> Switch back to GitLab web UI
-
-
 ## Generate **root personal access tokens** 
 > * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
@@ -211,6 +185,31 @@
 >   -----
 >   ```
 >
+
+## Set up Rancher pipeline and Gitlab hook
+> * Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
+> * Choose Tools/Pipline, select Gitlab  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
+> Get the "Redirect URI" and then open GitLab web UI
+>
+
+> Use root account/ settings/ Applications
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
+> Setting Applications  
+> insert Name : iiidevops-k8s, Redirect URI: [from Rancher] and chose all optional, and save application.
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
+> Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url. Exp. 10.20.0.71 or gitlab.iiidevops.10.20.0.71.xip.io  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true)  
+> Authorize  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true)  
+> Done  
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
+>
+> Switch back to GitLab web UI
+
 
 ## Enable Outbound requests from web hooks
 > * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes

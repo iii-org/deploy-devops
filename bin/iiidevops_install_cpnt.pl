@@ -74,9 +74,9 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("Sonarqube ..OK!\n\n");
 
 log_print("The deployment of GitLab, Redmine & other services has been completed, These services URL are: \n");
-log_print("GitLab - http://$gitlab_ip/\n");
-log_print("Redmine - http://$redmine_ip:32748/\n");
-log_print("Sonarqube - http://$sonarqube_ip:31910/\n");
+log_print("GitLab - http://$gitlab_domain_name/\n");
+log_print("Redmine - http://$redmine_domain_name/\n");
+log_print("Sonarqube - http://$sonarqube_domain_name/\n");
 log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 7. to continue.\n\n");
 
 exit;
