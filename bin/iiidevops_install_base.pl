@@ -43,32 +43,13 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("NFS configuration OK!\n");
 
 
-# GitLab
-$cmd = "sudo $home/deploy-devops/gitlab/create_gitlab.pl";
-log_print("\nDeploy Gitlab..");
-#$cmd_msg = `$cmd`;
-system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
-# Check GitLab service is working
-$cmd = "nc -z -v $gitlab_ip 80";
-$chk_key = 'succeeded!';
-$cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
-if (index($cmd_msg, $chk_key)<0) {
-	log_print("Failed to deploy GitLab!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
-}
-log_print("Successfully deployed GitLab!\n");
-
-
 # Harbor
 $cmd = "sudo $home/deploy-devops/harbor/create_harbor.pl";
 log_print("\nDeploy and Setting Harbor server..");
 #$cmd_msg = `$cmd`;
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
-$cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
+$cmd = "curl -k --location --request POST 'https://$harbor_ip/api/v2.0/registries'";
 $chk_key = 'UNAUTHORIZED';
 $cmd_msg = `$cmd 2>&1`;
 #{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
@@ -98,10 +79,9 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("Successfully deployed Rancher!\n");
 
 
-log_print("\nThe deployment of NFS / Harbor / Gitlab / Rancher services has been completed, These services URL are: \n");
-log_print("Harbor - https://$harbor_ip:5443/\n");
+log_print("\nThe deployment of NFS / Harbor / Rancher services has been completed, These services URL are: \n");
+log_print("Harbor - https://$harbor_ip/\n");
 log_print("Rancher - https://$rancher_ip:6443/\n");
-log_print("GitLab - http://$gitlab_ip/\n");
 log_print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
 
 exit;

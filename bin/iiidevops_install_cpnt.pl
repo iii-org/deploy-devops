@@ -15,6 +15,25 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
 
+# GitLab
+$cmd = "sudo $home/deploy-devops/gitlab/create_gitlab.pl";
+log_print("\nDeploy Gitlab..");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
+# Check GitLab service is working
+$cmd = "nc -z -v $gitlab_ip 80";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+# Connection to 10.20.0.71 80 port [tcp/*] succeeded!
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy GitLab!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+log_print("Successfully deployed GitLab!\n");
+
+
 # Redmine
 $cmd = "$home/deploy-devops/redmine/install_redmine.pl";
 log_print("Deploy Redmine..");
@@ -53,7 +72,8 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 log_print("Sonarqube ..OK!\n\n");
 
-log_print("The deployment of Redmine & other services has been completed, These services URL are: \n");
+log_print("The deployment of GitLab, Redmine & other services has been completed, These services URL are: \n");
+log_print("GitLab - http://$gitlab_ip/\n");
 log_print("Redmine - http://$redmine_ip:32748/\n");
 log_print("Sonarqube - http://$sonarqube_ip:31910/\n");
 log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 7. to continue.\n\n");
