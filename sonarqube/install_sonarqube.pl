@@ -98,6 +98,13 @@ if ($isChk) {
 	exit;
 }
 log_print("Successfully deployed Sonarqube!\n");
+
+# curl --silent --location --request POST 'http://10.50.1.56:31910/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
+# response
+#{"login":"admin","name":"API_SERVER","token":"d7a86c2fbcd2a9f565ad269df206fb22021ace98","createdAt":"2021-01-20T02:56:04+0000"}
+# get token
+
+
 exit;
 
 
