@@ -46,7 +46,7 @@
 >
 >   ``` vi ~/deploy-devops/env.pl```
 
-# Step 3. Deploy Harbor / Rancher / NFS (VM1)
+# Step 3. Deploy Harbor / Rancher / NFS 
 
 > ``` sudo ~/deploy-devops/bin/iiidevops_install_base.pl```
 >
