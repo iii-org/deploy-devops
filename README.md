@@ -1,7 +1,7 @@
 # deploy-devops
 ## Installation environment and requriments
 
-* 1 Ubuntu20.04 LTS VM (The minimum resource configuration of a virtual machine is 4 vcore, 8G ram, 32G HD; however, for production environment, it should be 3 or more VMs with 8 vcore, 16G ram, 200G SSD)
+* 1 Ubuntu20.04 LTS VM (The minimum resource configuration of a virtual machine is 4 vCore, 8G RAM, 60G HD; however, for production environment, it should be 3 or more VMs with 8 vCore, 16G RAM, 200G SSD)
 * Before installation, you should decide on these configuration settings
   * IP of VM
   * Deploy mode:DNS or IP or nip.io or xip.io (nip.io and xip.io are only for test environment)
@@ -9,13 +9,14 @@
 	- IP : External access IP of VM
   * GitLab root password
   * Harbor, Rancher, Redmine, Sonarqube admin password
-  * III DevOps super user account ('admin' and 'root' are not allowed)
-  * III DevOps super user E-Mail
-  * III DevOps super user password
+  * III-devops first user (super user) 
+    - account ('admin' and 'root' are not allowed)
+    - E-Mail
+    - password
 
 * You can scale out the Kubernetes nodes (VM2, VM3, VM4, VM5...) and scale up the VM1 according to actual performance requirements.
 
-* You should add firewall policy allow rules - From src(User) To dest(VM) TCP port 80/443/3443/5544/30000~32767
+* You should add firewall policy allow rules - From src(User) To dest(VM) TCP port 80/443/3443/5443/30000~32767
 
 
 # Step 1. Download deploy-devops and Install docker
