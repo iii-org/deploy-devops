@@ -28,7 +28,6 @@ $ans_tmpl = <<END;
 \$deploy_mode = '{{deploy_mode}}';
 \$iiidevops_ver = '{{iiidevops_ver}}';
 \$vm1_ip = '{{vm1_ip}}';
-\$vm2_ip = '{{vm2_ip}}';
 \$gitlab_domain_name = '{{ask_gitlab_domain_name}}';
 \$harbor_domain_name = '{{ask_harbor_domain_name}}';
 \$redmine_domain_name = '{{ask_redmine_domain_name}}';
@@ -76,7 +75,7 @@ if (defined($ARGV[0])) {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	if (!defined($ARGV[1])) {
 		$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
-		$question = "Q1. Please enter the VM1 IP or domain name of the main services?(GitLab, Harbor, NFS...):($vm1_ip)";
+		$question = "Q1. Please enter the VM IP?($vm1_ip)";
 		$isAsk = 1;
 		while($isAsk) {
 			$ans_ip = prompt_for_input($question);
@@ -87,52 +86,19 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 			}
 			else {
 				print("A1. This IP $ans_ip is not allowed, please re-enter!\n");
-			}		
+			}
 		}
 	}
 	else {
 		$vm1_ip = $ARGV[1];
 	}
-	$answer = "A1. Set [$vm1_ip] for the main services";
+	$answer = "A1. Set [$vm1_ip] for all services";
 	print ("$answer\n\n");
 	if ($vm1_ip ne '') {
 		if (-e $p_config_tmpl_ans) {
 			$tmp=$vm1_ip;
 			require($p_config_tmpl_ans);
 			$vm1_ip=$tmp;
-		}
-		write_ans();
-	}
-}
-
-# 2. Set $vm2_ip
-if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
-	if (!defined($ARGV[1])) {
-		$vm2_ip = (defined($vm2_ip) && $vm2_ip ne '{{vm2_ip}}' && $vm2_ip ne '')?$vm2_ip:$host_ip;
-		$question = "Q2. Please enter the VM2 IP or domain name of the application services?(Redmine, Sonarqube, iiidevops...):($vm2_ip)";
-		$isAsk = 1;
-		while($isAsk) {
-			$ans_ip = prompt_for_input($question);
-			$ans_ip = ($ans_ip eq '')?$vm2_ip:$ans_ip;
-			if ($ans_ip ne '' && index($ans_ip, '127.')!=0 && $ans_ip ne $vm1_ip) {
-				$vm2_ip = $ans_ip;
-				$isAsk = 0;
-			}
-			else {
-				print("A2. This IP $ans_ip is not allowed, please re-enter!\n");
-			}		
-		}
-	}
-	else {
-		$vm2_ip = $ARGV[1];
-	}
-	$answer = "A2. Set [$vm2_ip] for the application services";
-	print ("$answer\n\n");
-	if ($vm2_ip ne '') {
-		if (-e $p_config_tmpl_ans) {
-			$tmp=$vm2_ip;
-			require($p_config_tmpl_ans);
-			$vm2_ip=$tmp;
 		}
 		write_ans();
 	}
