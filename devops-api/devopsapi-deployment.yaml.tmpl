@@ -20,17 +20,17 @@ spec:
         - containerPort: 10009
         env:
         - name: SQLALCHEMY_DATABASE_URI
-          value: "postgresql://postgres:{{db_passwd}}@{{db_ip}}:31403/devopsdb"
+          value: "postgresql://postgres:{{db_passwd}}@devopsdb-service:5432/devopsdb"
         - name: SQLALCHEMY_TRACK_MODIFICATIONS
           value: "false"
         - name: JWT_SECRET_KEY
-          value: "{{jwt_secret_key}}"  
+          value: "{{jwt_secret_key}}"
         - name: WTF_CSRF_CHECK_DEFAULT
           value: "false"
         - name: JSON_AS_ASCII
           value: "false"
         - name: REDMINE_IP_PORT
-          value: "{{redmine_domain_name}}"
+          value: "redmine-service:3000"
         - name: REDMINE_ADMIN_ACCOUNT
           value: "admin"
         - name: REDMINE_ADMIN_PASSWORD
@@ -38,7 +38,7 @@ spec:
         - name: REDMINE_API_KEY
           value: "{{redmine_api_key}}"
         - name: GITLAB_IP_PORT
-          value: "{{gitlab_url}}"
+          value: "gitlab-service:80"
         - name: GITLAB_ADMIN_ACCOUNT
           value: "root"
         - name: GITLAB_ADMIN_PASSWORD
@@ -72,7 +72,7 @@ spec:
         - name: WEBINSPECT_BASE_URL
           value: "{{webinspect_base_url}}"
         - name: SONAR_IP_PORT
-          value: "{{sonarqube_ip}}:31910"
+          value: "sonarqube-server-service:9000"
         - name: ADMIN_INIT_LOGIN
           value: "{{admin_init_login}}"
         - name: ADMIN_INIT_EMAIL
