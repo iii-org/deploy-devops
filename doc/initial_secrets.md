@@ -15,10 +15,5 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 ## webinspect
 - wi-base-url
 
-## gitlab-token
-選擇性: 特殊專案使用(資料庫專案)+Chart+(vuejs-template3使用)
-- `git-token`: 具有專案clone權限的的access token
-- `git-host`: gitlab的IP 
-
 # Registry Credentials
 - harbor-local
