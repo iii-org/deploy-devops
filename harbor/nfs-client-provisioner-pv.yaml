@@ -1,0 +1,35 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nfs-client-provisioner
+spec:
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: iiidevops-nfs-provisioner
+            - name: NFS_SERVER
+              value: 10.20.0.67
+            - name: NFS_PATH
+              value: /iiidevopsNFS/pvc
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 10.20.0.67
+            path: /iiidevopsNFS/pvc
