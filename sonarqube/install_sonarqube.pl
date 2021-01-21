@@ -112,7 +112,7 @@ $hash_msg = decode_json(`$cmd`);
 $message = $hash_msg->{'name'};
 if ($message eq 'API_SERVER') {
 	$sonarqube_admin_token = $hash_msg->{'token'};
-	$cmd = "$Bin/../bin/generate_env.pl ask_sonarqube_admin_token $sonarqube_admin_token";
+	$cmd = "$Bin/../bin/generate_env.pl ask_sonarqube_admin_token $sonarqube_admin_token force";
 	write_env();
 }
 else {

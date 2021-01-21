@@ -106,35 +106,44 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	}
 }
 
-# 2. set III-DevOps version
+# 2. set III-DevOps installation version
 #\$iiidevops_ver = '{{iiidevops_ver}}';
+$ver_str = '[1] [1.0] [1.0.0] [develop]';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
 	if (!defined($ARGV[1])) {
-		$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
-		$question = "Q1. Please enter the VM IP?($vm1_ip)";
-		$isAsk = 1;
-		while($isAsk) {
-			$ans_ip = prompt_for_input($question);
-			$ans_ip = ($ans_ip eq '')?$vm1_ip:$ans_ip;
-			if ($ans_ip ne '' && index($ans_ip, '127.')!=0) {
-				$vm1_ip = $ans_ip;
-				$isAsk = 0;
+		$iiidevops_ver = (defined($iiidevops_ver) && $iiidevops_ver ne '{{iiidevops_ver}}' && $iiidevops_ver ne '')?$iiidevops_ver:'';
+		if ($iiidevops_ver ne '') {
+			$question = "Q2. Do you want to change III-DevOps installation version?(y/N)";
+			$answer = "A2. III-DevOps installation version: $iiidevops_ver";
+			$Y_N = prompt_for_input($question);
+			$isAsk = (lc($Y_N) eq 'y');	
+		}
+		else {
+			$isAsk=1;
+		}
+		while ($isAsk) {
+			$question = "Q2. Please enter the III-DevOps installation version: $ver_str ?";
+			$iiidevops_ver = prompt_for_input($question);
+			$iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
+			$isAsk = (index($ver_str, '['.$iiidevops_ver.']')<0);
+			if ($isAsk) {
+				print("A2. The version is wrong, please re-enter!\n");
 			}
 			else {
-				print("A1. This IP $ans_ip is not allowed, please re-enter!\n");
+				$answer = "A2. III-DevOps installation version: $iiidevops_ver OK!";
 			}
 		}
 	}
 	else {
-		$vm1_ip = $ARGV[1];
+		$iiidevops_ver = $ARGV[1];
+		$answer = "A2. III-DevOps installation version: $iiidevops_ver OK!";
 	}
-	$answer = "A1. Set [$vm1_ip] for all services";
 	print ("$answer\n\n");
-	if ($vm1_ip ne '') {
+	if ($iiidevops_ver ne '') {
 		if (-e $p_config_tmpl_ans) {
-			$tmp=$vm1_ip;
+			$tmp=$iiidevops_ver;
 			require($p_config_tmpl_ans);
-			$vm1_ip=$tmp;
+			$iiidevops_ver=$tmp;
 		}
 		write_ans();
 	}
@@ -612,11 +621,11 @@ if ($isAsk) {
 # 21. Generate env.pl
 #------------------------------
 $question = "Q21. Do you want to generate env.pl based on the above information?(Y/n)";
-if(!defined($ARGV[2] || lc($ARGV[2]) ne 'force')) {
-	$Y_N = prompt_for_input($question);
+if(defined($ARGV[2] && lc($ARGV[2]) eq 'force')) {
+	$Y_N = 'y';
 }
 else {
-	$Y_N = 'y';
+	$Y_N = prompt_for_input($question);
 }
 if (lc($Y_N) ne 'n') {
 	if (-e $p_config) {
