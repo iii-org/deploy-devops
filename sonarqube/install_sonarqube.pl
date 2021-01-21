@@ -2,6 +2,7 @@
 # Install sonarqube service script
 #
 use FindBin qw($Bin);
+use JSON::MaybeXS qw(encode_json decode_json);
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
@@ -99,14 +100,39 @@ if ($isChk) {
 }
 log_print("Successfully deployed Sonarqube!\n");
 
+# get admin token
 # curl --silent --location --request POST 'http://10.50.1.56:31910/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-# response
-#{"login":"admin","name":"API_SERVER","token":"d7a86c2fbcd2a9f565ad269df206fb22021ace98","createdAt":"2021-01-20T02:56:04+0000"}
-# get token
+$cmd = <<END;
+curl --silent --location --request POST 'http://$sonarqube_domain_name/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
 
+END
+# response
+#{"login":"admin","name":"API_SERVER","token":"3d8d8cb48f0ee8feb889f673bd859fd69be7106b","createdAt":"2021-01-21T07:41:46+0000"}
+$hash_msg = decode_json(`$cmd`);
+$message = $hash_msg->{'name'};
+if ($message eq 'API_SERVER') {
+	$sonarqube_admin_token = $hash_msg->{'token'};
+	$cmd = "$Bin/../bin/generate_env.pl ask_sonarqube_admin_token $sonarqube_admin_token";
+	write_env();
+}
+else {
+	print("get api token Error : $message \n");
+	exit;
+}
+	
+# update admin password
+# curl --silent --location --request POST 'http://10.50.1.56:31910/api/users/change_password?login=admin&password=NewPassword&previousPassword=admin' --header 'Authorization: Basic YWRtaW46YWRtaW4='
+$cmd = <<END;
+curl --silent --location --request POST 'http://$sonarqube_domain_name/api/users/change_password?login=admin&password=$sonarqube_admin_passwd&previousPassword=admin' --header 'Authorization: Basic YWRtaW46YWRtaW4='
+
+END
+$cmd_msg = `$cmd`;
+if ($cmd_msg ne '') {
+	print("update admin password Error : $cmd_msg \n");
+	exit;
+}
 
 exit;
-
 
 sub log_print {
 	my ($p_msg) = @_;

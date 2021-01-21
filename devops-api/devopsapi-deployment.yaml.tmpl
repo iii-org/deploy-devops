@@ -29,16 +29,18 @@ spec:
           value: "false"
         - name: JSON_AS_ASCII
           value: "false"
-        - name: REDMINE_IP_PORT
-          value: "redmine-service:3000"
+        - name: REDMINE_INTERNAL_BASE_URL
+          value: "http://redmine-service:3000"
+        - name: REDMINE_EXTERNAL_BASE_URL
+          value: "http://{{redmine_domain_name}}"
         - name: REDMINE_ADMIN_ACCOUNT
           value: "admin"
         - name: REDMINE_ADMIN_PASSWORD
           value: "{{redmine_admin_passwd}}"
         - name: REDMINE_API_KEY
           value: "{{redmine_api_key}}"
-        - name: GITLAB_IP_PORT
-          value: "gitlab-service:80"
+        - name: GITLAB_BASE_URL
+          value: "http://gitlab-service:80"
         - name: GITLAB_ADMIN_ACCOUNT
           value: "root"
         - name: GITLAB_ADMIN_PASSWORD
@@ -53,14 +55,6 @@ spec:
           value: "{{rancher_admin_password}}"
         - name: RANCHER_CLUSTER_NAME
           value: "iiidevops-k8s"
-        - name: HARBOR_BASE_URL
-          value: "https://{{harbor_ip}}:5443/api/v2.0"
-        - name: HARBOR_IP_PORT
-          value: "{{harbor_ip}}:5443"
-        - name: HARBOR_ACCOUNT
-          value: "admin"
-        - name: HARBOR_PASSWORD
-          value: "{{harbor_admin_password}}"
         - name: CHECKMARX_ORIGIN
           value: "{{checkmarx_origin}}"
         - name: CHECKMARX_USERNAME
@@ -69,10 +63,22 @@ spec:
           value: "{{checkmarx_password}}"
         - name: CHECKMARX_SECRET
           value: "{{checkmarx_secret}}"
+        - name: SONARQUBE_INTERNAL_BASE_URL
+          value: "http://sonarqube-server-service:9000/api"
+        - name: SONARQUBE_EXTERNAL_BASE_URL
+          value: "{{sonarqube_domain_name}}"
+        - name: SONARQUBE_ADMIN_TOKEN
+          value: "{{sonarqube_admin_token}}"
+        - name: HARBOR_INTERNAL_BASE_URL
+          value: "https://{{harbor_ip}}:5443/api/v2.0"
+        - name: HARBOR_EXTERNAL_BASE_URL
+          value: "https://{{harbor_domain_name}}:5443"
+        - name: HARBOR_ACCOUNT
+          value: "admin"
+        - name: HARBOR_PASSWORD
+          value: "{{harbor_admin_password}}"
         - name: WEBINSPECT_BASE_URL
           value: "{{webinspect_base_url}}"
-        - name: SONAR_IP_PORT
-          value: "sonarqube-server-service:9000"
         - name: ADMIN_INIT_LOGIN
           value: "{{admin_init_login}}"
         - name: ADMIN_INIT_EMAIL

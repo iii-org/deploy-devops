@@ -38,6 +38,8 @@ $ans_tmpl = <<END;
 \$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';
 \$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
 \$ask_redmine_api_key = '{{ask_redmine_api_key}}';
+\$ask_sonarqube_admin_passwd = '{{ask_sonarqube_admin_passwd}}';
+\$ask_sonarqube_admin_token = '{{ask_sonarqube_admin_token}}';
 \$ask_harbor_admin_password = '{{ask_harbor_admin_password}}';
 \$ask_admin_init_login = '{{ask_admin_init_login}}';
 \$ask_admin_init_email = '{{ask_admin_init_email}}';
@@ -73,6 +75,40 @@ if (defined($ARGV[0])) {
 
 # 1. Set $vm1_ip
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
+	if (!defined($ARGV[1])) {
+		$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
+		$question = "Q1. Please enter the VM IP?($vm1_ip)";
+		$isAsk = 1;
+		while($isAsk) {
+			$ans_ip = prompt_for_input($question);
+			$ans_ip = ($ans_ip eq '')?$vm1_ip:$ans_ip;
+			if ($ans_ip ne '' && index($ans_ip, '127.')!=0) {
+				$vm1_ip = $ans_ip;
+				$isAsk = 0;
+			}
+			else {
+				print("A1. This IP $ans_ip is not allowed, please re-enter!\n");
+			}
+		}
+	}
+	else {
+		$vm1_ip = $ARGV[1];
+	}
+	$answer = "A1. Set [$vm1_ip] for all services";
+	print ("$answer\n\n");
+	if ($vm1_ip ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$vm1_ip;
+			require($p_config_tmpl_ans);
+			$vm1_ip=$tmp;
+		}
+		write_ans();
+	}
+}
+
+# 2. set III-DevOps version
+#\$iiidevops_ver = '{{iiidevops_ver}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
 	if (!defined($ARGV[1])) {
 		$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
 		$question = "Q1. Please enter the VM IP?($vm1_ip)";
@@ -243,14 +279,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_rancher_admin_password') {
 	}
 }
 
-# 6. set Redmine admin password
+# 6.1 set Redmine admin password
 #\$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_redmine_admin_password) && $ask_redmine_admin_password ne '{{ask_redmine_admin_password}}' && $ask_redmine_admin_password ne '')?$ask_redmine_admin_password:'';
 		if ($password1 ne '') {
-			$question = "Q6. Do you want to change Redmine admin password?(y/N)";
-			$answer = "A6. Skip Set Redmine admin password!";
+			$question = "Q6.1 Do you want to change Redmine admin password?(y/N)";
+			$answer = "A6.1 Skip Set Redmine admin password!";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
 		}
@@ -258,28 +294,28 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q6. Please enter the Redmine admin password:(If it is the same as GitLab, please enter 'SAME')";
+			$question = "Q6.1 Please enter the Redmine admin password:(If it is the same as GitLab, please enter 'SAME')";
 			$password1 = prompt_for_password($question);
 			if (lc($password1) eq 'same') {
 				$password1 = $same_passwd;
 				$isAsk = 0;
 			}
 			else {
-				$question = "Q6. Please re-enter the Redmine admin password:";
+				$question = "Q6.1 Please re-enter the Redmine admin password:";
 				$password2 = prompt_for_password($question);
 				$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
 			}
 			if ($isAsk) {
-				print("A6. The password is not the same, please re-enter!\n");
+				print("A6.1 The password is not the same, please re-enter!\n");
 			}
 			else {
-				$answer = "A6. Set Redmine admin password OK!";
+				$answer = "A6.1 Set Redmine admin password OK!";
 			}
 		}
 	}
 	else {
 		$password1 = $ARGV[1];
-		$answer = "A6. Set Redmine admin password OK!";
+		$answer = "A6.1 Set Redmine admin password OK!";
 	}
 	$ask_redmine_admin_password = $password1;
 	print ("$answer\n\n");
@@ -293,14 +329,14 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 	}
 }
 
-# 7. set Redmine API key
+# 6.2 set Redmine API key
 #\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 	if (!defined($ARGV[1])) {
 		$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '{{ask_redmine_api_key}}' && $ask_redmine_api_key ne '')?$ask_redmine_api_key:'';
 		if ($ask_redmine_api_key ne '') {
-			$question = "Q7. Do you want to change Redmine API key?(y/N)";
-			$answer = "A7. Skip Set Redmine API key!";
+			$question = "Q6.2 Do you want to change Redmine API key?(y/N)";
+			$answer = "A6.2 Skip Set Redmine API key!";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
 		}
@@ -309,12 +345,12 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 		}
 		if ($isAsk) {
 			$ask_redmine_api_key = sha1_hex(random_password(20));
-			$answer = "A7. Set Redmine API key OK!";
+			$answer = "A6.2 Set Redmine API key OK!";
 		}
 	}
 	else {
 		$ask_redmine_api_key = $ARGV[1];
-		$answer = "A7. Set Redmine API key OK!";
+		$answer = "A6.2 Set Redmine API key OK!";
 	}
 	print ("$answer\n\n");
 	if ($ask_redmine_api_key ne '') {
@@ -322,6 +358,97 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 			$tmp=$ask_redmine_api_key;
 			require($p_config_tmpl_ans);
 			$ask_redmine_api_key=$tmp;
+		}
+		write_ans();
+	}
+}
+
+# 7.1 set Sonarqube admin password
+#\$ask_sonarqube_admin_passwd = '{{ask_sonarqube_admin_passwd}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_admin_passwd') {
+	if (!defined($ARGV[1])) {
+		$password1 = (defined($ask_sonarqube_admin_passwd) && $ask_sonarqube_admin_passwd ne '{{ask_sonarqube_admin_passwd}}' && $ask_sonarqube_admin_passwd ne '')?$ask_sonarqube_admin_passwd:'';
+		if ($password1 ne '') {
+			$question = "Q7.1 Do you want to change Sonarqube admin password?(y/N)";
+			$answer = "A7.1 Skip Set Sonarqube admin password!";
+			$Y_N = prompt_for_input($question);
+			$isAsk = (lc($Y_N) eq 'y');	
+		}
+		else {
+			$isAsk=1;
+		}
+		while ($isAsk) {
+			$question = "Q7.1 Please enter the Sonarqube admin password:(If it is the same as GitLab, please enter 'SAME')";
+			$password1 = prompt_for_password($question);
+			if (lc($password1) eq 'same') {
+				$password1 = $same_passwd;
+				$isAsk = 0;
+			}
+			else {
+				$question = "Q7.1 Please re-enter the Sonarqube admin password:";
+				$password2 = prompt_for_password($question);
+				$isAsk = !(($password1 eq $password2) && ($password1 ne ''));
+			}
+			if ($isAsk) {
+				print("A7.1 The password is not the same, please re-enter!\n");
+			}
+			else {
+				$answer = "A7.1 Set Sonarqube admin password OK!";
+			}
+		}
+	}
+	else {
+		$password1 = $ARGV[1];
+		$answer = "A7.1 Set Sonarqube admin password OK!";
+	}
+	$ask_sonarqube_admin_passwd = $password1;
+	print ("$answer\n\n");
+	if ($ask_sonarqube_admin_passwd ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_sonarqube_admin_passwd;
+			require($p_config_tmpl_ans);
+			$ask_sonarqube_admin_passwd=$tmp;
+		}
+		write_ans();
+	}
+}
+
+# 7.2 set Sonarqube Admin Token
+#\$sonarqube_admin_token = '{{ask_sonarqube_admin_token}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_admin_token') {
+	if (!defined($ARGV[1])) {
+		$ask_sonarqube_admin_token = (defined($ask_sonarqube_admin_token) && $ask_sonarqube_admin_token ne '{{ask_sonarqube_admin_token}}' && $ask_sonarqube_admin_token ne '' && lc($ask_sonarqube_admin_token) ne 'skip')?$ask_sonarqube_admin_token:'';
+		if ($ask_sonarqube_admin_token ne '') {
+			$question = "Q7.2 Do you want to change Sonarqube Admin Token?(y/N)";
+			$answer = "A7.2 Skip Set Sonarqube Admin Token!";
+			$Y_N = prompt_for_input($question);
+			$isAsk = (lc($Y_N) eq 'y');	
+		}
+		else {
+			$isAsk=1;
+		}
+		while ($isAsk) {
+			$question = "Q7.2 Please enter the Sonarqube Admin Token:(If your Sonarqube has not been set up, please enter 'SKIP')";
+			$ask_sonarqube_admin_token = prompt_for_input($question);
+			$isAsk = ($ask_sonarqube_admin_token eq '');
+			if ($isAsk) {
+				print("A7.2 The Token is empty, please re-enter!\n");
+			}
+			else {
+				$answer = "A7.2 Set Sonarqube Admin Token OK!";
+			}
+		}
+	}
+	else {
+		$ask_sonarqube_admin_token = $ARGV[1];
+		$answer = "A7.2 Set Sonarqube Admin Token OK!";
+	}
+	print ("$answer\n\n");
+	if ($ask_sonarqube_admin_token ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_sonarqube_admin_token;
+			require($p_config_tmpl_ans);
+			$ask_sonarqube_admin_token=$tmp;
 		}
 		write_ans();
 	}
@@ -485,7 +612,12 @@ if ($isAsk) {
 # 21. Generate env.pl
 #------------------------------
 $question = "Q21. Do you want to generate env.pl based on the above information?(Y/n)";
-$Y_N = prompt_for_input($question);
+if(!defined($ARGV[2] || lc($ARGV[2]) ne 'force')) {
+	$Y_N = prompt_for_input($question);
+}
+else {
+	$Y_N = 'y';
+}
 if (lc($Y_N) ne 'n') {
 	if (-e $p_config) {
 		`cat $p_config > $p_config_bak`;
@@ -507,6 +639,8 @@ if (lc($Y_N) ne 'n') {
 	$env_template =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/g;
 	$env_template =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/g;
 	$env_template =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/g;
+	$env_template =~ s/{{ask_sonarqube_admin_passwd}}/$ask_sonarqube_admin_passwd/g;
+	$env_template =~ s/{{ask_sonarqube_admin_token}}/$ask_sonarqube_admin_token/g;
 	$env_template =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/g;
 	$env_template =~ s/{{auto_password}}/$auto_password/g;
 	$env_template =~ s/{{random_key}}/$random_key/g;
@@ -552,6 +686,8 @@ sub write_ans {
 	$ans_file =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;
 	$ans_file =~ s/{{ask_redmine_admin_password}}/$ask_redmine_admin_password/;
 	$ans_file =~ s/{{ask_redmine_api_key}}/$ask_redmine_api_key/;
+	$ans_file =~ s/{{ask_sonarqube_admin_passwd}}/$ask_sonarqube_admin_passwd/;
+	$ans_file =~ s/{{ask_sonarqube_admin_token}}/$ask_sonarqube_admin_token/;
 	$ans_file =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;
 	$ans_file =~ s/{{auto_password}}/$auto_password/;
 	$ans_file =~ s/{{random_key}}/$random_key/;
