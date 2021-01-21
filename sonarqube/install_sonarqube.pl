@@ -102,21 +102,50 @@ log_print("Successfully deployed Sonarqube!\n");
 
 # get admin token
 # curl --silent --location --request POST 'http://10.50.1.56:31910/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-$cmd = <<END;
+$cmd_add = <<END;
 curl --silent --location --request POST 'http://$sonarqube_domain_name/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
 
 END
 # response
 #{"login":"admin","name":"API_SERVER","token":"3d8d8cb48f0ee8feb889f673bd859fd69be7106b","createdAt":"2021-01-21T07:41:46+0000"}
-$hash_msg = decode_json(`$cmd`);
-$message = $hash_msg->{'name'};
-if ($message eq 'API_SERVER') {
+$cmd_del = <<END;
+curl --silent --location --request POST 'http://$sonarqube_domain_name/api/user_tokens/revoke?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
+
+END
+
+$chk_key='API_SERVER';
+$isChk=1;
+$count=0;
+$wait_sec=300;
+while($isChk && $count<$wait_sec) {
+	log_print('.');
+	$cmd_msg = `$cmd_add`;
+	#print("1:$cmd_msg\n");
+	if (index($cmd_msg, 'already exists')>=0) {
+		`$cmd_del`;
+		sleep(1);
+		$cmd_msg = `$cmd_add`;
+		#print("2:$cmd_msg\n");
+	}
+	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
+	$count ++;
+	sleep($isChk);
+}
+log_print("\n$cmd_msg-----\n");
+$message = '';
+if (!$isChk) {
+	$hash_msg = decode_json($cmd_msg);
+	$message = $hash_msg->{'name'};
+}
+if ($message eq $chk_key) {
 	$sonarqube_admin_token = $hash_msg->{'token'};
 	$cmd = "$Bin/../bin/generate_env.pl ask_sonarqube_admin_token $sonarqube_admin_token force";
-	write_env();
+	$cmd_msg = `$cmd`;
+	log_print("$cmd_msg-----\n");
+	log_print("get & set admin token OK!\n");
 }
 else {
-	print("get api token Error : $message \n");
+	log_print("get admin token Error : $message \n");
 	exit;
 }
 	
@@ -126,11 +155,14 @@ $cmd = <<END;
 curl --silent --location --request POST 'http://$sonarqube_domain_name/api/users/change_password?login=admin&password=$sonarqube_admin_passwd&previousPassword=admin' --header 'Authorization: Basic YWRtaW46YWRtaW4='
 
 END
+
+sleep(3);
 $cmd_msg = `$cmd`;
 if ($cmd_msg ne '') {
-	print("update admin password Error : $cmd_msg \n");
+	log_print("update admin password Error : $cmd_msg \n");
 	exit;
 }
+log_print("update admin password OK!\n");
 
 exit;
 
