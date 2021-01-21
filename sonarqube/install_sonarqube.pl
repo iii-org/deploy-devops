@@ -131,7 +131,7 @@ while($isChk && $count<$wait_sec) {
 	$count ++;
 	sleep($isChk);
 }
-log_print("\n$cmd_msg-----\n");
+log_print("\n$cmd_msg\n-----\n");
 $message = '';
 if (!$isChk) {
 	$hash_msg = decode_json($cmd_msg);
@@ -141,7 +141,7 @@ if ($message eq $chk_key) {
 	$sonarqube_admin_token = $hash_msg->{'token'};
 	$cmd = "$Bin/../bin/generate_env.pl ask_sonarqube_admin_token $sonarqube_admin_token force";
 	$cmd_msg = `$cmd`;
-	log_print("$cmd_msg-----\n");
+	log_print("$cmd_msg");
 	log_print("get & set admin token OK!\n");
 }
 else {
