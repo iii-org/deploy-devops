@@ -1,0 +1,222 @@
+clair:
+  replicas: 1
+registry:
+  replicas: 1
+expose:
+  type: ingress
+  tls:
+    enabled: true
+    certSource: auto
+    secret:
+      secretName: "harbor-tls"
+  ingress:
+    hosts:
+      core: harbor.10.20.0.67.xip.io
+    controller: default
+externalURL: https://harbor.10.20.0.67.xip.io
+
+internalTLS:
+  enabled: true
+  certSource: "auto"
+  
+persistence:
+  enabled: true
+  # Setting it to "keep" to avoid removing PVCs during a helm delete
+  # operation. Leaving it empty will delete PVCs after the chart deleted
+  # (this does not apply for PVCs that are created for internal database
+  # and redis components, i.e. they are never deleted automatically)
+  resourcePolicy: "keep"
+  persistentVolumeClaim:
+    registry:
+      #existingClaim: ""
+      storageClass: "iiidevops-nfs-storage"
+      #subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+    chartmuseum:
+      #existingClaim: ""
+      storageClass: "iiidevops-nfs-storage"
+      #subPath: ""
+      accessMode: ReadWriteOnce
+      size: 5Gi
+    jobservice:
+      #existingClaim: ""
+      storageClass: "iiidevops-nfs-storage"
+      #subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    database:
+      #existingClaim: ""
+      storageClass: "iiidevops-nfs-storage"
+      #subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+    redis:
+      #existingClaim: ""
+      storageClass: "iiidevops-nfs-storage"
+      #subPath: ""
+      accessMode: ReadWriteOnce
+      size: 1Gi
+  # Define which storage backend is used for registry and chartmuseum to store
+  # images and charts. Refer to
+  # https://github.com/docker/distribution/blob/master/docs/configuration.md#storage
+  # for the detail.
+  imageChartStorage:
+    # Specify whether to disable `redirect` for images and chart storage, for
+    # backends which not supported it (such as using minio for `s3` storage type), please disable
+    # it. To disable redirects, simply set `disableredirect` to `true` instead.
+    # Refer to
+    # https://github.com/docker/distribution/blob/master/docs/configuration.md#redirect
+    # for the detail.
+    disableredirect: false
+    # Specify the "caBundleSecretName" if the storage service uses a self-signed certificate.
+    # The secret must contain keys named "ca.crt" which will be injected into the trust store
+    # of registry's and chartmuseum's containers.
+    # caBundleSecretName:
+
+    # Specify the type of storage: "filesystem", "azure", "gcs", "s3", "swift",
+    # "oss" and fill the information needed in the corresponding section. The type
+    # must be "filesystem" if you want to use persistent volumes for registry
+    # and chartmuseum
+    type: filesystem
+    filesystem:
+      rootdirectory: /storage
+      #maxthreads: 100
+
+imagePullPolicy: IfNotPresent
+
+# Use this set to assign a list of default pullSecrets
+imagePullSecrets:
+#  - name: docker-registry-secret
+#  - name: internal-registry-secret
+
+# The update strategy for deployments with persistent volumes(jobservice, registry
+# and chartmuseum): "RollingUpdate" or "Recreate"
+# Set it as "Recreate" when "RWM" for volumes isn't supported
+updateStrategy:
+  type: RollingUpdate
+
+# debug, info, warning, error or fatal
+logLevel: info
+
+# The initial password of Harbor admin. Change it from portal after launching Harbor
+harborAdminPassword: "IIIdevops123!"
+
+# The name of the secret which contains key named "ca.crt". Setting this enables the
+# download link on portal to download the certificate of CA when the certificate isn't
+# generated automatically
+caSecretName: ""
+
+# The secret key used for encryption. Must be a string of 16 chars.
+secretKey: "not-a-secure-key"
+
+# The proxy settings for updating trivy vulnerabilities from the Internet and replicating
+# artifacts from/to the registries that cannot be reached directly
+proxy:
+  httpProxy:
+  httpsProxy:
+  noProxy: 127.0.0.1,localhost,.local,.internal
+  components:
+    - core
+    - jobservice
+    #- trivy
+
+# The custom ca bundle secret, the secret must contain key named "ca.crt"
+# which will be injected into the trust store for chartmuseum, core, jobservice, registry, trivy components
+# caBundleSecretName: ""
+
+## UAA Authentication Options
+# If you're using UAA for authentication behind a self-signed
+# certificate you will need to provide the CA Cert.
+# Set uaaSecretName below to provide a pre-created secret that
+# contains a base64 encoded CA Certificate named `ca.crt`.
+# uaaSecretName:
+
+# If expose the service via "ingress", the Nginx will not be used
+nginx:
+  image:
+    repository: goharbor/nginx-photon
+    tag: dev
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  replicas: 1
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+portal:
+  image:
+    repository: goharbor/harbor-portal
+    tag: dev
+  # set the service account to be used, default if left empty
+  serviceAccountName: ""
+  replicas: 1
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  ## Additional deployment annotations
+  podAnnotations: {}
+
+core:
+  replicas: 1
+  ## Startup probe values
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 10
+  # Fill the name of a kubernetes secret if you want to use your own
+  # TLS certificate and private key for token encryption/decryption.
+  # The secret must contain keys named:
+  # "tls.crt" - the certificate
+  # "tls.key" - the private key
+  # The default key pair will be used if it isn't set
+  secretName: ""
+  # The XSRF key. Will be generated automatically if it isn't specified
+  xsrfKey: ""
+
+jobservice:
+  replicas: 1
+
+chartmuseum:
+  enabled: false
+
+trivy:
+  enabled: false
+
+notary:
+  enabled: false
+
+database:
+  # if external database is used, set "type" to "external"
+  # and fill the connection informations in "external" section
+  type: internal
+  internal:
+    # The initial superuser password for internal database
+    password: "IIIdevops123!"
+
+redis:
+  # if external Redis is used, set "type" to "external"
+  # and fill the connection informations in "external" section
+  type: internal
+
+exporter:
+    replicas: 1
+  # resources:
+  #  requests:
+  #    memory: 256Mi
+  #    cpu: 100m
+    podAnnotations: {}
+    cacheDuration: 30
+    cacheCleanInterval: 14400
+
+metrics:
+  enabled: false

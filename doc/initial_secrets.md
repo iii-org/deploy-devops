@@ -3,8 +3,6 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 
 ## nexus
 - api-origin
-- username
-- password
 
 ## checkmarx
 - cm-url
@@ -15,5 +13,9 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 ## webinspect
 - wi-base-url
 
+## gitlab
+- `git-host`: gitlab的IP 
+
 # Registry Credentials
 - harbor-local
+
