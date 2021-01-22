@@ -73,6 +73,7 @@ if (index($cmd_msg, $chk_key)<0) {
 print("Rancher is working well!\n");
 
 # Check Harbor service is working
+$harbor_domain_name = ($harbor_domain_name eq '')?"harbor.iiidevops.$redmine_ip.xip.io":$harbor_domain_name;
 $cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
 $chk_key = 'UNAUTHORIZED';
 $cmd_msg = `$cmd 2>&1`;
@@ -97,6 +98,18 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 print("Redmine is working well!\n");
 
+# Check Sonarqube service is working
+$sonarqube_domain_name = ($sonarqube_domain_name eq '')?"sonarqube.iiidevops.$redmine_ip.xip.io":$sonarqube_domain_name;
+$cmd = "curl -q -I http://$sonarqube_domain_name";
+$chk_key = 'Content-Type: text/html;charset=utf-8';
+$cmd_msg = `$cmd 2>&1`;
+# Content-Type: text/html;charset=utf-8
+if (index($cmd_msg, $chk_key)<0) {
+	print("Sonarqube is not working!\n");
+	print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+print("Sonarqube is working well!\n");
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster
 $yaml_path = "$Bin/../devops-db/";
