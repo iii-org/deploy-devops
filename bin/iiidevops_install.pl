@@ -26,7 +26,6 @@ if ($OSVer ne '20.04') {
 	exit;
 }
 
-
 # Run on remote host 
 if (uc($ARGV[0] ne 'local')) {
 
@@ -141,6 +140,19 @@ if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl Failed!\n$cmd_msg");
 }
 log_print("Install kubectl $chk_str ..OK!\n");
+
+# If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
+$nfs_dir = '/iiidevopsNFS';
+$p_config = "$Bin/deploy-devops/env.pl";
+if (-e "$nfs_dir/deploy-config/env.pl") {
+	$cmd_msg = `ln -s $nfs_dir/deploy-config/env.pl $p_config`; 
+	log_print("env.pl file link is automatically created ..OK!\n");
+}
+if (-e "$nfs_dir/deploy-config/env.pl.ans") {
+	$cmd_msg = `ln -s $nfs_dir/deploy-config/env.pl.ans $p_config.ans`; 
+	log_print("env.pl.ans file link is automatically created ..OK!\n");
+}
+
 
 exit;
 
