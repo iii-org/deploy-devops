@@ -3,8 +3,6 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 
 ## nexus
 - api-origin
-- username
-- password
 
 ## checkmarx
 - cm-url
@@ -16,9 +14,9 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 - wi-base-url
 
 ## gitlab
-選擇性: 特殊專案使用(資料庫專案)+Chart+(vuejs-template3使用)
-- `git-token`: 具有專案clone權限的的access token
+特殊專案使用(資料庫專案)+Chart+(vuejs-template3使用)
 - `git-host`: gitlab的IP 
 
 # Registry Credentials
 - harbor-local
+
