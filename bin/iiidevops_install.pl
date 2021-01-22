@@ -58,15 +58,15 @@ system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 # Check iiidevops_install.pl version
-if ($prgname eq 'iiidevops_install.pl' && -e "$Bin/deploy-devops/bin/$prgname") {
-	($my_md5) = split(/ /, `md5sum $Bin/$prgname`);
-	($dl_md5) = split(/ /, `md5sum $Bin/deploy-devops/bin/$prgname`);
-	if ($my_md5 ne $dl_md5) {
-		log_print("Got the new version of iiidevops_install.pl, execute the downloaded version..\n"); 
-		exec("$Bin/deploy-devops/bin/$prgname local");
-		exit;
-	}
-}
+#if ($prgname eq 'iiidevops_install.pl' && -e "$Bin/deploy-devops/bin/$prgname") {
+#	($my_md5) = split(/ /, `md5sum $Bin/$prgname`);
+#	($dl_md5) = split(/ /, `md5sum $Bin/deploy-devops/bin/$prgname`);
+#	if ($my_md5 ne $dl_md5) {
+#		log_print("Got the new version of iiidevops_install.pl, execute the downloaded version..\n"); 
+#		exec("$Bin/deploy-devops/bin/$prgname local");
+#		exit;
+#	}
+#}
 
 # check /etc/sysctl.conf vm.max_map_count=262144 for Sonarqube
 $cmd_msg = `cat /etc/sysctl.conf | grep vm.max_map_count`;
