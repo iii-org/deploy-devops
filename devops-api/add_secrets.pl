@@ -28,8 +28,6 @@ foreach $item (@{ $hash_secrets->{'data'} }) {
 # nexus
 $name = 'nexus';
 $key_value{'api-origin'} = $iiidevops_api;
-$key_value{'username'} = $admin_init_login;
-$key_value{'password'} = $admin_init_password;
 if (index($secrets_name_list, $name)<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
@@ -55,6 +53,17 @@ else {
 # webinspect
 $name = 'webinspect';
 $key_value{'wi-base-url'} = $webinspect_base_url;
+if (index($secrets_name_list, $name)<0) {
+	$ret_msg = add_secrets($name, %key_value);
+	print("$name : $ret_msg\n");
+}
+else {
+	print("$name : already exists, Skip!\n");
+}
+
+# gitlab
+$name = 'gitlab';
+$key_value{'git-host'} = $gitlab_domain_name;
 if (index($secrets_name_list, $name)<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");

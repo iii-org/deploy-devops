@@ -1,6 +1,8 @@
 # Secrets
 Initial secrets needed by https://github.com/iii-org/newman-runner, https://github.com/iii-org/checkmarx-runner, https://github.com/iii-org/webinspect-runner
 
+Define installation template - https://github.com/iii-org/deploy-devops/tree/master/devops-api/secrets
+
 ## nexus
 - api-origin
 
@@ -14,7 +16,7 @@ Initial secrets needed by https://github.com/iii-org/newman-runner, https://gith
 - wi-base-url
 
 ## gitlab
-- `git-host`: gitlab的IP 
+- git-host
 
 # Registry Credentials
 - harbor-local
