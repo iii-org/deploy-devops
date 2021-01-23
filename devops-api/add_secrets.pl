@@ -62,9 +62,8 @@ else {
 }
 
 # gitlab
-$gitlab_domain_name = ($gitlab_domain_name eq '')?"gitlab.iiidevops.$gitlab_ip.xip.io":$gitlab_domain_name;
 $name = 'gitlab';
-$key_value{'git-host'} = $gitlab_domain_name;
+$key_value{'git-host'} = $gitlab_ip.':32080';
 if (index($secrets_name_list, $name)<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
