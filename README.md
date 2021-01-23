@@ -117,11 +117,11 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig file to **~/.kube/config** and **/iiidevopsNFS/kube-config/config** and also keep it.
 > ```bash
->  vi /iiidevopsNFS/kube-config/config
+>  touch /iiidevopsNFS/kube-config/config
 >  ln -s /iiidevopsNFS/kube-config/config ~/.kube/config
+>  vi /iiidevopsNFS/kube-config/config
 > ```
->
-> Use the following command to check if the config is working
+> After pasting the Kubeconfig File, you can use the following command to check if the configuration is working properly.
 >
 > > ```kubectl cluster-info ```
 >
