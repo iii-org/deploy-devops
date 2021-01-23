@@ -117,11 +117,11 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
 > Put on kubeconfig file to **~/.kube/config** and **/iiidevopsNFS/kube-config/config** and also keep it.
 > ```bash
->  vi /iiidevopsNFS/kube-config/config
+>  touch /iiidevopsNFS/kube-config/config
 >  ln -s /iiidevopsNFS/kube-config/config ~/.kube/config
+>  vi /iiidevopsNFS/kube-config/config
 > ```
->
-> Use the following command to check if the config is working
+> After pasting the Kubeconfig File, you can use the following command to check if the configuration is working properly.
 >
 > > ```kubectl cluster-info ```
 >
@@ -197,7 +197,7 @@
 > insert Name : iiidevops-k8s, Redirect URI: [from Rancher] and chose all optional, and save application.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
-> Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url. Exp. 10.20.0.71 or gitlab.iiidevops.10.20.0.71.xip.io  
+> Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url. Exp. **10.20.0.71:32080** 
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true)  
 > Authorize  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true)  
