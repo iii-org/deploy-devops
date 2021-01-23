@@ -73,7 +73,7 @@ if (index($cmd_msg, $chk_key)<0) {
 print("Rancher is working well!\n");
 
 # Check Harbor service is working
-$harbor_domain_name = ($harbor_domain_name eq '')?"harbor.iiidevops.$redmine_ip.xip.io":$harbor_domain_name;
+$harbor_domain_name = ($harbor_domain_name eq '')?"harbor.iiidevops.$harbor_ip.xip.io":$harbor_domain_name;
 $cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
 $chk_key = 'UNAUTHORIZED';
 $cmd_msg = `$cmd 2>&1`;
