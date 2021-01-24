@@ -61,10 +61,10 @@ $helm_check = (index($cmd_msg, "Install helm v3.5 ..OK!")<0)?"ERROR!":"OK!";
 $nfs_check = (index($cmd_msg, "$nfs_dir *")<0)?"ERROR!":"OK!";
 $harbor_cert_check = (index($cmd_msg, "$harbor_ip.pem")<0)?"ERROR!":"OK!";
 log_print("-----Validation results-----\n");
-log_print("Docker 		: $docker_check\n");
-log_print("Kubectl		: $kubectl_check\n");
-log_print("Helm			: $helm_check\n");
-log_print("NFS Client	: $nfs_check\n");
+log_print("Docker    	: $docker_check\n");
+log_print("Kubectl   	: $kubectl_check\n");
+log_print("Helm	     	: $helm_check\n");
+log_print("NFS Client 	: $nfs_check\n");
 #log_print("Harbor Cert	: $harbor_cert_check\n");
 
 $p_kube_config = "$nfs_dir/kube-config/config";
