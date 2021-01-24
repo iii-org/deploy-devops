@@ -78,7 +78,7 @@ if (defined($ARGV[0])) {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	if (!defined($ARGV[1])) {
 		$vm1_ip = (defined($vm1_ip) && $vm1_ip ne '{{vm1_ip}}' && $vm1_ip ne '')?$vm1_ip:$host_ip;
-		$question = "Q1.1 Please enter the base services IP (NFS, Rancher, Harbor)?($vm1_ip)";
+		$question = "Q1.1 Please enter the base services IP (NFS, Rancher)?($vm1_ip)";
 		$isAsk = 1;
 		while($isAsk) {
 			$ans_ip = prompt_for_input($question);
@@ -111,7 +111,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	if (!defined($ARGV[1])) {
 		$vm2_ip = (defined($vm2_ip) && $vm2_ip ne '{{vm2_ip}}' && $vm2_ip ne '')?$vm2_ip:$host_ip;
-		$question = "Q1.2 Please enter other services running in K8s IP (Gitlab, Redmine, Sinarqube, III DevOps)?($vm2_ip)";
+		$question = "Q1.2 Please enter other services running in K8s IP (Gitlab, Redmine, Harbor, Sonarqube, III DevOps)?($vm2_ip)";
 		$isAsk = 1;
 		while($isAsk) {
 			$ans_ip = prompt_for_input($question);
