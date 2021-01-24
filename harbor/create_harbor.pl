@@ -58,7 +58,8 @@ else {
 }
 
 # Download harbor-offline-installer-v2 file
-$cmd_option = "wget -O $data_dir/harbor-offline-installer-v2.1.2.tgz  https://github.com/goharbor/harbor/releases/download/v2.1.2/harbor-offline-installer-v2.1.2.tgz;";
+#$cmd_option = "wget -O $data_dir/harbor-offline-installer-v2.1.2.tgz  https://github.com/goharbor/harbor/releases/download/v2.1.2/harbor-offline-installer-v2.1.2.tgz;";
+$cmd_option = "wget -O $data_dir/harbor-offline-installer-v2.1.2.tgz https://www.iiidevops.org/ulfiles/harbor-offline-installer-v2.1.2.tgz;";
 $chk_file = "$data_dir/harbor-offline-installer-v2.1.2.tgz";
 $md5_value = substr(`md5sum $chk_file`, 0, 32); # 37a84e078504546c24e6fb99f80f6d05
 if ($md5_value eq '37a84e078504546c24e6fb99f80f6d05') {
