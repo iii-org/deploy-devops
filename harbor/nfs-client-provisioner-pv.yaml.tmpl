@@ -17,7 +17,7 @@ spec:
       serviceAccountName: nfs-client-provisioner
       containers:
         - name: nfs-client-provisioner
-          image: quay.io/external_storage/nfs-client-provisioner:latest
+          image: quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11
           volumeMounts:
             - name: nfs-client-root
               mountPath: /persistentvolumes
@@ -25,11 +25,11 @@ spec:
             - name: PROVISIONER_NAME
               value: iiidevops-nfs-provisioner
             - name: NFS_SERVER
-              value: 10.20.0.67
+              value: {{$nfs_ip}}
             - name: NFS_PATH
-              value: /iiidevopsNFS/pvc
+              value: {{$nfs_dir}}/pvc
       volumes:
         - name: nfs-client-root
           nfs:
-            server: 10.20.0.67
-            path: /iiidevopsNFS/pvc
+            server: {{$nfs_ip}}
+            path: {{$nfs_dir}}/pvc

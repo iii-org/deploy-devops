@@ -11,9 +11,9 @@ expose:
       secretName: "harbor-tls"
   ingress:
     hosts:
-      core: harbor.10.20.0.67.xip.io
+      core: {{harbor_domain_name}}
     controller: default
-externalURL: https://harbor.10.20.0.67.xip.io
+externalURL: https://{{harbor_domain_name}}
 
 internalTLS:
   enabled: true
@@ -100,7 +100,7 @@ updateStrategy:
 logLevel: info
 
 # The initial password of Harbor admin. Change it from portal after launching Harbor
-harborAdminPassword: "IIIdevops123!"
+harborAdminPassword: "{{harbor_admin_password}}"
 
 # The name of the secret which contains key named "ca.crt". Setting this enables the
 # download link on portal to download the certificate of CA when the certificate isn't
@@ -153,7 +153,7 @@ nginx:
 portal:
   image:
     repository: goharbor/harbor-portal
-    tag: dev
+    tag: v2.1.2
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   replicas: 1
@@ -201,7 +201,7 @@ database:
   type: internal
   internal:
     # The initial superuser password for internal database
-    password: "IIIdevops123!"
+    password: "{{harbor_admin_password}}"
 
 redis:
   # if external Redis is used, set "type" to "external"
