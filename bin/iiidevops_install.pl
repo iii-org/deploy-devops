@@ -149,7 +149,7 @@ $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install helm Failed!\n$cmd_msg");
 }
-log_print("Install heml $chk_str ..OK!\n");
+log_print("Install helm $chk_str ..OK!\n");
 
 # If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
 $nfs_dir = '/iiidevopsNFS';
