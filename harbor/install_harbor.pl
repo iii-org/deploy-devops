@@ -20,12 +20,12 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+$harbor_domain_name = ($harbor_domain_name eq '')?"harbor.iiidevops.$gitlab_ip.xip.io":$harbor_domain_name;
 if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
 	create_dockerhub_proxy();
 	exit;
 }
 
-$harbor_domain_name = ($harbor_domain_name eq '')?"harbor.iiidevops.$gitlab_ip.xip.io":$harbor_domain_name;
 log_print("Install Harbor URL: https://$harbor_domain_name\n");
 # Check Harbor is working
 $cmd_msg = `curl -k --location --request POST 'https://$harbor_domain_name/api/v2.0/registries' 2>&1`;

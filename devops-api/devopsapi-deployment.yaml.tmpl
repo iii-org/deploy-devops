@@ -70,9 +70,9 @@ spec:
         - name: SONARQUBE_ADMIN_TOKEN
           value: "{{sonarqube_admin_token}}"
         - name: HARBOR_INTERNAL_BASE_URL
-          value: "https://{{harbor_ip}}:5443/api/v2.0"
+          value: "https://harbor-harbor-core/v2.0"
         - name: HARBOR_EXTERNAL_BASE_URL
-          value: "https://{{harbor_domain_name}}:5443"
+          value: "https://{{harbor_domain_name}}"
         - name: HARBOR_ACCOUNT
           value: "admin"
         - name: HARBOR_PASSWORD
