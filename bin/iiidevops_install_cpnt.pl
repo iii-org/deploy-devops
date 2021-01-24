@@ -15,6 +15,26 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
 
+# Harbor
+$cmd = "$home/deploy-devops/harbor/install_harbor.pl";
+log_print("\nDeploy Harbor..");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
+# Check Harbor service is working
+$harbor_domain_name = ($harbor_domain_name eq '')?"harbor.iiidevops.$gitlab_ip.xip.io":$harbor_domain_name;
+$cmd = "curl -k --location --request POST 'https://$harbor_domain_name/api/v2.0/registries' 2>&1";
+$chk_key = 'UNAUTHORIZED';
+$cmd_msg = `$cmd 2>&1`;
+#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy Harbor!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+log_print("Successfully deployed Harbor!\n");
+
+
 # GitLab
 $cmd = "$home/deploy-devops/gitlab/install_gitlab.pl";
 log_print("\nDeploy Gitlab..");
@@ -73,7 +93,8 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 log_print("Sonarqube ..OK!\n\n");
 
-log_print("The deployment of GitLab, Redmine & other services has been completed, These services URL are: \n");
+log_print("The deployment of these services has been completed. The service URLs are: \n");
+log_print("Harbor - https://$harbor_domain_name/\n");
 log_print("GitLab - http://$gitlab_domain_name/\n");
 log_print("Redmine - http://$redmine_domain_name/\n");
 log_print("Sonarqube - http://$sonarqube_domain_name/\n");

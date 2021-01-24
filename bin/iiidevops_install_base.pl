@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Install iiidevops main applications script
+# Install iiidevops base applications script
 #
 use FindBin qw($Bin);
 my $p_config = "$Bin/../env.pl";
@@ -43,24 +43,6 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("NFS configuration OK!\n");
 
 
-# Harbor
-$cmd = "sudo $home/deploy-devops/harbor/create_harbor.pl";
-log_print("\nDeploy and Setting Harbor server..");
-#$cmd_msg = `$cmd`;
-system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
-$cmd = "curl -k --location --request POST 'https://$harbor_ip:5443/api/v2.0/registries'";
-$chk_key = 'UNAUTHORIZED';
-$cmd_msg = `$cmd 2>&1`;
-#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-if (index($cmd_msg, $chk_key)<0) {
-	log_print("Failed to deploy Harbor!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
-}
-log_print("Successfully deployed Harbor!\n");
-
-
 # Rancher
 $cmd = "sudo $home/deploy-devops/rancher/install_rancher.pl";
 log_print("\nInstall Rancher..");
@@ -79,8 +61,7 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("Successfully deployed Rancher!\n");
 
 
-log_print("\nThe deployment of NFS / Harbor / Rancher services has been completed, These services URL are: \n");
-log_print("Harbor - https://$harbor_ip:5443/\n");
+log_print("\nThe deployment of NFS / Rancher services has been completed, These services URL are: \n");
 log_print("Rancher - https://$rancher_ip:3443/\n");
 log_print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
 

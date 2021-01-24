@@ -109,14 +109,14 @@ system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
-sudo snap install kubectl --channel=1.18/stable --classic;
+sudo snap install kubectl --channel=1.18/stable --classic; 
+sudo snap install helm --channel=3.5/stable --classic; 
 mkdir -p ~/.kube/;
 END
-log_print("Install kubectl..\n");
+log_print("Install kubectl and helm..\n");
 #$cmd_msg = `$cmd`;
 system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
-
 
 # Validation results
 log_print("\n-----Validation results-----\n");
@@ -140,6 +140,16 @@ if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl Failed!\n$cmd_msg");
 }
 log_print("Install kubectl $chk_str ..OK!\n");
+
+#check helm version
+#version.BuildInfo{Version:"v3.5.0", GitCommit:"32c22239423b3b4ba6706d450bd044baffdcf9e6", GitTreeState:"clean", GoVersion:"go1.15.6"}
+$chk_str = 'v3.5';
+$cmd = "helm version";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install helm Failed!\n$cmd_msg");
+}
+log_print("Install heml $chk_str ..OK!\n");
 
 # If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
 $nfs_dir = '/iiidevopsNFS';

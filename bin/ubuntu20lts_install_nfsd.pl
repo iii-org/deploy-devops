@@ -47,6 +47,8 @@ log_print("-----\n$cmd_msg\n-----\n");
 
 # Create folder for other services  
 $cmd =<<END;
+sudo mkdir -p $nfs_dir/pvc;
+sudo chmod 777 $nfs_dir/pvc;
 sudo mkdir -p $nfs_dir/gitlab/config;
 sudo mkdir -p $nfs_dir/gitlab/data;
 sudo mkdir -p $nfs_dir/gitlab/logs;

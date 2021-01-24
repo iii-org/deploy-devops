@@ -70,21 +70,11 @@ exit;
 sub install_harbor {
 # Deploy Harbor on kubernetes cluster
 
-	# Modify harbor/harbor-lite-install.yaml.tmpl
-	$yaml_path = "$Bin/../harbor/";
-	$yaml_file = $yaml_path.'harbor-lite-install.yaml';
-	$tmpl_file = $yaml_file.'.tmpl';
-	if (!-e $tmpl_file) {
-		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
-	}
-	$template = `cat $tmpl_file`;
-	$template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
-	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
-	#log_print("-----\n$template\n-----\n\n");
-	open(FH, '>', $yaml_file) or die $!;
-	print FH $template;
-	close(FH);
+	# Add helm chart harbor repo - https://artifacthub.io/packages/helm/harbor/harbor/1.5.2
+	$cmd = "helm repo add harbor https://helm.goharbor.io";
+	$cmd_msg = `$cmd 2>&1`;
+	log_print("-----\n$cmd_msg-----\n");	
+
 	# Modify harbor/nfs-client-provisioner-pv.yaml.tmpl
 	$yaml_path = "$Bin/../harbor/";
 	$yaml_file = $yaml_path.'nfs-client-provisioner-pv.yaml';
@@ -100,8 +90,38 @@ sub install_harbor {
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
 	close(FH);
-	$cmd = "kubectl apply -f $yaml_path";
+	
+	log_print("Deploy K8s Volumes..\n");
+$cmd =<<END;
+kubectl apply -f $yaml_path/nfs-client-provisioner-serviceaccount.yaml;
+kubectl apply -f $yaml_path/nfs-client-provisioner-runner-clusterrole.yaml;
+kubectl apply -f $yaml_path/run-nfs-client-provisioner-clusterrolebinding.yaml;
+kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-role.yaml;
+kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-rolebinding.yaml;
+kubectl apply -f $yaml_file
+
+END
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg-----\n");
+
+	# Modify harbor/harbor-lite-install.yaml.tmpl
+	$yaml_path = "$Bin/../harbor/";
+	$yaml_file = $yaml_path.'harbor-lite-install.yaml';
+	$tmpl_file = $yaml_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		exit;
+	}
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
+	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
+	#log_print("-----\n$template\n-----\n\n");
+	open(FH, '>', $yaml_file) or die $!;
+	print FH $template;
+	close(FH);
+
 	log_print("Deploy Harbor..\n");
+	$cmd = "helm install harbor --version 1.5.2 harbor/harbor -f $yaml_file";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
 
