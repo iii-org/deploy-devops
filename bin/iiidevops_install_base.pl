@@ -44,7 +44,7 @@ log_print("NFS configuration OK!\n");
 
 # add insecure-registries
 if ($harbor_ip ne '') {
-	system("sudo $Bin/add-insecure-registries.pl");
+	system("sudo $Bin/../harbor/add-insecure-registries.pl");
 }
 
 # Rancher
