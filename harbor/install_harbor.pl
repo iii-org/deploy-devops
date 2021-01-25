@@ -101,6 +101,7 @@ kubectl apply -f $yaml_path/nfs-client-provisioner-runner-clusterrole.yaml;
 kubectl apply -f $yaml_path/run-nfs-client-provisioner-clusterrolebinding.yaml;
 kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-role.yaml;
 kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-rolebinding.yaml;
+kubectl apply -f $yaml_path/iiidevops-nfs-storage-storageclass.yaml;
 kubectl apply -f $yaml_file
 
 END
