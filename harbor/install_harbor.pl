@@ -120,8 +120,27 @@ END
 	print FH $template;
 	close(FH);
 
-	log_print("Deploy Harbor..\n");
+	log_print("Deploy Harbor service..\n");
 	$cmd = "helm install harbor --version 1.5.2 harbor/harbor -f $yaml_file";
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg-----\n");
+
+	# Modify harbor/harbor-ingress.yaml.tmpl
+	$yaml_path = "$Bin/../harbor/";
+	$yaml_file = $yaml_path.'harbor-ingress.yaml';
+	$tmpl_file = $yaml_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		exit;
+	}
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
+	#log_print("-----\n$template\n-----\n\n");
+	open(FH, '>', $yaml_file) or die $!;
+	print FH $template;
+	close(FH);
+
+	$cmd = "kubectl apply -f $yaml_file";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
 

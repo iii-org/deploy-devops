@@ -7,8 +7,8 @@ expose:
   tls:
     enabled: true
     certSource: auto
-    # 因為沒有使用ingress所以是必須
     auto:
+      commonName: harbor-common-tls
       commonName: harbor-common-tls
     secret:
       secretName: "harbor-tls"
