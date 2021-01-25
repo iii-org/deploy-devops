@@ -47,7 +47,7 @@ log_print("\n");
 
 # run and get remote k8s node info
 #$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; sudo -S ~/add_k8s.sh; showmount -e $nfs_ip; sudo -S cp ~/$harbor_ip.crt /usr/local/share/ca-certificates/; sudo update-ca-certificates; sudo systemctl restart docker.service; ls /etc/ssl/certs | awk /$harbor_ip/\"";
-$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; showmount -e $nfs_ip; sudo -S ~/harbor/add-insecure-registries.pl $harbor_ip; sudo -S ~/add_k8s.sh\"";
+$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; showmount -e $nfs_ip; sudo -S ~/add-insecure-registries.pl $harbor_ip; sudo -S ~/add_k8s.sh\"";
 log_print("-----\nInstall and get remote k8s node info..\n");
 $cmd_msg = `$cmd`;
 #system($cmd);
