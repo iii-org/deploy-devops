@@ -72,6 +72,17 @@ else {
 	print("$name : already exists, Skip!\n");
 }
 
+# sonarqube
+$name = 'sonarqube';
+$key_value{'sonar-url'} = 'http://'.$sonarqube_ip.':31910';
+if (index($secrets_name_list, $name)<0) {
+	$ret_msg = add_secrets($name, %key_value);
+	print("$name : $ret_msg\n");
+}
+else {
+	print("$name : already exists, Skip!\n");
+}
+
 
 #-----
 # Add Registry Credentials
@@ -88,7 +99,8 @@ foreach $item (@{ $hash_secrets->{'data'} }) {
 
 # harbor-local
 $name = 'harbor-local';
-$key_value{'harbor_ip'} = $harbor_ip;
+$key_value{'url'} = $harbor_ip.':32443';
+$key_value{'username'} = 'admin';
 $key_value{'password'} = $harbor_admin_password;
 if (index($registry_name_list, $name)<0) {
 	$ret_msg = add_registry($name, %key_value);

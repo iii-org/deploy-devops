@@ -22,5 +22,9 @@ Define installation template - https://github.com/iii-org/deploy-devops/tree/mas
 - sonar-url
 
 # Registry Credentials
-- harbor-local
+
+## harbor-local
+- Address
+- Username
+- Password
 

@@ -5,11 +5,11 @@ metadata:
   labels: 
     app: sonarqube-server
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: sonarqube-server
   ports:
     - name: apiport
       protocol: TCP
       port: 9000
-      #nodePort: 31910
+      nodePort: 31910
