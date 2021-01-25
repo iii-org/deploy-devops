@@ -42,6 +42,10 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 log_print("NFS configuration OK!\n");
 
+# add insecure-registries
+if ($harbor_ip ne '') {
+	system("sudo $Bin/add-insecure-registries.pl");
+}
 
 # Rancher
 $cmd = "sudo $home/deploy-devops/rancher/install_rancher.pl";
@@ -59,7 +63,6 @@ if (index($cmd_msg, $chk_key)<0) {
 	exit;	
 }
 log_print("Successfully deployed Rancher!\n");
-
 
 log_print("\nThe deployment of NFS / Rancher services has been completed, These services URL are: \n");
 log_print("Rancher - https://$rancher_ip:3443/\n");
