@@ -1,20 +1,21 @@
 #!/usr/bin/perl
 # add insecure-registries script
 #
+# Usage: sudo add-insecure-registries.pl <harbor_ip>
+#
 use FindBin qw($Bin);
-my $p_config = "$Bin/../env.pl";
-if (!-e $p_config) {
-	print("The configuration file [$p_config] does not exist!\n");
-	exit;
-}
-require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
+if (!defined($ARGV[0])) {
+	print("Usage:	sudo $prgname <harbor_ip>\n");
+	exit;
+}
 $logfile = "$Bin/$prgname.log";
 
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+$harbor_ip = $ARGV[0];
 
 #sudo vi /etc/docker/daemon.json
 #{

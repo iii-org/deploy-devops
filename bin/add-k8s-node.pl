@@ -40,14 +40,14 @@ if (index($addk8s_cmd, $rancher_chk)<0) {
 
 # copy iiidevops_install.pl, add_k8s_node_sh, habor_server_cert to remote k8s node
 #$cmd = "scp $Bin/iiidevops_install.pl $p_addk8s_sh $harbor_cert $ARGV[0]:~";
-$cmd = "scp $Bin/iiidevops_install.pl $p_addk8s_sh $ARGV[0]:~";
+$cmd = "scp $Bin/iiidevops_install.pl $Bin/add-insecure-registries.pl $p_addk8s_sh $ARGV[0]:~";
 log_print("-----\nCopy files to $ARGV[0]..\n");
 $cmd_msg = `$cmd`;
 log_print("\n");
 
 # run and get remote k8s node info
 #$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; sudo -S ~/add_k8s.sh; showmount -e $nfs_ip; sudo -S cp ~/$harbor_ip.crt /usr/local/share/ca-certificates/; sudo update-ca-certificates; sudo systemctl restart docker.service; ls /etc/ssl/certs | awk /$harbor_ip/\"";
-$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; showmount -e $nfs_ip; sudo ~/deploy-devops/harbor/add-insecure-registries.pl; sudo -S ~/add_k8s.sh\"";
+$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; showmount -e $nfs_ip; sudo -S ~/harbor/add-insecure-registries.pl $harbor_ip; sudo -S ~/add_k8s.sh\"";
 log_print("-----\nInstall and get remote k8s node info..\n");
 $cmd_msg = `$cmd`;
 #system($cmd);
