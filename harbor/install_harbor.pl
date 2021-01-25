@@ -61,11 +61,12 @@ if ($isChk) {
 }
 log_print("Successfully deployed Harbor!\n");
 
+# add insecure-registries
+system("sudo $Bin/add-insecure-registries.pl");
+
 # create dockerhub proxy project
 create_dockerhub_proxy();
 
-# add insecure-registries
-system("sudo $Bin/add-insecure-registries.pl");
 
 exit;
 
