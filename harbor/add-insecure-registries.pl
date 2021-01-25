@@ -24,12 +24,12 @@ $docker_daemon_json = "/etc/docker/daemon.json";
 if (-e $docker_daemon_json) {
 	$cmd_msg = `cat $docker_daemon_json`;
 	if (index($cmd_msg, $harbor_ip.':32443')>0) {
-		log_print("Harbor IP [$harbor_ip] already exists in daemon.json!\n");
+		log_print("Harbor IP [$harbor_ip] already exists in daemon.json!\nThe Docker of the node should be able to trust $harbor_ip\n");
 		exit;
 	}
 	if ($cmd_msg ne '') {
 		# Please manually append "insecure-registries":["10.20.0.71:32443"]
-		log_print("Please manually append $harbor_ip:32443 into 'insecure-registries' in $docker_daemon_json\nExp. \"insecure-registries\":[\"10.20.0.11:32443\", \"$$harbor_ip:32443\"]\nThen restart socker.service\n\n");
+		log_print("Please manually append $harbor_ip:32443 into 'insecure-registries' in $docker_daemon_json\nExp. \"insecure-registries\":[\"10.20.0.11:32443\", \"$harbor_ip:32443\"]\nThen restart socker.service\n\n");
 		exit;
 	}
 }
@@ -52,7 +52,7 @@ $cmd = "sudo systemctl restart docker.service";
 log_print("Restart docker service..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg-----\n");
-log_print("\nSuccessfully add $harbor_ip into insecure-registries!\n");
+log_print("\nSuccessfully add $harbor_ip into insecure-registries!\nThe Docker of the node should be able to trust $harbor_ip\n");
 exit;
 
 sub log_print {

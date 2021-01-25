@@ -38,7 +38,6 @@ if (index($addk8s_cmd, $rancher_chk)<0) {
 #	exit;
 #}
 
-
 # copy iiidevops_install.pl, add_k8s_node_sh, habor_server_cert to remote k8s node
 #$cmd = "scp $Bin/iiidevops_install.pl $p_addk8s_sh $harbor_cert $ARGV[0]:~";
 $cmd = "scp $Bin/iiidevops_install.pl $p_addk8s_sh $ARGV[0]:~";
@@ -48,7 +47,7 @@ log_print("\n");
 
 # run and get remote k8s node info
 #$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; sudo -S ~/add_k8s.sh; showmount -e $nfs_ip; sudo -S cp ~/$harbor_ip.crt /usr/local/share/ca-certificates/; sudo update-ca-certificates; sudo systemctl restart docker.service; ls /etc/ssl/certs | awk /$harbor_ip/\"";
-$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; sudo -S ~/add_k8s.sh; showmount -e $nfs_ip\"";
+$cmd = "ssh $ARGV[0] \"chmod a+x ~/add_k8s.sh; sudo -S perl ~/iiidevops_install.pl local; sudo -S ~/add_k8s.sh; showmount -e $nfs_ip\"; sudo ~/deploy-devops/harbor/add-insecure-registries.pl";
 log_print("-----\nInstall and get remote k8s node info..\n");
 $cmd_msg = `$cmd`;
 #system($cmd);
@@ -59,13 +58,13 @@ $docker_check = (index($cmd_msg, "Install docker 19.03.14 ..OK!")<0)?"ERROR!":"O
 $kubectl_check = (index($cmd_msg, "Install kubectl v1.18 ..OK!")<0)?"ERROR!":"OK!";
 $helm_check = (index($cmd_msg, "Install helm v3.5 ..OK!")<0)?"ERROR!":"OK!";
 $nfs_check = (index($cmd_msg, "$nfs_dir *")<0)?"ERROR!":"OK!";
-$harbor_cert_check = (index($cmd_msg, "$harbor_ip.pem")<0)?"ERROR!":"OK!";
+$harbor_check = (index($cmd_msg, "The Docker of the node should be able to trust $harbor_ip")<0)?"ERROR!":"OK!";
 log_print("-----Validation results-----\n");
 log_print("Docker    	: $docker_check\n");
 log_print("Kubectl   	: $kubectl_check\n");
 log_print("Helm	     	: $helm_check\n");
 log_print("NFS Client 	: $nfs_check\n");
-#log_print("Harbor Cert	: $harbor_cert_check\n");
+log_print("Harbor Trust	: $harbor_check\n");
 
 $p_kube_config = "$nfs_dir/kube-config/config";
 if (!-e $p_kube_config) {

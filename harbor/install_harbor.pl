@@ -64,6 +64,9 @@ log_print("Successfully deployed Harbor!\n");
 # create dockerhub proxy project
 create_dockerhub_proxy();
 
+# add insecure-registries
+system("sudo $Bin/add-insecure-registries.pl");
+
 exit;
 
 
