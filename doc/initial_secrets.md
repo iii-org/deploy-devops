@@ -18,6 +18,9 @@ Define installation template - https://github.com/iii-org/deploy-devops/tree/mas
 ## gitlab
 - git-host
 
+## sonarqube
+- sonar-url
+
 # Registry Credentials
 - harbor-local
 
