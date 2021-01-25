@@ -3,12 +3,21 @@ clair:
 registry:
   replicas: 1
 expose:
-  type: ingress
+  type: nodePort
   tls:
     enabled: true
     certSource: auto
     secret:
       secretName: "harbor-tls"
+  nodePort:
+    name: devops-harbor
+    ports:
+      http:
+        port: 80
+        nodePort: 32080
+      https:
+        port: 443
+        nodePort: 32443
   ingress:
     hosts:
       core: {{harbor_domain_name}}
