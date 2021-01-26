@@ -1,11 +1,11 @@
 # deploy-devops
 ## Installation environment and requriments
 
-* 1 Ubuntu20.04 LTS VM (The minimum resource configuration of a virtual machine is 4 vCore, 8G RAM, 60G HD; however, for production environment, it should be 3 or more VMs with 8 vCore, 16G RAM, 200G SSD)
+* Ubuntu 20.04 LTS virtual machine(VM) (The minimum resource configuration of a VM is 4 vCore, 8G RAM, 60G HD; however, for production environment, it should be 3 or more VMs with 8 vCore, 16G RAM, 200G SSD)
 * Before installation, you should decide on these configuration settings
   * IP of VM
   * Deploy mode:DNS or IP or nip.io or xip.io (nip.io and xip.io are only for test environment)
-    - DNS: Domain names of III DevOps, GitLab, Redmine, Harbor.
+    - DNS: Domain names of III DevOps, GitLab, Redmine, Harbor, Sonarqube.
 	- IP : External access IP of VM
   * GitLab root password
   * Harbor, Rancher, Redmine, Sonarqube admin password
@@ -16,7 +16,7 @@
 
 * You can scale out the Kubernetes nodes (VM2, VM3, VM4, VM5...) and scale up the VM1 according to actual performance requirements.
 
-* You should add firewall policy allow rules - From src(User) To dest(VM) TCP port 80/443/3443/5443/30000~32767
+* You should add firewall policy allow rules - From src(User) To dest(VM) TCP port 80/443/3443/30000~32767
 
 
 # Step 1. Download deploy-devops and Install docker
@@ -31,10 +31,10 @@
 > localadmin@iiidevops-71:~$ perl ./iiidevops_install.pl local
 > :
 > :
-> :
 > -----Validation results-----
 > Install docker 19.03.14 ..OK!
 > Install kubectl v1.18 ..OK!
+> Install helm v3.5 ..OK!
 > ```
 
 # Step 2. Generate configuration setting information file "env.pl"
@@ -46,28 +46,15 @@
 >
 >   ``` vi ~/deploy-devops/env.pl```
 
-# Step 3. Deploy Harbor / Rancher / NFS 
+# Step 3. Deploy NFS and Rancher
 
 > ``` sudo ~/deploy-devops/bin/iiidevops_install_base.pl```
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
-> * Harbor - https://10.20.0.71:5443/
 > * Rancher - https://10.20.0.71:3443/
 
-# Step 4. Setting Harbor server
-
-> * Harbor - https://10.20.0.71:5443/
-> * **Log in with the account admin and password ($harbour_admin_password) you entered in step 2.(~/deploy-devops/env.pl)**
-> 
-> * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
-> * If the project dockerhub is not created, you can exectue the command to manually create it.   
-> 
->   ```sudo ~/deploy-devops/harbor/create_harbor.pl create_dockerhub_proxy```
->
-
-# Step 5. Set up Rancher from the web UI
+# Step 4. Set up Rancher from the web UI
 
 > * Rancher - https://10.20.0.71:3443/
 > * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
@@ -77,8 +64,8 @@
 
 ## Create a Kubernetes by Rancher
 > * Add Cluster/ From existing nodes(Custom)  
->   * Cluster name:  **iiidevops-k8s**
->   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.12-rancher1-1**
+>   * Cluster Name:  **iiidevops-k8s**
+>   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.15-rancher1-1**
 >   * Network provider: **Calico**  
 >   * CNI Plugin MTU Override: **1440**  
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
@@ -110,7 +97,7 @@
 >   ```
 >
 > * After executing this command, it takes about 5 to 10 minutes to build the cluster.  
-> * Rancher Web UI will automatically refresh to use the new SSL certificate. You could need to login again.  After the iiidevops-k8s cluster is activated, you can get kubeconfig file.
+> * Rancher Web UI will automatically refresh to use the new SSL certificate. You may need to login again. After the iiidevops-k8s cluster is activated, you can get the kubeconfig file.
 >
 
 ## Get iiidevops-k8s Kubeconfig File
@@ -123,7 +110,7 @@
 > ```
 > After pasting the Kubeconfig File, you can use the following command to check if the configuration is working properly.
 >
-> > ```kubectl cluster-info ```
+> > ```kubectl cluster-info```
 >
 > It should display as below.
 >
@@ -135,7 +122,7 @@
 > To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 > ```
 
-# Step 6. Deploy GitLab, Redmine, Sonarqube on kubernetes cluster
+# Step 5. Deploy GitLab, Redmine, Harbor, Sonarqube on kubernetes cluster
 
 > ```~/deploy-devops/bin/iiidevops_install_cpnt.pl```
 >
@@ -144,9 +131,10 @@
 >
 > * GitLab - http://10.20.0.71:32080/ or http://gitlab.iiidevops.10.20.0.71.xip.io/ 
 > * Redmine - http://10.20.0.71:32748/ or http://redmine.iiidevops.10.20.0.71.xip.io/
+> * Harbor - http://10.20.0.71:32443/ or https://harbor.iiidevops.10.20.0.71.xip.io/
 > * Sonarqube - http://10.20.0.71:31910/ or http://sonarqube.iiidevops.10.20.0.71.xip.io/
 
-# Step 7. Set up GitLab from the web UI
+# Step 6. Set up GitLab from the web UI
 
 > * GitLab - http://10.20.0.71:32080/ or http://gitlab.iiidevops.10.20.0.71.xip.io/ 
 > * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
@@ -210,6 +198,18 @@
 ## Enable Outbound requests from web hooks
 > * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
+>
+
+# Step 7. Check Harbor Project
+
+> * Harbor - https://10.20.0.71:5443/
+> * **Log in with the account admin and password ($harbour_admin_password) you entered in step 2.(~/deploy-devops/env.pl)**
+> 
+> * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
+> * If the project dockerhub is not created, you can exectue the command to manually create it.   
+> 
+>   ```sudo ~/deploy-devops/harbor/create_harbor.pl create_dockerhub_proxy```
 >
 
 # Step 8. Deploy III DevOps
