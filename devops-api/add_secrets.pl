@@ -99,7 +99,8 @@ foreach $item (@{ $hash_secrets->{'data'} }) {
 
 # harbor-local
 $name = 'harbor-local';
-$key_value{'url'} = $harbor_ip.':32443';
+$url = ($harbor_domain_name eq '')?$harbor_ip.':32443':$harbor_domain_name;
+$key_value{'url'} = $url;
 $key_value{'username'} = 'admin';
 $key_value{'password'} = $harbor_admin_password;
 if (index($registry_name_list, $name)<0) {
