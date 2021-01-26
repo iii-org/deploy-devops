@@ -16,7 +16,7 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 $harbor_ip = $ARGV[0];
-$harbor_domain_name = (defined($ARGV[1])?$ARGV[1]:'';
+$harbor_domain_name = (defined($ARGV[1]))?$ARGV[1]:'';
 
 #sudo vi /etc/docker/daemon.json
 #{
