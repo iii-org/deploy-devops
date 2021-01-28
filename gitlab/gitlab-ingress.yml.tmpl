@@ -7,7 +7,8 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/proxy-body-size: "1g"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"spec:
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
   rules:
   - host: "{{gitlab_domain_name}}"
     http:
