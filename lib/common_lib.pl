@@ -3,31 +3,31 @@
 #
 
 # Deploy Mode $deploy_mode = # IP(Default), DNS, nip.io, xip.io
-# $p_service : gitlab, redmine, harbor, sonaqrqube, iiidevops
+# $p_service : gitlab, redmine, harbor, sonarqube, iiidevops
 # Exp.
 #   IP : 10.20.0.73
 #		gitlab		10.20.0.73:32080
 #		redmine		10.20.0.73:32748
 #		harbor		10.20.0.73:32443
-#		sonaqrqube	10.20.0.73:31910
+#		sonarqube	10.20.0.73:31910
 #		iiidevops	10.20.0.73:30775
 #	DNS : 
 #		gitlab		gitlab.iiidevops.org
 #		redmine		redmine.iiidevops.org
 #		harbor		harbor.iiidevops.org
-#		sonaqrqube	sonaqrqube.iiidevops.org
+#		sonarqube	sonarqube.iiidevops.org
 #		iiidevops	www.iiidevops.org
 #	nip.io
 #		gitlab		gitlab.iiidevops.10.20.0.73.nip.io
 #		redmine		redmine.iiidevops.10.20.0.73.nip.io
 #		harbor		harbor.iiidevops.10.20.0.73.nip.io
-#		sonaqrqube	sonaqrqube.iiidevops.10.20.0.73.nip.io
+#		sonarqube	sonarqube.iiidevops.10.20.0.73.nip.io
 #		iiidevops	iiidevops.10.20.0.73.nip.io
 #	xip.io
 #		gitlab		gitlab.iiidevops.10.20.0.73.xip.io
 #		redmine		redmine.iiidevops.10.20.0.73.xip.io
 #		harbor		harbor.iiidevops.10.20.0.73.xip.io
-#		sonaqrqube	sonaqrqube.iiidevops.10.20.0.73.xip.io
+#		sonarqube	sonarqube.iiidevops.10.20.0.73.xip.io
 #		iiidevops	iiidevops.10.20.0.73.xip.io
 #
 sub get_domain_name {
@@ -45,7 +45,7 @@ sub get_domain_name {
 		elsif ($p_service eq 'harbor') {
 			$v_domain_name = $harbor_domain_name;
 		}
-		elsif ($p_service eq 'sonaqrqube') {
+		elsif ($p_service eq 'sonarqube') {
 			$v_domain_name = $sonarqube_domain_name;
 		}
 		elsif ($p_service eq 'iiidevops') {
@@ -62,7 +62,7 @@ sub get_domain_name {
 		elsif ($p_service eq 'harbor') {
 			$v_domain_name = 'gitlab.iiidevops.'.$harbor_ip.'.nip.io';
 		}
-		elsif ($p_service eq 'sonaqrqube') {
+		elsif ($p_service eq 'sonarqube') {
 			$v_domain_name = 'gitlab.iiidevops.'.$sonarqube_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'iiidevops') {
@@ -79,7 +79,7 @@ sub get_domain_name {
 		elsif ($p_service eq 'harbor') {
 			$v_domain_name = 'gitlab.iiidevops.'.$harbor_ip.'.xip.io';
 		}
-		elsif ($p_service eq 'sonaqrqube') {
+		elsif ($p_service eq 'sonarqube') {
 			$v_domain_name = 'gitlab.iiidevops.'.$sonarqube_ip.'.xip.io';
 		}
 		elsif ($p_service eq 'iiidevops') {
@@ -97,7 +97,7 @@ sub get_domain_name {
 		elsif ($p_service eq 'harbor') {
 			$v_domain_name = $harbor_ip.':32443';
 		}
-		elsif ($p_service eq 'sonaqrqube') {
+		elsif ($p_service eq 'sonarqube') {
 			$v_domain_name = $sonarqube_ip.':31910';
 		}
 		elsif ($p_service eq 'iiidevops') {
