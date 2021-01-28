@@ -88,6 +88,22 @@ else {
 	log_print("The system parameter vm.max_map has been set!\n");
 }
 
+# check timezone 
+$cmd_msg = `ls -l /etc/localtime`;
+if (index($cmd_msg, 'Taipei')<0) {
+	$cmd = "sudo cp /etc/localtime /tmp/old.timezone;sudo rm -f /etc/localtime;sudo ln -s /usr/share/zoneinfo/Asia/Taipei /etc/localtime; date";
+	$cmd_msg = `$cmd`;
+	#Thu Jan 28 16:55:27 CST 2021
+	if (index($cmd_msg, 'CST')<0) {
+		log_print("Set Time zone Error!\n$cmd_msg\n-----\n");
+		exit;
+	}
+	log_print("Successfully set the time zone to Taipei!\n");	
+}
+else {
+	log_print("Time zone has been set to Taipei!\n");
+}
+
 $cmd = <<END;
 sudo apt-get update -y;
 sudo apt-get install nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client-12 apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y;
