@@ -17,10 +17,11 @@ if ($harbor_ip eq '') {
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
+require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$harbor_domain_name = ($harbor_domain_name eq '')?"harbor.iiidevops.$gitlab_ip.xip.io":$harbor_domain_name;
+$harbor_domain_name = get_domain_name('harbor');
 if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
 	create_dockerhub_proxy();
 	exit;
@@ -130,17 +131,26 @@ END
 	# Modify harbor/harbor-ingress.yaml.tmpl
 	$yaml_path = "$Bin/../harbor/";
 	$yaml_file = $yaml_path.'harbor-ingress.yaml';
-	$tmpl_file = $yaml_file.'.tmpl';
-	if (!-e $tmpl_file) {
-		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+	if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
+		$tmpl_file = $yaml_file.'.tmpl';
+		if (!-e $tmpl_file) {
+			log_print("The template file [$tmpl_file] does not exist!\n");
+			exit;
+		}
+		$template = `cat $tmpl_file`;
+		$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
+		#log_print("-----\n$template\n-----\n\n");
+		open(FH, '>', $yaml_file) or die $!;
+		print FH $template;
+		close(FH);
 	}
-	$template = `cat $tmpl_file`;
-	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
-	#log_print("-----\n$template\n-----\n\n");
-	open(FH, '>', $yaml_file) or die $!;
-	print FH $template;
-	close(FH);
+	else {
+		$cmd = "rm -f $yaml_file";
+		$cmd_msg = `$cmd 2>&1`;
+		if ($cmd_msg ne '') {
+			log_print("$cmd Error!\n$cmd_msg-----\n");
+		}
+	}
 
 	$cmd = "kubectl apply -f $yaml_file";
 	$cmd_msg = `$cmd`;
@@ -218,16 +228,4 @@ END
 	}
 	
 	return;
-}
-
-sub log_print {
-	my ($p_msg) = @_;
-
-    print "$p_msg";
-	
-	open(FH, '>>', $logfile) or die $!;
-	print FH $p_msg;
-	close(FH);	
-
-    return;
 }

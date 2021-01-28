@@ -11,12 +11,18 @@ if (!-e $p_config) {
 }
 require($p_config);
 
+if ($redmine_ip eq '') {
+	print("The redmine_ip in [$p_config] is ''!\n\n");
+	exit;
+}
+
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
+require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$redmine_domain_name = ($redmine_domain_name eq '')?"redmine.iiidevops.$redmine_ip.xip.io":$redmine_domain_name;
+$redmine_domain_name = get_domain_name('redmine');
 
 log_print("Install Redmine URL: http://$redmine_domain_name\n");
 # Deploy Redmine on kubernetes cluster
@@ -59,17 +65,27 @@ close(FH);
 # Modify redmine/redmine/redmine-ingress.yaml.tmpl <- {{redmine_domain_name}}
 $yaml_path = "$Bin/../redmine/redmine/";
 $yaml_file = $yaml_path.'redmine-ingress.yml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
+	$tmpl_file = $yaml_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		exit;
+	}
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
+	#log_print("-----\n$template\n-----\n\n");
+	open(FH, '>', $yaml_file) or die $!;
+	print FH $template;
+	close(FH);
 }
-$template = `cat $tmpl_file`;
-$template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
-#log_print("-----\n$template\n-----\n\n");
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
+else {
+	$cmd = "rm -f $yaml_file";
+	$cmd_msg = `$cmd 2>&1`;
+	if ($cmd_msg ne '') {
+		log_print("$cmd Error!\n$cmd_msg-----\n");
+	}
+}
+
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy redmine..\n");
 $cmd_msg = `$cmd`;
@@ -158,16 +174,4 @@ sub import_init_data {
 	log_print("-----\n$cmd_msg-----\n");
 
 	return;
-}
-
-sub log_print {
-	my ($p_msg) = @_;
-
-    print "$p_msg";
-	
-	open(FH, '>>', $logfile) or die $!;
-	print FH $p_msg;
-	close(FH);	
-
-    return;
 }

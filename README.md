@@ -4,9 +4,9 @@
 * Ubuntu 20.04 LTS virtual machine(VM) (The minimum resource configuration of a VM is 4 vCore, 8G RAM, 60G HD; however, for production environment, it should be 3 or more VMs with 8 vCore, 16G RAM, 200G SSD)
 * Before installation, you should decide on these configuration settings
   * IP of VM
-  * Deploy mode:DNS or IP or nip.io or xip.io (nip.io and xip.io are only for test environment)
-    - DNS: Domain names of III DevOps, GitLab, Redmine, Harbor, Sonarqube.
+  * Deploy mode:IP or DNS or nip.io or xip.io (nip.io and xip.io are only for test environment)
 	- IP : External access IP of VM
+    - DNS: Domain names of III DevOps, GitLab, Redmine, Harbor, Sonarqube.
   * GitLab root password
   * Harbor, Rancher, Redmine, Sonarqube admin password
   * III-devops first user (super user) 
@@ -129,14 +129,14 @@
 >
 > After the deployment is complete, you should be able to see the URL information of these services as shown below.
 >
-> * GitLab - http://10.20.0.71:32080/ or http://gitlab.iiidevops.10.20.0.71.xip.io/ 
-> * Redmine - http://10.20.0.71:32748/ or http://redmine.iiidevops.10.20.0.71.xip.io/
-> * Harbor - http://10.20.0.71:32443/ or https://harbor.iiidevops.10.20.0.71.xip.io/
-> * Sonarqube - http://10.20.0.71:31910/ or http://sonarqube.iiidevops.10.20.0.71.xip.io/
+> * GitLab - http://10.20.0.71:32080/
+> * Redmine - http://10.20.0.71:32748/
+> * Harbor - http://10.20.0.71:32443/
+> * Sonarqube - http://10.20.0.71:31910/
 
 # Step 6. Set up GitLab from the web UI
 
-> * GitLab - http://10.20.0.71:32080/ or http://gitlab.iiidevops.10.20.0.71.xip.io/ 
+> * GitLab - http://10.20.0.71:32080/
 > * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
 >
 
@@ -144,7 +144,7 @@
 > * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 >
-> * Access Tokens / Name : root-pat / Scopes : Check all / Create personal access token  
+> * Access Tokens / Name : **root-pat** / Scopes : Check all / Create personal access token  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 >
 > * Keep Your New Personal Access Token 
@@ -171,9 +171,9 @@
 >
 
 ## Set up Rancher pipeline and Gitlab hook
-> * Choose Global/ Cluster(iiidevops-k8s)/ Project(Default)  
+> * Choose Global/ Cluster(**iiidevops-k8s**)/ Project(Default)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
-> * Choose Tools/Pipline, select Gitlab  
+> * Choose Tools/Pipline, select **Gitlab**  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
 > Get the "Redirect URI" and then open GitLab web UI
 >
@@ -182,7 +182,7 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
 > Setting Applications  
-> insert Name : iiidevops-k8s, Redirect URI: [from Rancher] and chose all optional, and save application.
+> insert Name : **iiidevops-k8s**, Redirect URI: [from Rancher] and chose all optional, and save application.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
 > Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url. Exp. **10.20.0.71:32080** 
@@ -200,9 +200,9 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
 >
 
-# Step 7. Check Harbor Project
+# Step 7. Check Harbor Project(Option)
 
-> * Harbor - https://10.20.0.71:5443/
+> * Harbor - https://10.20.0.71:32443/
 > * **Log in with the account admin and password ($harbour_admin_password) you entered in step 2.(~/deploy-devops/env.pl)**
 > 
 > * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
@@ -234,12 +234,12 @@
 > harbor-local : Create Registry /home/localadmin/deploy-devops/devops-api/secrets/harbor-local-registry.json..OK!
 > 
 > The deployment of III DevOps services has been completed. Please try to connect to the following URL.
-> III DevOps URL - http://10.20.0.71:30775 or http://iiidevops.10.20.0.71.xip.io/
+> III DevOps URL - http://10.20.0.71:30775
 >
 > ```
 
 ## Go to Web UI to login 
-> * III DevOps URL -  http://10.20.0.71:30775/ or http://iiidevops.10.20.0.71.xip.io/ 
+> * III DevOps URL -  http://10.20.0.71:30775/
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
 >
 > Use the **$admin_init_login** and **$admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III DevOps
@@ -248,7 +248,7 @@
 
 > * Execute the following command on VM1 to make VM2, VM3.... join the K8s cluster.
 >
->   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm3_ip]```
+>   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm2_ip]```
 >
 >   It should display as below.
 >   ```bash
