@@ -37,31 +37,31 @@ persistence:
       storageClass: "iiidevops-nfs-storage"
       #subPath: ""
       accessMode: ReadWriteOnce
-      size: 5Gi
+      size: 1000Gi
     chartmuseum:
       #existingClaim: ""
       storageClass: "iiidevops-nfs-storage"
       #subPath: ""
       accessMode: ReadWriteOnce
-      size: 5Gi
+      size: 500Gi
     jobservice:
       #existingClaim: ""
       storageClass: "iiidevops-nfs-storage"
       #subPath: ""
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 100Gi
     database:
       #existingClaim: ""
       storageClass: "iiidevops-nfs-storage"
       #subPath: ""
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 100Gi
     redis:
       #existingClaim: ""
       storageClass: "iiidevops-nfs-storage"
       #subPath: ""
       accessMode: ReadWriteOnce
-      size: 1Gi
+      size: 100Gi
 
 imagePullPolicy: IfNotPresent
 
