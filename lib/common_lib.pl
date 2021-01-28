@@ -57,16 +57,16 @@ sub get_domain_name {
 			$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'redmine') {
-			$v_domain_name = 'gitlab.iiidevops.'.$redmine_ip.'.nip.io';
+			$v_domain_name = 'redmine.iiidevops.'.$redmine_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'harbor') {
-			$v_domain_name = 'gitlab.iiidevops.'.$harbor_ip.'.nip.io';
+			$v_domain_name = 'harbor.iiidevops.'.$harbor_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'sonarqube') {
-			$v_domain_name = 'gitlab.iiidevops.'.$sonarqube_ip.'.nip.io';
+			$v_domain_name = 'sonarqube.iiidevops.'.$sonarqube_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'iiidevops') {
-			$v_domain_name = 'gitlab.iiidevops.'.$iiidevops_ip.'.nip.io';
+			$v_domain_name = 'iiidevops.'.$iiidevops_ip.'.nip.io';
 		}
 	}
 	elsif (lc($deploy_mode) eq 'xip.io') {
@@ -74,16 +74,16 @@ sub get_domain_name {
 			$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.xip.io';
 		}
 		elsif ($p_service eq 'redmine') {
-			$v_domain_name = 'gitlab.iiidevops.'.$redmine_ip.'.xip.io';
+			$v_domain_name = 'redmine.iiidevops.'.$redmine_ip.'.xip.io';
 		}
 		elsif ($p_service eq 'harbor') {
-			$v_domain_name = 'gitlab.iiidevops.'.$harbor_ip.'.xip.io';
+			$v_domain_name = 'harbor.iiidevops.'.$harbor_ip.'.xip.io';
 		}
 		elsif ($p_service eq 'sonarqube') {
-			$v_domain_name = 'gitlab.iiidevops.'.$sonarqube_ip.'.xip.io';
+			$v_domain_name = 'sonarqube.iiidevops.'.$sonarqube_ip.'.xip.io';
 		}
 		elsif ($p_service eq 'iiidevops') {
-			$v_domain_name = 'gitlab.iiidevops.'.$iiidevops_ip.'.xip.io';
+			$v_domain_name = 'iiidevops.'.$iiidevops_ip.'.xip.io';
 		}
 	}
 	else {
