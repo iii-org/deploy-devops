@@ -46,7 +46,7 @@ close(FH);
 # Modify gitlab/gitlab-ingress.yaml.tmpl
 $yaml_path = "$Bin/../gitlab/";
 $yaml_file = $yaml_path.'gitlab-ingress.yml';
-if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
+#if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
@@ -58,14 +58,14 @@ if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
 	close(FH);
-}
-else {
-	$cmd = "rm -f $yaml_file";
-	$cmd_msg = `$cmd 2>&1`;
-	if ($cmd_msg ne '') {
-		log_print("$cmd Error!\n$cmd_msg-----\n");
-	}
-}
+#}
+#else {
+#	$cmd = "rm -f $yaml_file";
+#	$cmd_msg = `$cmd 2>&1`;
+#	if ($cmd_msg ne '') {
+#		log_print("$cmd Error!\n$cmd_msg-----\n");
+#	}
+#}
 
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy GitLab..\n");
