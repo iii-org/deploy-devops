@@ -140,14 +140,57 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	}
 }
 
-# 2.1 set Deploy Mode # IP(Default), DNS, nip.io, xip.io
+# 2.1 set III-DevOps installation version
+#\$iiidevops_ver = '{{iiidevops_ver}}';
+$ver_str = '[1] [1.0] [1.0.0] [develop]';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
+	if (!defined($ARGV[1])) {
+		$iiidevops_ver = (defined($iiidevops_ver) && $iiidevops_ver ne '{{iiidevops_ver}}' && $iiidevops_ver ne '')?$iiidevops_ver:'';
+		if ($iiidevops_ver ne '') {
+			$question = "Q2.1 Do you want to change III-DevOps installation version: $iiidevops_ver ?(y/N)";
+			$answer = "A2.1 III-DevOps installation version: $iiidevops_ver";
+			$Y_N = prompt_for_input($question);
+			$isAsk = (lc($Y_N) eq 'y');	
+		}
+		else {
+			$isAsk=1;
+		}
+		while ($isAsk) {
+			$question = "Q2.1 Please enter the III-DevOps installation version: $ver_str ?";
+			$iiidevops_ver = prompt_for_input($question);
+			$iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
+			$isAsk = (index($ver_str, '['.$iiidevops_ver.']')<0);
+			if ($isAsk) {
+				print("A2.1 The version is wrong, please re-enter!\n");
+			}
+			else {
+				$answer = "A2.1 III-DevOps installation version: $iiidevops_ver OK!";
+			}
+		}
+	}
+	else {
+		$iiidevops_ver = $ARGV[1];
+		$answer = "A2.1 III-DevOps installation version: $iiidevops_ver OK!";
+	}
+	print ("$answer\n\n");
+	if ($iiidevops_ver ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$iiidevops_ver;
+			require($p_config_tmpl_ans);
+			$iiidevops_ver=$tmp;
+		}
+		write_ans();
+	}
+}
+
+# 2.2 set Deploy Mode # IP(Default), DNS, nip.io, xip.io
 #\$deploy_mode = '{{deploy_mode}}';
 $mode_str = '[IP] [DNS] [nip.io] [xip.io]';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'deploy_mode') {
 	if (!defined($ARGV[1])) {
 		$deploy_mode = (defined($deploy_mode) && $deploy_mode ne '{{deploy_mode}}' && $deploy_mode ne '')?$deploy_mode:'';
 		if ($deploy_mode ne '') {
-			$question = "Q2.1 Do you want to change the deployment mode?(y/N)";
+			$question = "Q2.2 Do you want to change the deployment mode: $deploy_mode ?(y/N)";
 			$answer = "A2.2 Deployment mode: $deploy_mode";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
@@ -156,21 +199,21 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'deploy_mode') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q2.1 Please enter the deployment mode: $mode_str ?";
+			$question = "Q2.2 Please enter the deployment mode: $mode_str ?";
 			$deploy_mode = prompt_for_input($question);
 			$deploy_mode = ($deploy_mode eq '')?'IP':$deploy_mode;
 			$isAsk = (index($mode_str, '['.$deploy_mode.']')<0);
 			if ($isAsk) {
-				print("A2.1 The deployment mode is wrong, please re-enter!\n");
+				print("A2.2 The deployment mode is wrong, please re-enter!\n");
 			}
 			else {
-				$answer = "A2.1 Set the deployment mode: $deploy_mode OK!";
+				$answer = "A2.2 Set the deployment mode: $deploy_mode OK!";
 			}
 		}
 	}
 	else {
 		$deploy_mode = $ARGV[1];
-		$answer = "A2.1 Set the deployment mode: $deploy_mode OK!";
+		$answer = "A2.2 Set the deployment mode: $deploy_mode OK!";
 	}
 	print ("$answer\n\n");
 	if ($deploy_mode ne '') {
@@ -183,47 +226,19 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'deploy_mode') {
 	}
 }
 
-# 2.2 set III-DevOps installation version
-#\$iiidevops_ver = '{{iiidevops_ver}}';
-$ver_str = '[1] [1.0] [1.0.0] [develop]';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
-	if (!defined($ARGV[1])) {
-		$iiidevops_ver = (defined($iiidevops_ver) && $iiidevops_ver ne '{{iiidevops_ver}}' && $iiidevops_ver ne '')?$iiidevops_ver:'';
-		if ($iiidevops_ver ne '') {
-			$question = "Q2.2 Do you want to change III-DevOps installation version?(y/N)";
-			$answer = "A2.2 III-DevOps installation version: $iiidevops_ver";
-			$Y_N = prompt_for_input($question);
-			$isAsk = (lc($Y_N) eq 'y');	
-		}
-		else {
-			$isAsk=1;
-		}
-		while ($isAsk) {
-			$question = "Q2.2 Please enter the III-DevOps installation version: $ver_str ?";
-			$iiidevops_ver = prompt_for_input($question);
-			$iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
-			$isAsk = (index($ver_str, '['.$iiidevops_ver.']')<0);
-			if ($isAsk) {
-				print("A2.2 The version is wrong, please re-enter!\n");
-			}
-			else {
-				$answer = "A2.2 III-DevOps installation version: $iiidevops_ver OK!";
-			}
-		}
-	}
-	else {
-		$iiidevops_ver = $ARGV[1];
-		$answer = "A2.2 III-DevOps installation version: $iiidevops_ver OK!";
-	}
-	print ("$answer\n\n");
-	if ($iiidevops_ver ne '') {
-		if (-e $p_config_tmpl_ans) {
-			$tmp=$iiidevops_ver;
-			require($p_config_tmpl_ans);
-			$iiidevops_ver=$tmp;
-		}
-		write_ans();
-	}
+# 2.3 set Services Domain Name
+# gitlab_domain_name, harbor_domain_name, redmine_domain_name, sonarqube_domain_name, iiidevops_domain_name
+if (!defined($ARGV[0]) && $deploy_mode eq 'DNS') {
+	$question = "Q2.3 Do you want to change services domain name setting?(y/N)";
+	$answer = "A2.3 Skip change services domain name setting!";
+	$Y_N = prompt_for_input($question);
+	$isAsk = (lc($Y_N) eq 'y');	
+}
+else {
+	$isAsk = 1;
+}
+if ($isAsk) {
+	require($Bin.'/generate_env_domainname.pl');
 }
 
 # 3. set GitLab root password
