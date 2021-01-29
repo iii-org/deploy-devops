@@ -53,9 +53,9 @@ open(FH, '>', $docker_daemon_json) or die $!;
 print FH $new_daemon_json;
 close(FH);
 
-#sudo systemctl restart docker.service
-$cmd = "sudo systemctl restart docker.service";
-log_print("Restart docker service..\n");
+#sudo systemctl reload docker.service
+$cmd = "sudo systemctl reload docker.service";
+log_print("Reload docker service..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg-----\n");
 log_print("\nSuccessfully add $harbor_ip into insecure-registries!\nThe Docker of the node should be able to trust $harbor_ip\n");
