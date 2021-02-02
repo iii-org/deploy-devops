@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Add Secrets & Registry for all Rancher Projects
+# Add Secrets & Registry & Catalogs for all Rancher Projects
 #
 use FindBin qw($Bin);
 use JSON::MaybeXS qw(encode_json decode_json);
@@ -92,10 +92,9 @@ print("\nAdd Registry Credentials\n-----\n");
 $hash_registry = {};
 $registry_num = get_registry_api();
 $registry_name_list = '';
-foreach $item (@{ $hash_secrets->{'data'} }) {
+foreach $item (@{ $hash_registry->{'data'} }) {
         $registry_name_list .= "[$item->{'name'}]";
 }
-
 
 # harbor-local
 $name = 'harbor-local';
@@ -110,6 +109,34 @@ if (index($registry_name_list, $name)<0) {
 else {
 	print("$name : already exists, Skip!\n");
 }
+
+
+#-----
+# Add Apps Catalogs
+#-----
+print("\nAdd Apps Catalogs\n-----\n");
+# Get catalogs List
+$hash_catalogs = {};
+$catalogs_num = get_catalogs_api();
+$catalogs_name_list = '';
+foreach $item (@{ $hash_catalogs->{'data'} }) {
+        $catalogs_name_list .= "[$item->{'name'}]";
+}
+
+# iii-dev-charts3
+$name = 'iii-dev-charts3';
+#$key_value{'branch'} = 'main';
+#$key_value{'helmVersion'} = '2.0';
+#$key_value{'url'} = 'https://github.com/iii-org/devops-charts/';
+%key_value = {};
+if (index($catalogs_name_list, $name)<0) {
+	$ret_msg = add_catalogs($name, %key_value);
+	print("$name : $ret_msg\n");
+}
+else {
+	print("$name : already exists, Skip!\n");
+}
+
 
 exit;
 
@@ -155,6 +182,26 @@ sub add_registry {
 	return($ret_msg);
 }
 
+sub add_catalogs {
+	my ($p_name, %key_value) = @_;
+
+	$json_file = $secrets_path.$p_name.'-catalogs.json';
+	$tmpl_file = $json_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		$ret_msg = "The template file [$tmpl_file] does not exist!";
+		return($ret_msg);
+	}
+
+	$template = `cat $tmpl_file`;
+	foreach $key (keys %key_value) {
+		$template =~ s/{{$key}}/$key_value{$key}/g;
+	}
+	#print("-----\n$template\n-----\n\n");
+	$api_msg = add_catalogs_api($template);
+	$ret_msg = "Create Catalogs $json_file..$api_msg";
+	
+	return($ret_msg);
+}
 
 #curl --location --request POST 'http://10.20.0.68:31850/user/login' \
 #--header 'Content-Type: application/json' \
@@ -259,7 +306,7 @@ END
 	$hash_msg = decode_json(`$cmd`);
 	$message = $hash_msg->{'message'};
 	if ($message eq 'success') {
-		$hash_secrets = $hash_msg;
+		$hash_registry = $hash_msg;
 		$ret = @{ $hash_msg->{'data'} };
 	}
 	else {
@@ -303,5 +350,66 @@ END
 	
 	return($api_msg);	
 }
+
+#curl --location --request GET 'http://172.16.0.171:31850/rancher/catalogs' \
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTIyNjc0OTMsIm5iZiI6MTYxMjI2NzQ5MywianRpIjoiM2FmNzFmMDYtYTUyZS00Mjk4LWIyM2EtMTZkNzhmM2YwYmZmIiwiZXhwIjoxNjE0ODU5NDkzLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzeXNhZG1pbiIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.t3RBUWkA-QC6gGPFb-1CqrAoLAMm75jjAwE0t2t4GeU'
+sub get_catalogs_api {
+
+	if ($api_key eq '') {
+		get_api_key_api();
+	}
+
+	$cmd = <<END;
+curl -s --location --request GET '$iiidevops_api/rancher/catalogs' --header 'Authorization: Bearer $api_key'
+
+END
+	$hash_msg = decode_json(`$cmd`);
+	$message = $hash_msg->{'message'};
+	if ($message eq 'success') {
+		$hash_catalogs = $hash_msg;
+		$ret = @{ $hash_msg->{'data'} };
+	}
+	else {
+		print("get catalogs list Error : $message \n");
+		$ret=-1;
+	}
+	
+	return($ret);
+}
+
+#curl --location --request POST 'http://172.16.0.171:31850/rancher/catalogs' \
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTIyNjc0OTMsIm5iZiI6MTYxMjI2NzQ5MywianRpIjoiM2FmNzFmMDYtYTUyZS00Mjk4LWIyM2EtMTZkNzhmM2YwYmZmIiwiZXhwIjoxNjE0ODU5NDkzLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzeXNhZG1pbiIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.t3RBUWkA-QC6gGPFb-1CqrAoLAMm75jjAwE0t2t4GeU' \
+#--header 'Content-Type: application/json' \
+#--data-raw '{
+# "name": "iii-dev-charts3",
+# "branch": "main",
+# "helmVersion": "2.0",
+# "url": "https://github.com/iii-org/devops-charts/"
+#}'
+sub add_catalogs_api {
+	my ($p_data) = @_;
+
+	if ($api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$cmd = <<END;
+curl -s --location --request POST '$iiidevops_api/rancher/catalogs' --header 'Authorization: Bearer $api_key' --header 'Content-Type: application/json' --data-raw '$p_data'
+
+END
+	$api_msg = `$cmd`;
+	$hash_msg = decode_json($api_msg);
+	$message = $hash_msg->{'message'};
+	if ($message eq 'success') {
+		$api_msg = 'OK!';
+	}
+	else {
+		print("add catalogs Error:\n$api_msg\n");
+		$api_msg = 'Failed!';
+	}
+	
+	return($api_msg);	
+}
+
 
 1;
