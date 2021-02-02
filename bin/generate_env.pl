@@ -245,7 +245,7 @@ if ($isAsk) {
 
 # 3. set GitLab root password
 #\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_root_password') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'gitlab_root_password') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_gitlab_root_password) && $ask_gitlab_root_password ne '{{ask_gitlab_root_password}}' && $ask_gitlab_root_password ne '')?$ask_gitlab_root_password:'';
 		if ($password1 ne '') {
@@ -293,7 +293,7 @@ $same_passwd = $ask_gitlab_root_password;
 
 # 4. set GitLab Token
 #\$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_private_token') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'gitlab_private_token') {
 	if (!defined($ARGV[1])) {
 		$ask_gitlab_private_token = (defined($ask_gitlab_private_token) && $ask_gitlab_private_token ne '{{ask_gitlab_private_token}}' && $ask_gitlab_private_token ne '' && lc($ask_gitlab_private_token) ne 'skip')?$ask_gitlab_private_token:'';
 		if ($ask_gitlab_private_token ne '') {
@@ -334,7 +334,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_private_token') {
 
 # 5. set Rancher admin password
 #\$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_rancher_admin_password') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'rancher_admin_password') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_rancher_admin_password) && $ask_rancher_admin_password ne '{{ask_rancher_admin_password}}' && $ask_rancher_admin_password ne '')?$ask_rancher_admin_password:'';
 		if ($password1 ne '') {
@@ -384,7 +384,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_rancher_admin_password') {
 
 # 6.1 set Redmine admin password
 #\$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'redmine_admin_password') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_redmine_admin_password) && $ask_redmine_admin_password ne '{{ask_redmine_admin_password}}' && $ask_redmine_admin_password ne '')?$ask_redmine_admin_password:'';
 		if ($password1 ne '') {
@@ -434,7 +434,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_admin_password') {
 
 # 6.2 set Redmine API key
 #\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'redmine_api_key') {
 	if (!defined($ARGV[1])) {
 		$ask_redmine_api_key = (defined($ask_redmine_api_key) && $ask_redmine_api_key ne '{{ask_redmine_api_key}}' && $ask_redmine_api_key ne '')?$ask_redmine_api_key:'';
 		if ($ask_redmine_api_key ne '') {
@@ -468,7 +468,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_api_key') {
 
 # 7.1 set Sonarqube admin password
 #\$ask_sonarqube_admin_passwd = '{{ask_sonarqube_admin_passwd}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_admin_passwd') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'sonarqube_admin_passwd') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_sonarqube_admin_passwd) && $ask_sonarqube_admin_passwd ne '{{ask_sonarqube_admin_passwd}}' && $ask_sonarqube_admin_passwd ne '')?$ask_sonarqube_admin_passwd:'';
 		if ($password1 ne '') {
@@ -518,7 +518,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_admin_passwd') {
 
 # 7.2 set Sonarqube Admin Token
 #\$sonarqube_admin_token = '{{ask_sonarqube_admin_token}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_admin_token') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'sonarqube_admin_token') {
 	if (!defined($ARGV[1])) {
 		$ask_sonarqube_admin_token = (defined($ask_sonarqube_admin_token) && $ask_sonarqube_admin_token ne '{{ask_sonarqube_admin_token}}' && $ask_sonarqube_admin_token ne '' && lc($ask_sonarqube_admin_token) ne 'skip')?$ask_sonarqube_admin_token:'';
 		if ($ask_sonarqube_admin_token ne '') {
@@ -559,7 +559,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_admin_token') {
 
 # 8. set Harbor admin password
 #\$ask_harbor_admin_password = '{{ask_harbor_admin_password}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_harbor_admin_password') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'harbor_admin_password') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_harbor_admin_password) && $ask_harbor_admin_password ne '{{ask_harbor_admin_password}}' && $ask_harbor_admin_password ne '')?$ask_harbor_admin_password:'';
 		if ($password1 ne '') {

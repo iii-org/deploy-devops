@@ -6,7 +6,7 @@
 #
 # 9. set III-DevOps settings(Core)
 # 9a. \$ask_admin_init_login = '{{ask_admin_init_login}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_login') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'admin_init_login') {
 	if (!defined($ARGV[1])) {
 		$ask_admin_init_login = (defined($ask_admin_init_login) && $ask_admin_init_login ne '{{ask_admin_init_login}}' && $ask_admin_init_login ne '')?$ask_admin_init_login:'';
 		if ($ask_admin_init_login ne '') {
@@ -47,7 +47,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_login') {
 }
 
 # 9b. \$ask_admin_init_email = '{{ask_admin_init_email}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_email') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'admin_init_email') {
 	if (!defined($ARGV[1])) {
 		$ask_admin_init_email = (defined($ask_admin_init_email) && $ask_admin_init_email ne '{{ask_admin_init_email}}' && $ask_admin_init_email ne '')?$ask_admin_init_email:'';
 		if ($ask_admin_init_email ne '') {
@@ -87,7 +87,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_email') {
 }
 
 # 9c. \$ask_admin_init_password = '{{ask_admin_init_password}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_admin_init_password') {
+if (!defined($ARGV[0]) || $ARGV[0] eq 'admin_init_password') {
 	if (!defined($ARGV[1])) {
 		$password1 = (defined($ask_admin_init_password) && $ask_admin_init_password ne '{{ask_admin_init_password}}' && $ask_admin_init_password ne '')?$ask_admin_init_password:'';
 		if ($password1 ne '') {

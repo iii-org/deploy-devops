@@ -152,11 +152,11 @@
 >
 > * Modify the **$gitlab_private_token** value in env.pl
 >
->   ```~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token [Personal Access Token]```
+>   ```~/deploy-devops/bin/generate_env.pl gitlab_private_token [Personal Access Token]```
 >
 >   It should display as below.
 >   ```bash
->   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl ask_gitlab_private_token 535wZnCJDTL5y22xYYzv
+>   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl gitlab_private_token 535wZnCJDTL5y22xYYzv
 >   A4. Set GitLab Token OK!
 > 
 >   Q21. Do you want to generate env.pl based on the above information?(Y/n)
