@@ -237,7 +237,7 @@ if (!defined($ARGV[0]) && $ask_deploy_mode eq 'DNS') {
 	$isAsk = (lc($Y_N) eq 'y');	
 }
 else {
-	$isAsk = 1;
+	$isAsk = 0;
 }
 if ($isAsk) {
 	require($Bin.'/generate_env_domainname.pl');
