@@ -4,7 +4,7 @@
 # domain name setting(services)
 #------------------------------
 
-# 2.3a \$gitlab_domain_name = '{{ask_gitlab_domain_name}}';
+# 2.3a \$ask_gitlab_domain_name = '{{ask_gitlab_domain_name}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_domain_name') {
 	if (!defined($ARGV[1])) {
 		$ask_gitlab_domain_name = (defined($ask_gitlab_domain_name) && $ask_gitlab_domain_name ne '{{ask_gitlab_domain_name}}' && $ask_gitlab_domain_name ne '')?$ask_gitlab_domain_name:'';
@@ -44,7 +44,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_gitlab_domain_name') {
 	}
 }
 
-# 2.3b \$harbor_domain_name = '{{ask_harbor_domain_name}}';
+# 2.3b \$ask_harbor_domain_name = '{{ask_harbor_domain_name}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_harbor_domain_name') {
 	if (!defined($ARGV[1])) {
 		$ask_harbor_domain_name = (defined($ask_harbor_domain_name) && $ask_harbor_domain_name ne '{{ask_harbor_domain_name}}' && $ask_harbor_domain_name ne '')?$ask_harbor_domain_name:'';
@@ -84,7 +84,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_harbor_domain_name') {
 	}
 }
 
-# 2.3c \$redmine_domain_name = '{{ask_redmine_domain_name}}';
+# 2.3c \$ask_redmine_domain_name = '{{ask_redmine_domain_name}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_domain_name') {
 	if (!defined($ARGV[1])) {
 		$ask_redmine_domain_name = (defined($ask_redmine_domain_name) && $ask_redmine_domain_name ne '{{ask_redmine_domain_name}}' && $ask_redmine_domain_name ne '')?$ask_redmine_domain_name:'';
@@ -124,7 +124,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_redmine_domain_name') {
 	}
 }
 
-# 2.3d \$sonarqube_domain_name = '{{ask_sonarqube_domain_name}}';
+# 2.3d \$ask_sonarqube_domain_name = '{{ask_sonarqube_domain_name}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_domain_name') {
 	if (!defined($ARGV[1])) {
 		$ask_sonarqube_domain_name = (defined($ask_sonarqube_domain_name) && $ask_sonarqube_domain_name ne '{{ask_sonarqube_domain_name}}' && $ask_sonarqube_domain_name ne '')?$ask_sonarqube_domain_name:'';
@@ -164,7 +164,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_sonarqube_domain_name') {
 	}
 }
 
-# 2.3e \$iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
+# 2.3e \$ask_iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'ask_iiidevops_domain_name') {
 	if (!defined($ARGV[1])) {
 		$ask_iiidevops_domain_name = (defined($ask_iiidevops_domain_name) && $ask_iiidevops_domain_name ne '{{ask_iiidevops_domain_name}}' && $ask_iiidevops_domain_name ne '')?$ask_iiidevops_domain_name:'';
