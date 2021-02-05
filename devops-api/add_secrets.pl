@@ -28,7 +28,7 @@ foreach $item (@{ $hash_secrets->{'data'} }) {
 # nexus
 $name = 'nexus';
 $key_value{'api-origin'} = $iiidevops_api;
-if (index($secrets_name_list, $name)<0) {
+if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
 }
@@ -42,7 +42,7 @@ $key_value{'client-secret'} = $checkmarx_secret;
 $key_value{'cm-url'} = $checkmarx_origin;
 $key_value{'username'} = $checkmarx_username;
 $key_value{'password'} = $checkmarx_password;
-if (index($secrets_name_list, $name)<0) {
+if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
 }
@@ -53,7 +53,7 @@ else {
 # webinspect
 $name = 'webinspect';
 $key_value{'wi-base-url'} = $webinspect_base_url;
-if (index($secrets_name_list, $name)<0) {
+if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
 }
@@ -64,7 +64,7 @@ else {
 # gitlab
 $name = 'gitlab';
 $key_value{'git-host'} = $gitlab_ip.':32080';
-if (index($secrets_name_list, $name)<0) {
+if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
 }
@@ -75,7 +75,7 @@ else {
 # sonarqube
 $name = 'sonarqube';
 $key_value{'sonar-url'} = 'http://'.$sonarqube_ip.':31910';
-if (index($secrets_name_list, $name)<0) {
+if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
 }
@@ -86,7 +86,7 @@ else {
 # harbor
 $name = 'harbor';
 $key_value{'harbor-local'} = ($harbor_domain_name eq '')?$harbor_ip.':32443':$harbor_domain_name;
-if (index($secrets_name_list, $name)<0) {
+if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
 }
@@ -113,7 +113,7 @@ $url = ($harbor_domain_name eq '')?$harbor_ip.':32443':$harbor_domain_name;
 $key_value{'url'} = $url;
 $key_value{'username'} = 'admin';
 $key_value{'password'} = $harbor_admin_password;
-if (index($registry_name_list, $name)<0) {
+if (index($registry_name_list, '['.$name.']')<0) {
 	$ret_msg = add_registry($name, %key_value);
 	print("$name : $ret_msg\n");
 }
@@ -140,7 +140,7 @@ $name = 'iii-dev-charts3';
 #$key_value{'helmVersion'} = '2.0';
 #$key_value{'url'} = 'https://github.com/iii-org/devops-charts/';
 %key_value = {};
-if (index($catalogs_name_list, $name)<0) {
+if (index($catalogs_name_list, '['.$name.']')<0) {
 	$ret_msg = add_catalogs($name, %key_value);
 	print("$name : $ret_msg\n");
 }
