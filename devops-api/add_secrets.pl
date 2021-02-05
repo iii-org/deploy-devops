@@ -83,6 +83,17 @@ else {
 	print("$name : already exists, Skip!\n");
 }
 
+# harbor
+$name = 'harbor';
+$key_value{'harbor-local'} = ($harbor_domain_name eq '')?$harbor_ip.':32443':$harbor_domain_name;
+if (index($secrets_name_list, $name)<0) {
+	$ret_msg = add_secrets($name, %key_value);
+	print("$name : $ret_msg\n");
+}
+else {
+	print("$name : already exists, Skip!\n");
+}
+
 
 #-----
 # Add Registry Credentials

@@ -21,6 +21,9 @@ Define installation template - https://github.com/iii-org/deploy-devops/tree/mas
 ## sonarqube
 - sonar-url
 
+## harobr
+- harbor-local
+
 # Registry Credentials
 
 ## harbor-local
@@ -28,3 +31,9 @@ Define installation template - https://github.com/iii-org/deploy-devops/tree/mas
 - Username
 - Password
 
+# Helm Catalogs
+
+## iii-dev-charts3
+- branch
+- helmVersion
+- url
