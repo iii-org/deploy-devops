@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # sync iii-org-app script
 #
-# Usage: sync-iii-org-app.pl [github_org] [gitubuser:github_token]
+# Usage: sync-iii-org-app.pl [gitubuser:github_token] [github_org] 
 #
 use FindBin qw($Bin);
 use JSON::MaybeXS qw(encode_json decode_json);
@@ -12,14 +12,25 @@ if (!-e $p_config) {
 }
 require($p_config);
 
+if (!defined($ARGV[0])) {
+	print("Usage: $prgname [gitubuser:github_token] [github_org]\n");
+	exit;
+}
+
+$github_user_token = $ARGV[0];
+($cmd_msg, $github_token) = split(':', $github_user_token);
+if (length($github_token)!=40) {
+	print("github_token:[$github_token] is worng!\n");
+	exit;
+}
+
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$github_org = (defined($ARGV[0]))?$ARGV[0]:'iii-org-app';
-$github_user_token = (defined($ARGV[1]))?$ARGV[1]:'';
+$github_org = (defined($ARGV[1]))?$ARGV[1]:'iii-org-app';
 
 # Get GitHub org $github_org (iii-org-app) repo list
 # curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iii-org-app/repos
@@ -28,7 +39,7 @@ $cmd = "curl -s $arg_str -H \"Accept: application/vnd.github.inertia-preview+jso
 log_print("Get GitHub org $github_org repo list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, 'node_id')<0) {
-	log_print("Get GitHub org [$github_org] repos Error!\n---\n$cmd_msg\n---\n");
+	log_print("Get GitHub org [$github_org] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
 	exit;
 }
 $hash_github_repo = decode_json($cmd_msg);
@@ -154,16 +165,10 @@ sub update_github {
 
 sub import_github {
 	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
-	my ($cmd, $cmd_msg, $arg_user, $arg_token);
+	my ($cmd, $cmd_msg, $arg_user);
 
 	# curl --request POST --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" --data "personal_access_token=de8b68c3ee3eccdf7d4d69c6260bff66482283a9&repo_id=336984846&new_name=django-postgresql-todo&target_namespace=iii-org-app" https://gitlab-demo.iiidevops.org/api/v4/import/github
-	if ($github_user_token eq '') {
-		($arg_user, $arg_token)=split(':', $github_user_token);
-	}
-	else {
-		$arg_token = 'de8b68c3ee3eccdf7d4d69c6260bff66482283a9';
-	}
-	$cmd = "curl -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$arg_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace\" http://$gitlab_ip:32080/api/v4/import/github";
+	$cmd = "curl -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace\" http://$gitlab_ip:32080/api/v4/import/github";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
