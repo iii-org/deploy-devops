@@ -24,6 +24,9 @@ Define installation template - https://github.com/iii-org/deploy-devops/tree/mas
 ## harobr
 - harbor-local
 
+## rancher
+- rancher-url
+
 # Registry Credentials
 
 ## harbor-local
