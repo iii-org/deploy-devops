@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-# sync iii-org-app script
+# sync project template script
 #
-# Usage: sync-iii-org-app.pl [gitubuser:github_token] [github_org] 
+# Usage: sync-prj-templ.pl [gitubuser:github_token] [github_org (iiidevops-templates)] 
 #
 use FindBin qw($Bin);
 use JSON::MaybeXS qw(encode_json decode_json);
@@ -30,10 +30,10 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$github_org = (defined($ARGV[1]))?$ARGV[1]:'iii-org-app';
+$github_org = (defined($ARGV[1]))?$ARGV[1]:'iiidevops-templates';
 
-# Get GitHub org $github_org (iii-org-app) repo list
-# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iii-org-app/repos
+# Get GitHub org $github_org (iiidevops-templates) repo list
+# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
 $arg_str = ($github_user_token ne '')?"-u $github_user_token ":'';
 $cmd = "curl -s $arg_str -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/orgs/$github_org/repos";
 log_print("Get GitHub org $github_org repo list..\n");
@@ -53,7 +53,7 @@ if ($repo_num==0){
 	exit;
 }
 
-# Check if the GitLab group $github_org (iii-org-app) exists
+# Check if the GitLab group $github_org (iiidevops-templates) exists
 # curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/
 $cmd = "curl -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/groups/";
 log_print("Get GitLab group list..\n");
@@ -71,7 +71,7 @@ else {
 }
 if (index($group_list, "[$github_org]")<0) {
 	# Create $github_org group
-	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iii-org-app","path": "iii-org-app"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
+	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
 	$cmd = "curl -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$github_org\",\"path\": \"$github_org\"}' http://$gitlab_ip:32080/api/v4/groups/";	
 	$cmd_msg = `$cmd`;
 	$ret = '';
@@ -93,8 +93,8 @@ else {
 }
 
 
-# Get GitLab Group $github_org (iii-org-app) project list
-# curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/iii-org-app/projects
+# Get GitLab Group $github_org (iiidevops-templates) project list
+# curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/iiidevops-templates/projects
 $cmd = "curl -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/groups/$github_org/projects";
 log_print("Get GitLab group $github_org project list..\n");
 $cmd_msg = `$cmd`;
@@ -167,7 +167,7 @@ sub import_github {
 	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
 	my ($cmd, $cmd_msg, $arg_user);
 
-	# curl --request POST --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" --data "personal_access_token=de8b68c3ee3eccdf7d4d69c6260bff66482283a9&repo_id=336984846&new_name=django-postgresql-todo&target_namespace=iii-org-app" https://gitlab-demo.iiidevops.org/api/v4/import/github
+	# curl --request POST --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" --data "personal_access_token=de8b68c3ee3eccdf7d4d69c6260bff66482283a9&repo_id=336984846&new_name=django-postgresql-todo&target_namespace=iiidevops-templates" https://gitlab-demo.iiidevops.org/api/v4/import/github
 	$cmd = "curl -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace\" http://$gitlab_ip:32080/api/v4/import/github";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
