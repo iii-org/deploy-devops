@@ -44,9 +44,12 @@ if (index($cmd_msg, 'node_id')<0) {
 }
 $hash_github_repo = decode_json($cmd_msg);
 $repo_num=0;
+$repo_name_list = '';
 foreach $repo_hash (@ {$hash_github_repo}) {
 	$repo_num++;
-	log_print("[$repo_num]:".$repo_hash->{'name'}."\n");
+	$repo_name = $repo_hash->{'name'};
+	$repo_name_list .= '['.$repo_name.']';
+	log_print("[$repo_num]:$repo_name\n");
 }
 log_print("GitHub org [$github_org] : $repo_num repo(s)\n\n");
 if ($repo_num==0){
@@ -110,13 +113,20 @@ $prj_name_list = '';
 %hash_prj_path={};
 %hash_prj_created_at={};
 foreach $project_hash (@ {$hash_gitlab_project}) {
-	$project_num++;
 	$prj_name = $project_hash->{'name'};
-	$prj_name_list .= '['.$prj_name.']';
-	$hash_prj_id{$prj_name}=$project_hash->{'id'};
-	$hash_prj_path{$prj_name}=$project_hash->{'path'};
-	$hash_prj_created_at{$prj_name}=$project_hash->{'created_at'};
-	log_print("[$project_num]:".$project_hash->{'name'}."\n");
+	$prj_id = $project_hash->{'id'};
+	if (index($repo_name_list, "[$prj_name]")<0) {
+		delete_gitlab($prj_id);
+		log_print("**Remove**:[$prj_id] $prj_name OK!\n");
+	}
+	else {
+		$project_num++;
+		$prj_name_list .= '['.$prj_name.']';
+		$hash_prj_id{$prj_name}=$prj_id;
+		$hash_prj_path{$prj_name}=$project_hash->{'path'};
+		$hash_prj_created_at{$prj_name}=$project_hash->{'created_at'};
+		log_print("[$project_num]:".$project_hash->{'name'}."\n");
+	}
 }
 log_print("Gitlab group [$github_org] : $project_num project(s)\n\n");
 
@@ -150,15 +160,24 @@ sub update_github {
 	my ($p_gitlab_id, $p_repo_id, $p_new_name, $p_target_namespace) = @_;
 	my ($cmd, $cmd_msg);
 
+	delete_gitlab($p_gitlab_id);
+	import_github($p_repo_id, $p_new_name, $p_target_namespace);
+
+	return;
+}
+
+sub delete_gitlab {
+	my ($p_gitlab_id) = @_;
+	my ($cmd, $cmd_msg);
+
 	#curl --request DELETE --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/projects/2
 	$cmd = "curl -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/projects/$p_gitlab_id";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, 'Accepted')<0) {
-		log_print("update_github:delete_gitlab [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		log_print("delete_gitlab [$p_gitlab_id] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
 		exit;
 	}
 	sleep(5);
-	import_github($p_repo_id, $p_new_name, $p_target_namespace);
 
 	return;
 }
