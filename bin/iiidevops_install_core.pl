@@ -281,5 +281,9 @@ print("\n");
 # Add secrets for Rancher all projects
 system("$Bin/../devops-api/add_secrets.pl");
 
+# Sync Project templates to GitLab
+$sync_key = decode_base64(substr($sync_templ_key,10,63));
+system("$Bin/../bin/sync-prj-templ.pl $sync_key");
+
 log_print("\nThe deployment of III-DevOps services has been completed. Please try to connect to the following URL.\n");
 log_print("III-DevOps - http://$iiidevops_domain_name\n\n");
