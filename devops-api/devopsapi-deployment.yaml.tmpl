@@ -77,6 +77,8 @@ spec:
           value: "admin"
         - name: HARBOR_PASSWORD
           value: "{{harbor_admin_password}}"
+        - name: INGRESS_EXTERNAL_BASE
+          value: "{{ingress_domain_name}}"
         - name: WEBINSPECT_BASE_URL
           value: "{{webinspect_base_url}}"
         - name: ADMIN_INIT_LOGIN
