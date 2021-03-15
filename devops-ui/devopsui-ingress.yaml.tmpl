@@ -9,6 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-ssl-protocols: "TLSv1.3"
     nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: "true"
     nginx.ingress.kubernetes.io/ssl-ciphers: "EECDH+AESGCM:EDH+AESGCM"
+    nginx.ingress.kubernetes.io/websocket-services: "devopsui-service"
 spec:
   rules:
   - host: "{{iiidevops_domain_name}}"
