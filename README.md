@@ -1,7 +1,7 @@
 # deploy-devops
 ## Installation environment and requriments
 
-* Ubuntu 20.04 LTS virtual machine(VM) (The minimum resource configuration of a VM is 4 vCore, 8G RAM, 60G HD; however, for production environment, it should be 3 or more VMs with 8 vCore, 16G RAM, 200G SSD)
+* Ubuntu 20.04 LTS virtual machine(VM) (The minimum resource configuration of a VM is 8 vCore, 16G RAM, 120G HD; however, for production environment, it should be 3 or more VMs with SSD driver)
 * Before installation, you should decide on these configuration settings
   * IP of VM
   * Deploy mode:IP or DNS or nip.io or xip.io (nip.io and xip.io are only for test environment)
@@ -266,4 +266,36 @@
 >   iiidevops-71   Ready    controlplane,etcd,worker   23h   v1.18.12
 >   ```
 >   * After executing this command, it will take about 3 to 5 minutes for the node to join the cluster.
+
+# Step 10. Auto update III DevOps project templates
+
+> * III DevOps provides popular software development frameworks and database project templates - https://github.com/iiidevops-templates
+> * Please get the personal token on github first (scopes : public_repo) - https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
+>
+> * Create cron.txt on VM1 and set it to synchronize with github every 10 minutes during working hours
+>
+>   ```bash
+>   localadmin@iiidevops-71:~$ vi cron.txt
+>   ----
+>   */10 7-20 * * * /home/localadmin/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
+>   ----
+>   localadmin@iiidevops-71:~$ crontab cron.txt
+>   localadmin@iiidevops-71:~$ crontab -l
+>   */10 7-20 * * * /home/localadmin/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
+>   ```
+> * You can see the synchronization log in /tmp/sync-prj-templ.log . It should display as below.
+>
+>   ```bash
+>   localadmin@iiidevops-71:~$ tail /tmp/sync-prj-templ.log
+>   ----
+>   :
+>   :
+>   [18].   name:flask-postgres-todo (2021-03-11T08:18:11Z)
+>           GitLab-> id:252 path:flask-postgres-todo created_at:2021-03-11T09:00:53.812Z
+>   [19].   name:spring-maraidb-restapi (2021-03-11T08:13:26Z)
+>           GitLab-> id:253 path:spring-maraidb-restapi created_at:2021-03-11T09:01:00.607Z
+>   [20].   name:flask-webpage-with-men (2021-03-11T08:10:06Z)
+>           GitLab-> id:254 path:flask-webpage-with-men created_at:2021-03-11T09:01:02.401Z
+>   localadmin@iiidevops-71:~$
+>   ```
 
