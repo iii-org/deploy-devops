@@ -33,6 +33,7 @@ $ans_tmpl = <<END;
 \$ask_harbor_domain_name = '{{ask_harbor_domain_name}}';
 \$ask_redmine_domain_name = '{{ask_redmine_domain_name}}';
 \$ask_sonarqube_domain_name = '{{ask_sonarqube_domain_name}}';
+\$ask_k8sctl_domain_name = '{{ask_k8sctl_domain_name}}';
 \$ask_ingress_domain_name = '{{ask_ingress_domain_name}}';
 \$ask_iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
 \$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
@@ -737,6 +738,7 @@ if (lc($Y_N) ne 'n') {
 	$env_template =~ s/{{ask_harbor_domain_name}}/$ask_harbor_domain_name/g;
 	$env_template =~ s/{{ask_redmine_domain_name}}/$ask_redmine_domain_name/g;
 	$env_template =~ s/{{ask_sonarqube_domain_name}}/$ask_sonarqube_domain_name/g;
+	$env_template =~ s/{{ask_k8sctl_domain_name}}/$ask_k8sctl_domain_name/g;
 	$env_template =~ s/{{ask_ingress_domain_name}}/$ask_ingress_domain_name/g;
 	$env_template =~ s/{{ask_iiidevops_domain_name}}/$ask_iiidevops_domain_name/g;
 	$env_template =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/g;
@@ -785,6 +787,7 @@ sub write_ans {
 	$ans_file =~ s/{{ask_harbor_domain_name}}/$ask_harbor_domain_name/g;
 	$ans_file =~ s/{{ask_redmine_domain_name}}/$ask_redmine_domain_name/g;
 	$ans_file =~ s/{{ask_sonarqube_domain_name}}/$ask_sonarqube_domain_name/g;
+	$ans_file =~ s/{{ask_k8sctl_domain_name}}/$ask_k8sctl_domain_name/g;
 	$ans_file =~ s/{{ask_ingress_domain_name}}/$ask_ingress_domain_name/g;
 	$ans_file =~ s/{{ask_iiidevops_domain_name}}/$ask_iiidevops_domain_name/g;
 	$ans_file =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/;

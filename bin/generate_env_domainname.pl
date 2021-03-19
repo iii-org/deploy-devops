@@ -164,13 +164,13 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'sonarqube_domain_name') {
 	}
 }
 
-# 2.3e \$ask_ingress_domain_name = '{{ask_ingress_domain_name}}';
-if (!defined($ARGV[0]) || $ARGV[0] eq 'ingress_domain_name') {
+# 2.3e \$ask_k8sctl_domain_name = '{{ask_k8sctl_domain_name}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'k8sctl_domain_name') {
 	if (!defined($ARGV[1])) {
-		$ask_ingress_domain_name = (defined($ask_ingress_domain_name) && $ask_ingress_domain_name ne '{{ask_ingress_domain_name}}' && $ask_ingress_domain_name ne '')?$ask_ingress_domain_name:'';
-		if ($ask_ingress_domain_name ne '') {
-			$question = "Q2.3e Do you want to change Ingress domain name:($ask_ingress_domain_name)?(y/N)";
-			$answer = "A2.3e Skip Set Ingress domain name!";
+		$ask_k8sctl_domain_name = (defined($ask_k8sctl_domain_name) && $ask_k8sctl_domain_name ne '{{ask_k8sctl_domain_name}}' && $ask_k8sctl_domain_name ne '')?$ask_k8sctl_domain_name:'';
+		if ($ask_k8sctl_domain_name ne '') {
+			$question = "Q2.3e Do you want to change kubectl domain name:($ask_k8sctl_domain_name)?(y/N)";
+			$answer = "A2.3e Skip Set kubectl domain name!";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
 		}
@@ -178,20 +178,60 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ingress_domain_name') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q2.3e Please enter the Ingress domain name:";
+			$question = "Q2.3e Please enter the kubectl domain name:";
+			$ask_k8sctl_domain_name = prompt_for_input($question);
+			$isAsk = ($ask_k8sctl_domain_name eq '');
+			if ($isAsk) {
+				print("A2.3e The kubectl domain name is empty, please re-enter!\n");
+			}
+			else {
+				$answer = "A2.3e Set kubectl domain name OK!";
+			}
+		}
+	}
+	else {
+		$ask_k8sctl_domain_name = $ARGV[1];
+		$answer = "A2.3e Set kubectl domain name OK!";
+	}
+	print ("$answer\n\n");
+	if ($ask_k8sctl_domain_name ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_k8sctl_domain_name;
+			require($p_config_tmpl_ans);
+			$ask_k8sctl_domain_name=$tmp;
+		}
+		write_ans();
+	}
+}
+
+# 2.3f \$ask_ingress_domain_name = '{{ask_ingress_domain_name}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'ingress_domain_name') {
+	if (!defined($ARGV[1])) {
+		$ask_ingress_domain_name = (defined($ask_ingress_domain_name) && $ask_ingress_domain_name ne '{{ask_ingress_domain_name}}' && $ask_ingress_domain_name ne '')?$ask_ingress_domain_name:'';
+		if ($ask_ingress_domain_name ne '') {
+			$question = "Q2.3f Do you want to change Ingress domain name:($ask_ingress_domain_name)?(y/N)";
+			$answer = "A2.3f Skip Set Ingress domain name!";
+			$Y_N = prompt_for_input($question);
+			$isAsk = (lc($Y_N) eq 'y');	
+		}
+		else {
+			$isAsk=1;
+		}
+		while ($isAsk) {
+			$question = "Q2.3f Please enter the Ingress domain name:";
 			$ask_ingress_domain_name = prompt_for_input($question);
 			$isAsk = ($ask_ingress_domain_name eq '');
 			if ($isAsk) {
-				print("A2.3e The Ingress domain name is empty, please re-enter!\n");
+				print("A2.3f The Ingress domain name is empty, please re-enter!\n");
 			}
 			else {
-				$answer = "A2.3e Set Ingress domain name OK!";
+				$answer = "A2.3f Set Ingress domain name OK!";
 			}
 		}
 	}
 	else {
 		$ask_ingress_domain_name = $ARGV[1];
-		$answer = "A2.3e Set III DevOps domain name OK!";
+		$answer = "A2.3f Set Ingress domain name OK!";
 	}
 	print ("$answer\n\n");
 	if ($ask_ingress_domain_name ne '') {
@@ -204,13 +244,13 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'ingress_domain_name') {
 	}
 }
 
-# 2.3f \$ask_iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
+# 2.3g \$ask_iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_domain_name') {
 	if (!defined($ARGV[1])) {
 		$ask_iiidevops_domain_name = (defined($ask_iiidevops_domain_name) && $ask_iiidevops_domain_name ne '{{ask_iiidevops_domain_name}}' && $ask_iiidevops_domain_name ne '')?$ask_iiidevops_domain_name:'';
 		if ($ask_iiidevops_domain_name ne '') {
-			$question = "Q2.3f Do you want to change III DevOps domain name:($ask_iiidevops_domain_name)?(y/N)";
-			$answer = "A2.3f Skip Set III DevOps domain name!";
+			$question = "Q2.3g Do you want to change III DevOps domain name:($ask_iiidevops_domain_name)?(y/N)";
+			$answer = "A2.3g Skip Set III DevOps domain name!";
 			$Y_N = prompt_for_input($question);
 			$isAsk = (lc($Y_N) eq 'y');	
 		}
@@ -218,20 +258,20 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_domain_name') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q2.3f Please enter the III DevOps domain name:";
+			$question = "Q2.3g Please enter the III DevOps domain name:";
 			$ask_iiidevops_domain_name = prompt_for_input($question);
 			$isAsk = ($ask_iiidevops_domain_name eq '');
 			if ($isAsk) {
-				print("A2.3f The III DevOps domain name is empty, please re-enter!\n");
+				print("A2.3g The III DevOps domain name is empty, please re-enter!\n");
 			}
 			else {
-				$answer = "A2.3f Set III DevOps domain name OK!";
+				$answer = "A2.3g Set III DevOps domain name OK!";
 			}
 		}
 	}
 	else {
 		$ask_iiidevops_domain_name = $ARGV[1];
-		$answer = "A2.3f Set III DevOps domain name OK!";
+		$answer = "A2.3g Set III DevOps domain name OK!";
 	}
 	print ("$answer\n\n");
 	if ($ask_iiidevops_domain_name ne '') {

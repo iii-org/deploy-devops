@@ -177,6 +177,7 @@ $template =~ s/{{rancher_admin_password}}/$rancher_admin_password/g;
 $template =~ s/{{harbor_ip}}/$harbor_ip/g;
 $template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
 $template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
+$template =~ s/{{k8s_domain_name}}/$k8s_domain_name/g;
 $template =~ s/{{ingress_domain_name}}/$ingress_domain_name/g;
 $template =~ s/{{checkmarx_origin}}/$checkmarx_origin/g;
 $template =~ s/{{checkmarx_username}}/$checkmarx_username/g;
