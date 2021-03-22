@@ -66,7 +66,7 @@ spec:
         - name: SONARQUBE_INTERNAL_BASE_URL
           value: "http://sonarqube-server-service:9000/api"
         - name: SONARQUBE_EXTERNAL_BASE_URL
-          value: "{{sonarqube_domain_name}}"
+          value: "http://{{sonarqube_domain_name}}"
         - name: SONARQUBE_ADMIN_TOKEN
           value: "{{sonarqube_admin_token}}"
         - name: HARBOR_INTERNAL_BASE_URL
