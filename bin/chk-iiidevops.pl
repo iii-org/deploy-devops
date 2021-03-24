@@ -25,6 +25,7 @@ if (index($cmd_msg, 'Running')<0) {
 	log_print("The Kubernetes cluster is not working properly!\n");
 	exit;
 }
+log_print("OK!\n");
 
 # Check if Gitlab/Rancher/Harbor/Redmine services are running well
 # Check GitLab service is working
@@ -106,7 +107,7 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 log_print("OK!\n");
 
-log_print("7. Check DevOps-DB..\n");
+log_print("7. Check DevOps-DB..");
 # Check the database is ready!
 $cmd_msg = `nc -z -v $db_ip 31403 2>&1`;
 # Connection to 192.168.11.205 31403 port [tcp/*] succeeded!
@@ -117,8 +118,7 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 log_print("OK!\n");
 
-
-log_print("8. Check III DevOps-AP..\n");
+log_print("8. Check III DevOps-AP..");
 # check iiidevops-api ready
 $cmd = "curl -s --location --request POST '$iiidevops_api/user/login'";
 #{ "message": {
