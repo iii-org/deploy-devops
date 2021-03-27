@@ -29,6 +29,8 @@ $ans_tmpl = <<END;
 \$ask_iiidevops_ver = '{{ask_iiidevops_ver}}';
 \$ask_vm1_ip = '{{ask_vm1_ip}}';
 \$ask_vm2_ip = '{{ask_vm2_ip}}';
+\$ask_nfs_ip = '{{ask_nfs_ip}}';
+\$ask_nfs_dir = '{{ask_nfs_dir}}';
 \$ask_gitlab_domain_name = '{{ask_gitlab_domain_name}}';
 \$ask_harbor_domain_name = '{{ask_harbor_domain_name}}';
 \$ask_redmine_domain_name = '{{ask_redmine_domain_name}}';
@@ -81,7 +83,7 @@ if (defined($ARGV[0])) {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	if (!defined($ARGV[1])) {
 		$ask_vm1_ip = (defined($ask_vm1_ip) && $ask_vm1_ip ne '{{ask_vm1_ip}}' && $ask_vm1_ip ne '')?$ask_vm1_ip:$host_ip;
-		$question = "Q1.1 Please enter the base services IP (NFS, Rancher)?($ask_vm1_ip)";
+		$question = "Q1.1 Please enter the base service (Rancher) IP?($ask_vm1_ip)";
 		$isAsk = 1;
 		while($isAsk) {
 			$ans_ip = prompt_for_input($question);
@@ -98,7 +100,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	else {
 		$ask_vm1_ip = $ARGV[1];
 	}
-	$answer = "A1.1 Set [$ask_vm1_ip] for Base Services";
+	$answer = "A1.1 Set [$ask_vm1_ip] for Base Service";
 	print ("$answer\n\n");
 	if ($ask_vm1_ip ne '') {
 		if (-e $p_config_tmpl_ans) {
@@ -139,6 +141,74 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 			$tmp=$ask_vm2_ip;
 			require($p_config_tmpl_ans);
 			$ask_vm2_ip=$tmp;
+		}
+		write_ans();
+	}
+}
+
+# 1.3 Set $nfs_ip
+#\$ask_nfs_ip = '{{ask_nfs_ip}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_ip') {
+	if (!defined($ARGV[1])) {
+		$ask_nfs_ip = (defined($ask_nfs_ip) && $ask_nfs_ip ne '{{ask_nfs_ip}}' && $ask_nfs_ip ne '')?$ask_nfs_ip:$ask_vm1_ip;
+		$question = "Q1.3 Please enter NFS service IP?($ask_nfs_ip)";
+		$isAsk = 1;
+		while($isAsk) {
+			$ans_ip = prompt_for_input($question);
+			$ans_ip = ($ans_ip eq '')?$ask_nfs_ip:$ans_ip;
+			if ($ans_ip ne '' && index($ans_ip, '127.')!=0) {
+				$ask_nfs_ip = $ans_ip;
+				$isAsk = 0;
+			}
+			else {
+				print("A1.3 This IP $ans_ip is not allowed, please re-enter!\n");
+			}
+		}
+	}
+	else {
+		$ask_nfs_ip = $ARGV[1];
+	}
+	$answer = "A1.3 Set [$ask_nfs_ip] for NFS service";
+	print ("$answer\n\n");
+	if ($ask_nfs_ip ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_nfs_ip;
+			require($p_config_tmpl_ans);
+			$ask_nfs_ip=$tmp;
+		}
+		write_ans();
+	}
+}
+
+# 1.4 Set $nfs_dir
+#\$ask_nfs_dir = '{{ask_nfs_dir}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_dir') {
+	if (!defined($ARGV[1])) {
+		$ask_nfs_dir = (defined($ask_nfs_dir) && $ask_nfs_dir ne '{{ask_nfs_dir}}' && $ask_nfs_dir ne '')?$ask_nfs_dir:$data_dir;
+		$question = "Q1.4 Please enter NFS shared dir?($ask_nfs_dir)";
+		$isAsk = 1;
+		while($isAsk) {
+			$ans_dir = prompt_for_input($question);
+			$ans_dir = ($ans_dir eq '')?$ask_nfs_dir:$ans_dir;
+			if ($ans_dir ne '') {
+				$ask_nfs_dir = $ans_dir;
+				$isAsk = 0;
+			}
+			else {
+				print("A1.4 This shared dir $ans_dir is not allowed, please re-enter!\n");
+			}
+		}
+	}
+	else {
+		$ask_nfs_dir = $ARGV[1];
+	}
+	$answer = "A1.4 Set [$ask_nfs_dir] for NFS shared dir";
+	print ("$answer\n\n");
+	if ($ask_nfs_dir ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp=$ask_nfs_dir;
+			require($p_config_tmpl_ans);
+			$ask_nfs_dir=$tmp;
 		}
 		write_ans();
 	}
