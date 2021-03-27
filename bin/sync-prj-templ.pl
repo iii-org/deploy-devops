@@ -97,8 +97,11 @@ else {
 
 
 # Get GitLab Group $github_org (iiidevops-templates) project list
-# curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/iiidevops-templates/projects
-$cmd = "curl -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/groups/$github_org/projects";
+# Ref - https://docs.gitlab.com/ee/api/groups.html 
+#	By default, this request returns 20 results at a time because the API results are paginated.
+#	https://docs.gitlab.com/ee/api/README.html#pagination
+# curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/iiidevops-templates/projects?per_page=100
+$cmd = "curl -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/groups/$github_org/projects?per_page=100";
 log_print("Get GitLab group $github_org project list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, '"message"')>0) {
