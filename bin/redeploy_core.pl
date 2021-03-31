@@ -64,7 +64,7 @@ $template =~ s/{{nfs_dir}}/$nfs_dir/g;
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
-$cmd = "kubectl $kubeconf_str apply -f $yaml_path";
+$cmd = "/snap/bin/kubectl $kubeconf_str apply -f $yaml_path";
 log_print("Deploy devops-api..[$cmd]\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n\n");
@@ -110,7 +110,7 @@ else {
 	}
 }
 
-$cmd = "kubectl $kubeconf_str apply -f $yaml_path";
+$cmd = "/snap/bin/kubectl $kubeconf_str apply -f $yaml_path";
 log_print("Deploy devops-ui..[$cmd]\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n\n");
