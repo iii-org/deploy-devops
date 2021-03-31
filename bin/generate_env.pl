@@ -182,6 +182,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_ip') {
 
 # 1.4 Set $nfs_dir
 #\$ask_nfs_dir = '{{ask_nfs_dir}}';
+$ask_nfs_dir = ($ask_nfs_dir eq '')?$nfs_dir:$ask_nfs_dir;
 if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_dir') {
 	if (!defined($ARGV[1])) {
 		$ask_nfs_dir = (defined($ask_nfs_dir) && $ask_nfs_dir ne '{{ask_nfs_dir}}' && $ask_nfs_dir ne '')?$ask_nfs_dir:$data_dir;
@@ -216,7 +217,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_dir') {
 
 # 2.1 set III-DevOps installation version
 #\$ask_iiidevops_ver = '{{ask_iiidevops_ver}}';
-$ver_str = '[1] [1.0] [1.0.0] [develop]';
+$ver_str = '[1] [1.0] [1.3] [develop]';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
 	if (!defined($ARGV[1])) {
 		$ask_iiidevops_ver = (defined($ask_iiidevops_ver) && $ask_iiidevops_ver ne '{{ask_iiidevops_ver}}' && $ask_iiidevops_ver ne '')?$ask_iiidevops_ver:'';
