@@ -143,6 +143,9 @@ END
 		open(FH, '>', $yaml_file) or die $!;
 		print FH $template;
 		close(FH);
+		$cmd = "kubectl apply -f $yaml_file";
+		$cmd_msg = `$cmd`;
+		log_print("-----\n$cmd_msg-----\n");
 	}
 	else {
 		$cmd = "rm -f $yaml_file";
@@ -151,10 +154,6 @@ END
 			log_print("$cmd Error!\n$cmd_msg-----\n");
 		}
 	}
-
-	$cmd = "kubectl apply -f $yaml_file";
-	$cmd_msg = `$cmd`;
-	log_print("-----\n$cmd_msg-----\n");
 
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to deploy Harbor service. Please wait.. \n");
