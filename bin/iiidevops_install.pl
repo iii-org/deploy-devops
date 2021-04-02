@@ -46,6 +46,7 @@ system($cmd);
 #log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd = <<END;
+sudo apt update
 sudo apt-get install unzip -y;
 cd ~; unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
