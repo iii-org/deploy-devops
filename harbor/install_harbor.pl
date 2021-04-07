@@ -29,7 +29,7 @@ if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
 
 log_print("Install Harbor URL: https://$harbor_domain_name\n");
 # Check Harbor is working
-$cmd_msg = `curl -k --location --request POST 'https://$harbor_domain_name/api/v2.0/registries' 2>&1`;
+$cmd_msg = `curl -k --connect-timeout 60 --location --request POST 'https://$harbor_domain_name/api/v2.0/registries' 2>&1`;
 #{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
 $isWorking = index($cmd_msg, 'UNAUTHORIZED')<0?0:1;
 if ($isWorking) {
@@ -41,7 +41,7 @@ if ($isWorking) {
 install_harbor();
 
 # Check Harbor service is working
-$cmd = "curl -s -k --location --request POST 'https://$harbor_domain_name/api/v2.0/registries'";
+$cmd = "curl -s -k --connect-timeout 60 --location --request POST 'https://$harbor_domain_name/api/v2.0/registries'";
 #{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
 $chk_key = 'UNAUTHORIZED';
 $isChk=1;

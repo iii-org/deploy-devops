@@ -95,7 +95,7 @@ log_print("-----\n$cmd_msg-----\n");
 log_print("It takes 1 to 3 minutes to deploy Redmine service. Please wait.. \n");
 
 # Check Redmine service is working
-$cmd = "curl -q -I http://$redmine_domain_name";
+$cmd = "curl -q --connect-timeout 60 -I http://$redmine_domain_name";
 # HTTP/1.1 200 OK
 $chk_key = '200 OK';
 $isChk=1;
