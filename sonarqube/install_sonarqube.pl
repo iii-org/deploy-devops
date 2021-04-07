@@ -95,7 +95,7 @@ log_print("-----\n$cmd_msg-----\n");
 log_print("It takes 1 to 3 minutes to deploy Sonarqube service. Please wait.. \n");
 
 # Check Sonarqube service is working
-$cmd = "curl -q -I http://$sonarqube_domain_name";
+$cmd = "curl -q --max-time 5 -I http://$sonarqube_domain_name";
 # Content-Type: text/html;charset=utf-8
 $chk_key = 'Content-Type: text/html;charset=utf-8';
 $isChk=1;
@@ -104,8 +104,8 @@ $wait_sec=600;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
 	$cmd_msg = `$cmd 2>&1`;
-	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
-	$count ++;
+	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	$count = $count + $isChk;
 	sleep($isChk);
 }
 log_print("\n$cmd_msg-----\n");
