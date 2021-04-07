@@ -266,7 +266,7 @@ while($isChk) {
 }
 
 # check iiidevops-api ready
-$cmd = "curl -s --location --request POST '$iiidevops_api/user/login'";
+$cmd = "curl -s --max-time 5 --location --request POST '$iiidevops_api/user/login'";
 #{ "message": {
 #        "username": "Missing required parameter in the JSON body or the post body or the query string" }}
 $isChk=1;
@@ -274,7 +274,7 @@ while($isChk) {
 	print('.');
 	$isChk = 0;
 	$cmd_msg = `$cmd`;
-	$isChk = (index($cmd_msg, 'username')<0)?1:0;
+	$isChk = (index($cmd_msg, 'username')<0)?3:0;
 	sleep($isChk);
 }
 print("\n");
