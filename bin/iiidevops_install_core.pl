@@ -68,10 +68,10 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("GitLab is working well!\n");
 
 # Check Rancher service is working
-$cmd = "nc -z -v $rancher_ip 3443";
-$chk_key = 'succeeded!';
+$cmd = "kubectl -n cattle-system rollout status deploy/rancher";
+$chk_key = 'successfully';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.71 3443 port [tcp/*] succeeded!
+# deployment "rancher" successfully rolled out
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Rancher is not working!\n");
 	log_print("-----\n$cmd_msg-----\n");

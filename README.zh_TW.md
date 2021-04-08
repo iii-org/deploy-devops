@@ -214,7 +214,7 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)
 > * 如果 project dockerhub 沒被自動建立, 你可以手動執行以下的命令來建立.
 > 
->   ```sudo ~/deploy-devops/harbor/create_harbor.pl create_dockerhub_proxy```
+>   ```~/deploy-devops/harbor/install_harbor.pl create_dockerhub_proxy```
 >
 
 # Step 8. 部署 III DevOps 系統

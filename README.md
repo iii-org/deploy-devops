@@ -209,7 +209,7 @@
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
 > * If the project dockerhub is not created, you can exectue the command to manually create it.   
 > 
->   ```sudo ~/deploy-devops/harbor/create_harbor.pl create_dockerhub_proxy```
+>   ```~/deploy-devops/harbor/install_harbor.pl create_dockerhub_proxy```
 >
 
 # Step 8. Deploy III DevOps
