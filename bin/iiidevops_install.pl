@@ -1,18 +1,13 @@
 #!/usr/bin/perl
 # Install iiidevops script
 #
-# Usage: iiidevops_install.pl <local|user@remote_ip>
+# Usage: iiidevops_install.pl
 #
 use FindBin qw($Bin);
 $|=-1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
-if (!defined($ARGV[0])) {
-	print("Usage:	$prgname local \n	$prgname user\@remote_ip\n");
-	exit;
-}
-
-$ins_repo = (!defined($ARGV[1]))?'master':$ARGV[1];
+$ins_repo = (!defined($ARGV[0]))?'master':$ARGV[0];
 $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
@@ -22,41 +17,30 @@ $cmd_msg = `lsb_release -r`;
 $cmd_msg =~ s/\n|\r//g;
 ($key, $OSVer) = split(/\t/, $cmd_msg);
 if ($OSVer ne '20.04') {
-	log_print("Only supports Ubuntu 20.04 LTS, your operating system $OSVer is not a supported version\n");
+	$cmd_msg = `cat /etc/issue`;
+	log_print("Only supports Ubuntu 20.04 LTS, your operating system : $cmd_msg");
 	exit;
 }
 
-# Run on remote host 
-if (uc($ARGV[0] ne 'local')) {
-
-	$cmd = "ssh $ARGV[0] \"rm -f ./iiidevops_install.pl; wget https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; sudo -S perl ./iiidevops_install.pl local $ins_repo\"";
-	log_print("Run on $ARGV[0] ...\n");
-	$cmd_msg=`$cmd`;
-	log_print("-----\n$cmd_msg");
-	exit;
-}
-
-$cmd = <<END;
-cd ~; \
-wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip
-END
-log_print("Getting iiidevops Deploy Package..\n");
-#$cmd_msg = `$cmd`;
-system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
-
+# Install OS Packages
 $cmd = <<END;
 sudo apt update
-sudo apt-get install unzip -y;
-cd ~; unzip -o $ins_repo.zip;
+sudo apt-get install unzip nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client apt-transport-https ca-certificates curl gnupg-agent software-properties-common snap -y;
+END
+log_print("Install OS Packages..\n");
+system($cmd);
+
+# Install iiidevops Deploy Scripts
+$cmd = <<END;
+cd ~;
+wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip
+unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
 mv deploy-devops-$ins_repo deploy-devops;
 find ~/deploy-devops -type f -name \"*.pl\" -exec chmod a+x {} \\;
 END
-log_print("Unziping iiidevops Deploy Package..\n");
-#$cmd_msg = `$cmd`;
+log_print("Install iiidevops Deploy Scripts..\n");
 system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
 
 # Check iiidevops_install.pl version
 #if ($prgname eq 'iiidevops_install.pl' && -e "$Bin/deploy-devops/bin/$prgname") {
@@ -105,15 +89,15 @@ else {
 	log_print("Time zone has been set to Taipei!\n");
 }
 
+# Disable swap
 $cmd = <<END;
-sudo apt-get update -y;
-sudo apt-get install nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client-12 apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y;
+sudo swapoff -a;
+sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab;
 END
-log_print("Install default packages..\n");
-#$cmd_msg = `$cmd`;
+log_print("Disable swap..\n");
 system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
 
+# Install docker
 $cmd = <<END;
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
 sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\";
@@ -121,19 +105,37 @@ sudo apt-get update -y;
 sudo apt-get install docker-ce=5:19.03.14~3-0~ubuntu-focal docker-ce-cli=5:19.03.14~3-0~ubuntu-focal containerd.io -y;
 END
 log_print("Install docker..\n");
-#$cmd_msg = `$cmd`;
 system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
 
+# Install kubectl
 $cmd = <<END;
-sudo snap install kubectl --channel=1.18/stable --classic; 
-sudo snap install helm --channel=3.5/stable --classic; 
+curl -LO https://dl.k8s.io/release/v1.18.17/bin/linux/amd64/kubectl;
+sudo chmod a+x kubectl;
+sudo mv ./kubectl /usr/local/bin/;
 mkdir -p ~/.kube/;
 END
-log_print("Install kubectl and helm..\n");
-#$cmd_msg = `$cmd`;
+log_print("Install kubectl..\n");
 system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
+
+# Install helm
+$cmd = <<END;
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -;
+sudo apt-get install apt-transport-https --yes;
+echo \"deb https://baltocdn.com/helm/stable/debian/ all main\" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+END
+log_print("Install helm..\n");
+system($cmd);
+
+# Install rke
+$cmd = <<END;
+wget -O rke https://github.com/rancher/rke/releases/download/v1.2.7/rke_linux-amd64
+sudo mv rke /usr/local/bin/rke
+sudo chmod +x /usr/local/bin/rke
+END
+log_print("Install rke..\n");
+system($cmd);
 
 # Validation results
 log_print("\n-----Validation results-----\n");
@@ -159,19 +161,31 @@ if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl Failed!\n$cmd_msg");
 }
 else {
-log_print("Install kubectl $chk_str ..OK!\n");
+	log_print("Install kubectl $chk_str ..OK!\n");
 }
 
 #check helm version
 #version.BuildInfo{Version:"v3.5.0", GitCommit:"32c22239423b3b4ba6706d450bd044baffdcf9e6", GitTreeState:"clean", GoVersion:"go1.15.6"}
-$chk_str = 'v3.5';
+$chk_str = 'Version';
 $cmd = "helm version";
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install helm Failed!\n$cmd_msg");
 }
 else {
-	log_print("Install helm $chk_str ..OK!\n");
+	log_print("Install helm ..OK!\n");
+}
+
+#check rke version
+#rke version v1.2.7
+$chk_str = 'v1.2.7';
+$cmd = "rke --version";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install rke Failed!\n$cmd_msg");
+}
+else {
+	log_print("Install rke $chk_str ..OK!\n");
 }
 
 # If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
@@ -200,4 +214,3 @@ sub log_print {
 
     return;
 }
-

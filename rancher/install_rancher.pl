@@ -36,6 +36,7 @@ log_print("-----\n$cmd_msg\n\n");
 # Check Rancher service is working
 $cmd = "nc -z -v $rancher_ip 3443";
 # Connection to 10.20.0.71 3443 port [tcp/*] succeeded!
+# (UNKNOWN) [10.20.0.71] 3443 (?) open
 $chk_key = 'succeeded!';
 $isChk=1;
 $count=0;
