@@ -31,6 +31,7 @@ $ans_tmpl = <<END;
 \$ask_vm2_ip = '{{ask_vm2_ip}}';
 \$ask_nfs_ip = '{{ask_nfs_ip}}';
 \$ask_nfs_dir = '{{ask_nfs_dir}}';
+\$ask_rancher_domain_name = '{{ask_rancher_domain_name}}';
 \$ask_gitlab_domain_name = '{{ask_gitlab_domain_name}}';
 \$ask_harbor_domain_name = '{{ask_harbor_domain_name}}';
 \$ask_redmine_domain_name = '{{ask_redmine_domain_name}}';
@@ -807,6 +808,7 @@ if (lc($Y_N) ne 'n') {
 	$env_template =~ s/{{ask_vm2_ip}}/$ask_vm2_ip/g;
 	$env_template =~ s/{{ask_nfs_ip}}/$ask_nfs_ip/g;
 	$env_template =~ s/{{ask_nfs_dir}}/$ask_nfs_dir/g;
+	$env_template =~ s/{{ask_rancher_domain_name}}/$ask_rancher_domain_name/g;
 	$env_template =~ s/{{ask_gitlab_domain_name}}/$ask_gitlab_domain_name/g;
 	$env_template =~ s/{{ask_harbor_domain_name}}/$ask_harbor_domain_name/g;
 	$env_template =~ s/{{ask_redmine_domain_name}}/$ask_redmine_domain_name/g;
@@ -858,6 +860,7 @@ sub write_ans {
 	$ans_file =~ s/{{ask_vm2_ip}}/$ask_vm2_ip/;
 	$ans_file =~ s/{{ask_nfs_ip}}/$ask_nfs_ip/;
 	$ans_file =~ s/{{ask_nfs_dir}}/$ask_nfs_dir/;
+	$ans_file =~ s/{{ask_rancher_domain_name}}/$ask_rancher_domain_name/g;
 	$ans_file =~ s/{{ask_gitlab_domain_name}}/$ask_gitlab_domain_name/g;
 	$ans_file =~ s/{{ask_harbor_domain_name}}/$ask_harbor_domain_name/g;
 	$ans_file =~ s/{{ask_redmine_domain_name}}/$ask_redmine_domain_name/g;
