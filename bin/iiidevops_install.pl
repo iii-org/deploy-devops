@@ -12,6 +12,14 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+# Check running user
+$cmd_msg = `whoami`;
+$cmd_msg =~ s/\n|\r//g;
+if ($cmd_msg ne 'rkeuser') {
+	log_print("You must use the 'rkeuser' account to run the installation script!\n");
+	exit;
+}
+
 # Check OS version
 $cmd_msg = `lsb_release -r`;
 $cmd_msg =~ s/\n|\r//g;
@@ -150,6 +158,12 @@ if (index($cmd_msg, $chk_str)<0) {
 }
 else {
 	log_print("Install docker $chk_str ..OK!\n");
+}
+
+$cmd = "sudo usermod -aG docker rkeuser";
+$cmd_msg = `$cmd 2>&1`;
+if ($cmd_msg ne ''){
+	log_print("Unable to set the permission of 'rkeuser' to run docker! : $cmd_msg");
 }
 
 #check kubectl version
