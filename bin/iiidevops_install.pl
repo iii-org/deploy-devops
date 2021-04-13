@@ -112,8 +112,17 @@ sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubu
 sudo apt-get update -y;
 sudo apt-get install docker-ce=5:19.03.14~3-0~ubuntu-focal docker-ce-cli=5:19.03.14~3-0~ubuntu-focal containerd.io -y;
 END
-log_print("Install docker..\n");
-system($cmd);
+#check docker version
+#Docker version 19.03.14, build 5eb3275d40
+$chk_str = '19.03.14';
+$cmd = "docker -v";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install docker..\n");
+	system($cmd);
+else {
+	log_print("docker was Installed..$chk_str\n");
+}
 
 # Install kubectl
 $cmd = <<END;
@@ -122,8 +131,17 @@ sudo chmod a+x kubectl;
 sudo mv ./kubectl /usr/local/bin/;
 mkdir -p ~/.kube/;
 END
-log_print("Install kubectl..\n");
-system($cmd);
+#check kubectl version
+#Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.14", GitCommit:"89182bdd065fbcaffefec691908a739d161efc03", GitTreeState:"clean", BuildDate:"2020-12-22T14:49:29Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
+$chk_str = 'v1.18';
+$cmd = "kubectl version";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install kubectl..\n");
+	system($cmd);
+else {
+	log_print("kubectl was Installed..$chk_str\n");
+}
 
 # Install helm
 $cmd = <<END;
@@ -133,8 +151,18 @@ echo \"deb https://baltocdn.com/helm/stable/debian/ all main\" | sudo tee /etc/a
 sudo apt-get update
 sudo apt-get install helm
 END
-log_print("Install helm..\n");
-system($cmd);
+#check helm version
+#version.BuildInfo{Version:"v3.5.0", GitCommit:"32c22239423b3b4ba6706d450bd044baffdcf9e6", GitTreeState:"clean", GoVersion:"go1.15.6"}
+$chk_str = 'Version';
+$cmd = "helm version";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install helm..\n");
+	system($cmd);
+}
+else {
+	log_print("helm was Installed..\n");
+}
 
 # Install rke
 $cmd = <<END;
@@ -142,8 +170,18 @@ wget -O rke https://github.com/rancher/rke/releases/download/v1.2.7/rke_linux-am
 sudo mv rke /usr/local/bin/rke
 sudo chmod +x /usr/local/bin/rke
 END
-log_print("Install rke..\n");
-system($cmd);
+#check rke version
+#rke version v1.2.7
+$chk_str = 'v1.2.7';
+$cmd = "rke --version";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_str)<0) {
+	log_print("Install rke..\n");
+	system($cmd);
+else {
+	log_print("rke was Installed..$chk_str\n");
+}
+
 
 # Validation results
 log_print("\n-----Validation results-----\n");
