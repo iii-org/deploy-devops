@@ -51,10 +51,10 @@ if ($harbor_ip ne '') {
 
 # Gen K8s ssh key
 if (-e "$nfs_dir/deploy-config/id_rsa") {
-	$cmd = "cp -a $nfs_dir/deploy-config/ ~/.ssh/";
+	$cmd = "cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
 }
 else {
-	$cmd = "ssh-keygen -t rsa -C '$admin_init_email'; cp -a ~/.ssh/id_rsa $nfs_dir/deploy-config/";
+	$cmd = "ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa; cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
 }
 system($cmd);
 
@@ -74,6 +74,7 @@ log_print("Verify rkeuser permission for running docker OK!\n");
 
 # Install K8s
 system("$Bin/../kubernetes/update-k8s-cluster.pl Initial $first_ip");
+system("rke up --config $Bin/../kubernetes/cluster.yml");
 
 $cmd = "cp ~/kube_config_cluster.yml $nfs_dir/kube-config/config; ln -s $nfs_dir/kube-config/config ~/.kube/config";
 # Verify kubeconf
