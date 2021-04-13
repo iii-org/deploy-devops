@@ -51,10 +51,10 @@ if ($harbor_ip ne '') {
 
 # Gen K8s ssh key
 if (-e "$nfs_dir/deploy-config/id_rsa") {
-	$cmd = "cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
+	$cmd = "mkdir -p ~rkeuser/.ssh/;chown rkeuser:rkeuser ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
 }
 else {
-	$cmd = "ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa; cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
+	$cmd = "ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa;mkdir -p ~rkeuser/.ssh/;chown rkeuser:rkeuser ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
 }
 system($cmd);
 
