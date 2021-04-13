@@ -49,8 +49,8 @@ sub gen_cluster_yml {
 
 	$node_role_list = 'controlplane_worker_etcd';
 	$node_role = "  - controlplane\n";
-	$node_role .= "	- worker\n";
-	$node_role .= "	- etcd\n";
+	$node_role .= "  - worker\n";
+	$node_role .= "  - etcd";
 	
 	$cluster_node = $cluster_node_tmpl;
 	$cluster_node =~ s/%%node_ip%%/$p_node_ip/g;
