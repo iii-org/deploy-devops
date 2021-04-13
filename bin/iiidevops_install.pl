@@ -119,6 +119,7 @@ $cmd_msg = `docker -v 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install docker..\n");
 	system($cmd);
+}
 else {
 	log_print("docker was Installed..$chk_str\n");
 }
@@ -137,6 +138,7 @@ $cmd_msg = `kubectl version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl..\n");
 	system($cmd);
+}
 else {
 	log_print("kubectl was Installed..$chk_str\n");
 }
@@ -174,6 +176,7 @@ $cmd_msg = `rke --version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install rke..\n");
 	system($cmd);
+}
 else {
 	log_print("rke was Installed..$chk_str\n");
 }
