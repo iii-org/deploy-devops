@@ -115,8 +115,7 @@ END
 #check docker version
 #Docker version 19.03.14, build 5eb3275d40
 $chk_str = '19.03.14';
-$cmd = "docker -v";
-$cmd_msg = `$cmd 2>&1`;
+$cmd_msg = `docker -v 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install docker..\n");
 	system($cmd);
@@ -134,8 +133,7 @@ END
 #check kubectl version
 #Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.14", GitCommit:"89182bdd065fbcaffefec691908a739d161efc03", GitTreeState:"clean", BuildDate:"2020-12-22T14:49:29Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
 $chk_str = 'v1.18';
-$cmd = "kubectl version";
-$cmd_msg = `$cmd 2>&1`;
+$cmd_msg = `kubectl version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl..\n");
 	system($cmd);
@@ -154,8 +152,7 @@ END
 #check helm version
 #version.BuildInfo{Version:"v3.5.0", GitCommit:"32c22239423b3b4ba6706d450bd044baffdcf9e6", GitTreeState:"clean", GoVersion:"go1.15.6"}
 $chk_str = 'Version';
-$cmd = "helm version";
-$cmd_msg = `$cmd 2>&1`;
+$cmd_msg = `helm version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install helm..\n");
 	system($cmd);
@@ -173,8 +170,7 @@ END
 #check rke version
 #rke version v1.2.7
 $chk_str = 'v1.2.7';
-$cmd = "rke --version";
-$cmd_msg = `$cmd 2>&1`;
+$cmd_msg = `rke --version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install rke..\n");
 	system($cmd);
