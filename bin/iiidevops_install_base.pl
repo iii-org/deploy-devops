@@ -51,18 +51,18 @@ if ($harbor_ip ne '') {
 
 # Gen K8s ssh key
 if (-e "$nfs_dir/deploy-config/id_rsa") {
-	$cmd = "mkdir -p ~rkeuser/.ssh/;chown rkeuser:rkeuser ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
+	$cmd = "mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
 }
 else {
-	$cmd = "ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa;mkdir -p ~rkeuser/.ssh/;chown rkeuser:rkeuser ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/";
+	$cmd = "ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa;mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
 }
 system($cmd);
 
 # Copy ssh key to first_ip
-$cmd = "ssh-copy-id rkeuser@$first_ip";
+$cmd = "ssh-copy-id -i $nfs_dir/deploy-config/id_rsa.pub rkeuser\@$first_ip";
 system($cmd);
 # Verify rkeuser permission for running docker 
-$cmd = "ssh rkeuser@$first_ip; docker ps; exit";
+$cmd = "ssh rkeuser\@$first_ip -C 'docker ps'";
 $chk_key = 'CREATED';
 $cmd_msg = `$cmd 2>&1`;
 #CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
@@ -74,7 +74,7 @@ log_print("Verify rkeuser permission for running docker OK!\n");
 
 # Install K8s
 system("$Bin/../kubernetes/update-k8s-cluster.pl Initial $first_ip");
-system("rke up --config $Bin/../kubernetes/cluster.yml");
+system("sudo -u rkeuser rke up --config $nfs_dir/deploy-config/cluster.yml");
 
 $cmd = "cp ~/kube_config_cluster.yml $nfs_dir/kube-config/config; ln -s $nfs_dir/kube-config/config ~/.kube/config";
 # Verify kubeconf
