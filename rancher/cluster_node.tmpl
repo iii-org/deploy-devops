@@ -1,0 +1,14 @@
+- address: %%node_ip%%
+  port: "22"
+  internal_address: %%node_ip%%
+  role:
+  %%node_role%%
+  hostname_override: ""
+  user: rkeuser
+  docker_socket: /var/run/docker.sock
+  ssh_key: ""
+  ssh_key_path: ~/.ssh/id_rsa
+  ssh_cert: ""
+  ssh_cert_path: ""
+  labels: {}
+  taints: []
