@@ -54,10 +54,8 @@ helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 kubectl create namespace cattle-system
 kubectl apply --validate=false -f $Bin/cert-manager.crds.yaml
 kubectl apply -f $Bin/rancher-service.yaml
-helm install rancher rancher-stable/rancher \
-  --namespace cattle-system \
-  --version 2.4.15 \
-  --set hostname=$rancher_hostname
+helm install rancher rancher-stable/rancher --namespace cattle-system --version 2.4.15 --set hostname=$rancher_hostname
+
 END
 
 log_print("-----\n$cmd\n");
@@ -67,7 +65,7 @@ log_print("-----\n$cmd_msg\n\n");
 # Check Rancher service is working
 $cmd = "kubectl -n cattle-system rollout status deploy/rancher";
 # deployment "rancher" successfully rolled out
-$chk_key = 'successfully!';
+$chk_key = 'successfully';
 $isChk=1;
 $count=0;
 $wait_sec=600;
