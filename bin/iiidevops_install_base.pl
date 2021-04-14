@@ -54,7 +54,7 @@ if (-e "$nfs_dir/deploy-config/id_rsa") {
 	$cmd = "mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
 }
 else {
-	$cmd = "ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa;mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
+	$cmd = "sudo -u rkeuser ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa;mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
 }
 system($cmd);
 
@@ -76,9 +76,15 @@ log_print("Verify rkeuser permission for running docker OK!\n");
 system("$Bin/../kubernetes/update-k8s-cluster.pl Initial $first_ip");
 system("sudo -u rkeuser rke up --config $nfs_dir/deploy-config/cluster.yml");
 
-$cmd = "cp ~/kube_config_cluster.yml $nfs_dir/kube-config/config; ln -s $nfs_dir/kube-config/config ~/.kube/config";
+$cmd = "cp -a $nfs_dir/deploy-config/kube_config_cluster.yml $nfs_dir/kube-config/config; ln -f -s $nfs_dir/kube-config/config ~rkeuser/.kube/config";
+$cmd_msg = `$cmd 2>&1`;
+if ($cmd_msg ne '') {
+	log_print("Copy kubeconf failed!..\n$cmd_msg\n");
+	exit;
+}
+
 # Verify kubeconf
-$cmd = 'kubectl get node 2>&1';
+$cmd = 'sudo -u rkeuser kubectl get node 2>&1';
 #NAME         STATUS   ROLES                      AGE   VERSION
 #10.20.0.37   Ready    controlplane,etcd,worker   49m   v1.18.17
 $chk_key = 'Ready';
@@ -86,8 +92,9 @@ $isChk=1;
 $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
-	log_print('.');
+	#log_print('.');
 	$cmd_msg = `$cmd 2>&1`;
+	log_print($cmd_msg);
 	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
