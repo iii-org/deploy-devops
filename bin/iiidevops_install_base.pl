@@ -107,6 +107,21 @@ if ($isChk) {
 }
 log_print("Successfully deployed K8s!\n");
 
+# Rancher
+$cmd = "$home/deploy-devops/rancher/install_rancher.pl";
+log_print("\nDeploy Rancher..");
+system($cmd);
+# Check Rancher service is working
+$cmd = "nc -z -v $rancher_ip 31443 2>&1";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy Rancher!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+log_print("Successfully deployed Rancher!\n");
+
 log_print("\nplease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
 
 exit;
