@@ -32,27 +32,6 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 log_print("Successfully deployed Rancher!\n");
 
-
-# GitLab
-$cmd = "$home/deploy-devops/gitlab/install_gitlab.pl";
-log_print("\nDeploy Gitlab..");
-#$cmd_msg = `$cmd`;
-system($cmd);
-#log_print("-----\n$cmd_msg\n-----\n");
-# Check GitLab service is working
-$gitlab_domain_name = get_domain_name('gitlab');
-$cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
-$chk_key = '200 OK';
-$cmd_msg = `$cmd 2>&1`;
-# HTTP/1.1 200 OK
-if (index($cmd_msg, $chk_key)<0) {
-	log_print("Failed to deploy GitLab!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
-}
-log_print("Successfully deployed GitLab!\n");
-
-
 # Redmine
 $cmd = "$home/deploy-devops/redmine/install_redmine.pl";
 log_print("Deploy Redmine..");
@@ -109,6 +88,25 @@ if (index($cmd_msg, $chk_key)<0) {
 	exit;	
 }
 log_print("Sonarqube ..OK!\n\n");
+
+# GitLab
+$cmd = "$home/deploy-devops/gitlab/install_gitlab.pl";
+log_print("\nDeploy Gitlab..");
+#$cmd_msg = `$cmd`;
+system($cmd);
+#log_print("-----\n$cmd_msg\n-----\n");
+# Check GitLab service is working
+$gitlab_domain_name = get_domain_name('gitlab');
+$cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
+$chk_key = '200 OK';
+$cmd_msg = `$cmd 2>&1`;
+# HTTP/1.1 200 OK
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy GitLab!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+log_print("Successfully deployed GitLab!\n");
 
 log_print("The deployment of these services has been completed. The service URLs are: \n");
 log_print("Rancher - https://$rancher_domain_name/\n");
