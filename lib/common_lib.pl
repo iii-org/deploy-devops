@@ -3,27 +3,31 @@
 #
 
 # Deploy Mode $deploy_mode = # IP(Default), DNS, nip.io, xip.io
-# $p_service : gitlab, redmine, harbor, sonarqube, iiidevops
+# $p_service : rancher, gitlab, redmine, harbor, sonarqube, iiidevops
 # Exp.
 #   IP : 10.20.0.73
+#		rancher		10.20.0.73:31443
 #		gitlab		10.20.0.73:32080
 #		redmine		10.20.0.73:32748
 #		harbor		10.20.0.73:32443
 #		sonarqube	10.20.0.73:31910
 #		iiidevops	10.20.0.73:30775
 #	DNS : 
+#		rancher		rancher.iiidevops.org
 #		gitlab		gitlab.iiidevops.org
 #		redmine		redmine.iiidevops.org
 #		harbor		harbor.iiidevops.org
 #		sonarqube	sonarqube.iiidevops.org
 #		iiidevops	www.iiidevops.org
 #	nip.io
+#		rancher		rancher.iiidevops.10.20.0.73.nip.io
 #		gitlab		gitlab.iiidevops.10.20.0.73.nip.io
 #		redmine		redmine.iiidevops.10.20.0.73.nip.io
 #		harbor		harbor.iiidevops.10.20.0.73.nip.io
 #		sonarqube	sonarqube.iiidevops.10.20.0.73.nip.io
 #		iiidevops	iiidevops.10.20.0.73.nip.io
 #	xip.io
+#		rancher		rancher.iiidevops.10.20.0.73.xip.io
 #		gitlab		gitlab.iiidevops.10.20.0.73.xip.io
 #		redmine		redmine.iiidevops.10.20.0.73.xip.io
 #		harbor		harbor.iiidevops.10.20.0.73.xip.io
@@ -36,7 +40,10 @@ sub get_domain_name {
 	
 	$v_domain_name = '';
 	if (uc($deploy_mode) eq 'DNS') {
-		if ($p_service eq 'gitlab') {
+		if ($p_service eq 'rancher') {
+			$v_domain_name = $rancher_domain_name;
+		}
+		elsif ($p_service eq 'gitlab') {
 			$v_domain_name = $gitlab_domain_name;
 		}
 		elsif ($p_service eq 'redmine') {
@@ -53,7 +60,10 @@ sub get_domain_name {
 		}
 	}
 	elsif (lc($deploy_mode) eq 'nip.io') {
-		if ($p_service eq 'gitlab') {
+		if ($p_service eq 'rancher') {
+			$v_domain_name = 'rancher.iiidevops.'.$rancher_ip.'.nip.io';
+		}
+		elsif ($p_service eq 'gitlab') {
 			$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'redmine') {
@@ -70,7 +80,10 @@ sub get_domain_name {
 		}
 	}
 	elsif (lc($deploy_mode) eq 'xip.io') {
-		if ($p_service eq 'gitlab') {
+		if ($p_service eq 'rancher') {
+			$v_domain_name = 'rancher.iiidevops.'.$rancher_ip.'.xip.io';
+		}
+		elsif ($p_service eq 'gitlab') {
 			$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.xip.io';
 		}
 		elsif ($p_service eq 'redmine') {
@@ -88,9 +101,12 @@ sub get_domain_name {
 	}
 	else {
 		# IP(Default)
-		if ($p_service eq 'gitlab') {
-			#$v_domain_name = $gitlab_ip.':32080';
-			$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.nip.io';
+		if ($p_service eq 'rancher') {
+			$v_domain_name = $rancher_ip.':31443';
+		}
+		elsif ($p_service eq 'gitlab') {
+			$v_domain_name = $gitlab_ip.':32080';
+			#$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'redmine') {
 			$v_domain_name = $redmine_ip.':32748';

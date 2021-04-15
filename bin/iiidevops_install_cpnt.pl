@@ -16,6 +16,22 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
 
+# Rancher
+$cmd = "$home/deploy-devops/rancher/install_rancher.pl";
+log_print("\nDeploy Rancher..");
+system($cmd);
+# Check Rancher service is working
+$rancher_domain_name = get_domain_name('rancher');
+$cmd = "nc -z -v $rancher_ip 31443 2>&1";
+$chk_key = 'succeeded!';
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Failed to deploy Rancher!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+log_print("Successfully deployed Rancher!\n");
+
 
 # GitLab
 $cmd = "$home/deploy-devops/gitlab/install_gitlab.pl";
@@ -95,6 +111,7 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("Sonarqube ..OK!\n\n");
 
 log_print("The deployment of these services has been completed. The service URLs are: \n");
+log_print("Rancher - https://$rancher_domain_name/\n");
 log_print("GitLab - http://$gitlab_domain_name/\n");
 log_print("Redmine - http://$redmine_domain_name/\n");
 log_print("Harbor - https://$harbor_domain_name/\n");

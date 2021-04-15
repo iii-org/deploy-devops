@@ -14,7 +14,8 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-log_print("Install Rancher URL: https://$rancher_ip:31443\n");
+$rancher_domain_name = get_domain_name('rancher');
+log_print("Install Rancher URL: https://$rancher_domain_name\n");
 # Check Rancher is working
 $cmd_msg = `nc -z -v $rancher_ip 31443 2>&1`;
 $isWorking = index($cmd_msg, 'succeeded!')<0?0:1;
@@ -42,8 +43,8 @@ while($isChk && $count<$wait_sec) {
 	log_print($cmd_msg);
 	@arr_msg = split("\n", $cmd_msg);
 	$isChk = grep{ /$chk_key/} @arr_msg;
-	$isChk = ($isChk<3)?1:0;
-	$count ++;
+	$isChk = ($isChk<3)?3:0;
+	$count = $count + $isChk;
 	sleep($isChk);
 }
 
@@ -73,8 +74,8 @@ while($isChk && $count<$wait_sec) {
 	#log_print('.');
 	$cmd_msg = `$cmd 2>&1`;
 	log_print($cmd_msg);
-	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
-	$count ++;
+	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	$count = $count + $isChk;
 	sleep($isChk);
 }
 log_print("-----\n$cmd_msg-----\n");
