@@ -15,8 +15,8 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$rancher_domain_name = get_domain_name('rancher');
-log_print("Install Rancher URL: https://$rancher_domain_name\n");
+$rancher_url = 'https://'.get_domain_name('rancher');
+log_print("Install Rancher URL: $rancher_url\n");
 # Check Rancher is working
 $cmd_msg = `nc -z -v $rancher_ip 31443 2>&1`;
 $isWorking = index($cmd_msg, 'succeeded!')<0?0:1;
@@ -50,7 +50,6 @@ while($isChk && $count<$wait_sec) {
 }
 
 # Rancher 2.4.15
-$rancher_hostname = ($rancher_domain_name eq '')?$rancher_ip:$rancher_domain_name;
 $cmd = <<END;
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 kubectl create namespace cattle-system
