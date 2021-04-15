@@ -65,21 +65,21 @@ log_print("Deploy GitLab..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg-----\n");
 
-# Display Wait 3 min. message
-log_print("It takes 1 to 3 minutes to deploy GitLab service. Please wait.. \n");
+# Display Wait 2-10 min. message
+log_print("It takes 2 to 10 minutes to deploy GitLab service. Please wait.. \n");
 
 # Check GitLab service is working
-$cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
+$cmd = "curl -q --max-time 5 -I http://$gitlab_domain_name/users/sign_in";
 #HTTP/1.1 200 OK
 $chk_key = '200 OK';
 $isChk=1;
 $count=0;
-$wait_sec=600;
+$wait_sec=1200;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
 	$cmd_msg = `$cmd 2>&1`;
-	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
-	$count ++;
+	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	$count = $count + $isChk;
 	sleep($isChk);
 }
 log_print("\n$cmd_msg-----\n");

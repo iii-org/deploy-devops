@@ -50,6 +50,7 @@ while($isChk && $count<$wait_sec) {
 }
 
 # Rancher 2.4.15
+$rancher_hostname=($deploy_mode eq 'IP')?$rancher_ip:$rancher_domain_name;
 $cmd = <<END;
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 kubectl create namespace cattle-system
