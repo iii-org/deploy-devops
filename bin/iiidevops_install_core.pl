@@ -43,6 +43,7 @@ log_print("Create namespace on kubernetes cluster OK!\n");
 # Check if Gitlab/Rancher/Harbor/Redmine services are running well
 # Check GitLab service is working
 $gitlab_domain_name = get_domain_name('gitlab');
+$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
 $cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
 $chk_key = '200 OK';
 $cmd_msg = `$cmd 2>&1`;
@@ -163,6 +164,7 @@ if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
 	exit;
 }
+
 $template = `cat $tmpl_file`;
 $template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
 $template =~ s/{{db_passwd}}/$db_passwd/g;
@@ -171,7 +173,7 @@ $template =~ s/{{jwt_secret_key}}/$jwt_secret_key/g;
 $template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
 $template =~ s/{{redmine_admin_passwd}}/$redmine_admin_passwd/g;
 $template =~ s/{{redmine_api_key}}/$redmine_api_key/g;
-$template =~ s/{{gitlab_url}}/$gitlab_domain_name/g;
+$template =~ s/{{gitlab_port}}/$gitlab_port/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
 $template =~ s/{{rancher_ip}}/$rancher_ip/g;

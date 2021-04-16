@@ -40,7 +40,7 @@ spec:
         - name: REDMINE_API_KEY
           value: "{{redmine_api_key}}"
         - name: GITLAB_BASE_URL
-          value: "http://gitlab-service:80"
+          value: "http://gitlab-service:{{gitlab_port}}"
         - name: GITLAB_ADMIN_ACCOUNT
           value: "root"
         - name: GITLAB_ADMIN_PASSWORD
