@@ -68,10 +68,12 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("GitLab is working well!\n");
 
 # Check Rancher service is working
-$cmd = "kubectl -n cattle-system rollout status deploy/rancher";
-$chk_key = 'successfully';
+#curl -k --location --request GET 'https://10.20.0.37:31443/v3'
+#{"type":"error","status":"401","message":"must authenticate"} 
+$rancher_domain_name = get_domain_name('rancher');
+$cmd = "curl -k --location --request GET 'https://$rancher_domain_name/v3'";
+$chk_key = 'must authenticate';
 $cmd_msg = `$cmd 2>&1`;
-# deployment "rancher" successfully rolled out
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Rancher is not working!\n");
 	log_print("-----\n$cmd_msg-----\n");
@@ -259,7 +261,7 @@ while($isChk) {
 		if ($l_name eq 'NAME') {next;}
 		if ($l_status ne 'Running') {
 			print("[$l_name][$l_status]\n");
-			$isChk ++;
+			$isChk = 3;
 		}
 	}
 	sleep($isChk);
