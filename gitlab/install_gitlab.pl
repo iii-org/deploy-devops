@@ -68,7 +68,7 @@ if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
 	exit;
 }
-$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080
+$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
 $template = `cat $tmpl_file`;
 $template =~ s/{{gitlab_port}}/$gitlab_port/g;
 #log_print("-----\n$template\n-----\n\n");
