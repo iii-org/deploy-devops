@@ -18,9 +18,6 @@ spec:
         env:
         - name: GITLAB_OMNIBUS_CONFIG
           value: "external_url 'http://{{gitlab_domain_name}}';prometheus_monitoring['enable'] = false;gitlab_rails['gitlab_default_projects_features_container_registry'] = false;gitlab_rails['initial_root_password'] = '{{gitlab_root_passwd}}';gitlab_rails['gitlab_default_projects_features_builds'] = 'false'"
-        ports:
-        - containerPort: 80
-          name: http
         volumeMounts:
         - name: gitlab-log-storage
           mountPath: /var/log/gitlab

@@ -106,7 +106,6 @@ sub get_domain_name {
 		}
 		elsif ($p_service eq 'gitlab') {
 			$v_domain_name = $gitlab_ip.':32080';
-			#$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.nip.io';
 		}
 		elsif ($p_service eq 'redmine') {
 			$v_domain_name = $redmine_ip.':32748';
