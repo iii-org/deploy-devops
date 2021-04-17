@@ -98,7 +98,6 @@ while($isChk && $count<$wait_sec) {
 log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy K8s!\n");
-	log_print("-----\n$cmd_msg-----\n");
 	exit;
 }
 log_print("Successfully deployed K8s!\n");
