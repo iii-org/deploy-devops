@@ -22,11 +22,14 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$redmine_domain_name = get_domain_name('redmine');
+# Check Redmine service is working
+if (get_service_status('redmine')) {
+	log_print("Redmine is running, I skip the installation!\n\n");
+	exit;
+}
+log_print("Install Redmine ..\n");
 
-log_print("Install Redmine URL: http://$redmine_domain_name\n");
 # Deploy Redmine on kubernetes cluster
-
 # Modify redmine/redmine-postgresql/redmine-postgresql.yml.tmpl <- {{redmine_db_passwd}} {{nfs_ip}}
 $yaml_path = "$Bin/../redmine/redmine-postgresql/";
 $yaml_file = $yaml_path.'redmine-postgresql.yml';
@@ -62,10 +65,11 @@ $template =~ s/{{redmine_db_passwd}}/$redmine_db_passwd/g;
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
+
 # Modify redmine/redmine/redmine-ingress.yaml.tmpl <- {{redmine_domain_name}}
 $yaml_path = "$Bin/../redmine/redmine/";
 $yaml_file = $yaml_path.'redmine-ingress.yml';
-if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
+if ($redmine_domain_name ne '' && uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
@@ -95,26 +99,22 @@ log_print("-----\n$cmd_msg-----\n");
 log_print("It takes 1 to 3 minutes to deploy Redmine service. Please wait.. \n");
 
 # Check Redmine service is working
-$cmd = "curl -q --max-time 5 -I http://$redmine_domain_name";
-# HTTP/1.1 200 OK
-$chk_key = '200 OK';
 $isChk=1;
 $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
-	$cmd_msg = `$cmd 2>&1`;
-	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	$isChk = (!get_service_status('redmine'))?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
-log_print("\n$cmd_msg-----\n");
+log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy Redmine!\n");
-	log_print("-----\n$cmd_msg-----\n");
 	exit;
 }
-log_print("Successfully deployed Redmine!\n");
+$the_url = get_domain_name('redmine');
+log_print("Successfully deployed Redmine! URL - http://$the_url\n");
 
 # Check psql version
 chk_psql();

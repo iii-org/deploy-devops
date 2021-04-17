@@ -20,6 +20,7 @@ if (get_service_status('rancher')) {
 	log_print("Rancher is running, I skip the installation!\n\n");
 	exit;
 }
+log_print("Install Rancher ..\n");
 
 # cert-manager 1.0.4 https://github.com/jetstack/cert-manager/releases/download/v1.0.4/cert-manager.yaml
 $cmd = "kubectl apply --validate=false -f $Bin/cert-manager.yaml";
@@ -75,5 +76,6 @@ if ($isChk) {
 	log_print("Failed to deploy Rancher!\n");
 	exit;
 }
-log_print("Successfully deployed Rancher!\n");
+$the_url = get_domain_name('rancher');
+log_print("Successfully deployed Rancher! URL - http://$the_url\n");
 exit;
