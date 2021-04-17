@@ -84,19 +84,14 @@ if ($cmd_msg ne '') {
 	exit;
 }
 
-# Verify kubeconf
-$cmd = 'sudo -u rkeuser kubectl get node 2>&1';
-#NAME         STATUS   ROLES                      AGE   VERSION
-#10.20.0.37   Ready    controlplane,etcd,worker   49m   v1.18.17
-$chk_key = 'Ready';
+# Verify kubeconf & Check kubernetes status.
+log_print("Verify kubeconf & Check kubernetes status..\n");
 $isChk=1;
 $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
-	#log_print('.');
-	$cmd_msg = `$cmd 2>&1`;
-	log_print($cmd_msg);
-	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	log_print('.');
+	$isChk = (get_service_status('kubernetes')!=1)?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
@@ -107,7 +102,7 @@ if ($isChk) {
 	exit;
 }
 log_print("Successfully deployed K8s!\n");
-
+ 
 # Create Namespace on kubernetes cluster
 $cmd = "kubectl apply -f $Bin/../kubernetes/namespaces/account.yaml";
 log_print("Create Namespace on kubernetes cluster..\n");
