@@ -20,12 +20,16 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$gitlab_domain_name = get_domain_name('gitlab');
+# Check GitLab service is working
+if (get_service_status('gitlab')) {
+	log_print("GitLab is running, I skip the installation!\n\n");
+	exit;
+}
+log_print("Install GitLab ..\n");
 
-log_print("Install GitLab URL: http://$gitlab_domain_name\n");
 # Deploy GitLab on kubernetes cluster
-
 # Modify gitlab/gitlab-deployment.yml.tmpl
+$gitlab_domain_name = get_domain_name('gitlab');
 $yaml_path = "$Bin/../gitlab/";
 $yaml_file = $yaml_path.'gitlab-deployment.yml';
 $tmpl_file = $yaml_file.'.tmpl';
@@ -43,10 +47,10 @@ open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
 
+# Modify gitlab/gitlab-ingress.yaml.tmpl
+$yaml_path = "$Bin/../gitlab/";
+$yaml_file = $yaml_path.'gitlab-ingress.yml';
 if (uc($deploy_mode) ne 'IP') {
-	# Modify gitlab/gitlab-ingress.yaml.tmpl
-	$yaml_path = "$Bin/../gitlab/";
-	$yaml_file = $yaml_path.'gitlab-ingress.yml';
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
@@ -58,6 +62,13 @@ if (uc($deploy_mode) ne 'IP') {
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
 	close(FH);
+}
+else {
+	$cmd = "rm -f $yaml_file";
+	$cmd_msg = `$cmd 2>&1`;
+	if ($cmd_msg ne '') {
+		log_print("$cmd Error!\n$cmd_msg-----\n");
+	}
 }
 
 # Modify gitlab/gitlab-service.yml.tmpl
@@ -85,25 +96,21 @@ log_print("-----\n$cmd_msg-----\n");
 log_print("It takes 2 to 10 minutes to deploy GitLab service. Please wait.. \n");
 
 # Check GitLab service is working
-$cmd = "curl -q --max-time 5 -I http://$gitlab_domain_name/users/sign_in";
-#HTTP/1.1 200 OK
-$chk_key = '200 OK';
 $isChk=1;
 $count=0;
 $wait_sec=1200;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
-	$cmd_msg = `$cmd 2>&1`;
-	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	$isChk = (!get_service_status('gitlab'))?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
-log_print("\n$cmd_msg-----\n");
+log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy GitLab!\n");
-	log_print("-----\n$cmd_msg-----\n");
 	exit;
 }
-log_print("Successfully deployed GitLab!\n");
+$the_url = get_domain_name('gitlab');
+log_print("Successfully deployed GitLab! URL - http://$the_url\n");
 
 exit;
