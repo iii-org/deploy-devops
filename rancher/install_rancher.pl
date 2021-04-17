@@ -77,5 +77,6 @@ if ($isChk) {
 	exit;
 }
 $the_url = get_domain_name('rancher');
-log_print("Successfully deployed Rancher! URL - http://$the_url\n");
+log_print("Successfully deployed Rancher! URL - https://$the_url\n");
+
 exit;

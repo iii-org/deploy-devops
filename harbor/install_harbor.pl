@@ -21,53 +21,44 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$harbor_domain_name = get_domain_name('harbor');
 if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
 	create_dockerhub_proxy();
 	exit;
 }
 
-log_print("Install Harbor URL: https://$harbor_domain_name\n");
-# Check Harbor is working
-$cmd_msg = `curl -k --max-time 5 --location --request POST 'https://$harbor_domain_name/api/v2.0/registries' 2>&1`;
-#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-$isWorking = index($cmd_msg, 'UNAUTHORIZED')<0?0:1;
-if ($isWorking) {
+# Check Harbor service is working
+if (get_service_status('harbor')) {
 	log_print("Harbor is running, I skip the installation!\n\n");
 	exit;
 }
+log_print("Install Harbor ..\n");
 
 # Generate install yaml and exec install.sh
 install_harbor();
 
 # Check Harbor service is working
-$cmd = "curl -s -k --max-time 5 --location --request POST 'https://$harbor_domain_name/api/v2.0/registries'";
-#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-$chk_key = 'UNAUTHORIZED';
 $isChk=1;
 $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
 	$cmd_msg = `$cmd 2>&1`;
-	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	$isChk = (!get_service_status('harbor'))?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
 log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy Harbor!\n");
-	log_print("-----\n$cmd_msg-----\n");
 	exit;
 }
-log_print("Successfully deployed Harbor!\n");
+$the_url = get_domain_name('harbor');
+log_print("Successfully deployed Harbor! URL - https://$the_url\n");
 
 # create dockerhub proxy project
 create_dockerhub_proxy();
 
-
 exit;
-
 
 sub install_harbor {
 # Deploy Harbor on kubernetes cluster
@@ -115,6 +106,7 @@ END
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
 	}
+	$harbor_domain_name = get_domain_name('harbor');
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
 	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
@@ -165,6 +157,7 @@ sub create_dockerhub_proxy {
 # Add dockerhub Registry & create dockerhub Proxy Cache Project
 	$harbor_key = encode_base64("admin:$harbor_admin_password");
 	$harbor_key =~ s/\n|\r//;
+	$harbor_domain_name = get_domain_name('harbor');
 $cmd =<<END;
 curl -s -k --location --request POST 'https://$harbor_domain_name/api/v2.0/registries' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
   "name": "dockerhub",
