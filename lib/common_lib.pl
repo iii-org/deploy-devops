@@ -20,7 +20,7 @@ sub get_service_status {
 		#$v_cmd_msg =~  s/\e\[[\d;]*[a-zA-Z]//g; # Remove ANSI color
 		@arr_msg = split("\n", $v_cmd_msg);
 		$v_isHealthy = grep{ /$v_chk_key/} @arr_msg;
-		$v_status = ($v_isHealthy<3)?0:1;		
+		$v_status = !($v_isHealthy<3);	
 	}
 	elsif ($p_service eq 'rancher') {
 		$v_domain_name = get_domain_name('rancher');
@@ -33,7 +33,7 @@ sub get_service_status {
 		$v_chk_key = 'must authenticate';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
-		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	elsif ($p_service eq 'gitlab') {
 		$v_domain_name = get_domain_name('gitlab');
@@ -43,7 +43,7 @@ sub get_service_status {
 		$v_chk_key = '200 OK';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
-		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	elsif ($p_service eq 'redmine') {
 		$v_domain_name = get_domain_name('redmine');
@@ -52,7 +52,7 @@ sub get_service_status {
 		$v_chk_key = '200 OK';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
-		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	elsif ($p_service eq 'harbor') {
 		$v_domain_name = get_domain_name('harbor');
@@ -61,7 +61,7 @@ sub get_service_status {
 		$v_chk_key = 'UNAUTHORIZED';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
-		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	elsif ($p_service eq 'sonarqube') {
 		$v_domain_name = get_domain_name('sonarqube');
@@ -70,7 +70,7 @@ sub get_service_status {
 		$v_chk_key = 'Content-Type: text/html;charset=utf-8';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
-		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	elsif ($p_service eq 'iiidevops') {
 	}

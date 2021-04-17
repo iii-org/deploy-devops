@@ -16,7 +16,7 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 # Check Rancher service is working
-if (get_service_status('rancher')==1) {
+if (get_service_status('rancher')) {
 	log_print("Rancher is running, I skip the installation!\n\n");
 	exit;
 }
@@ -66,10 +66,11 @@ $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
-	$isChk = (get_service_status('rancher')!=1)?3:0;
+	$isChk = (!get_service_status('rancher'))?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
+log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy Rancher!\n");
 	exit;
