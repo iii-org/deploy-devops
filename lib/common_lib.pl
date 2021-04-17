@@ -24,7 +24,7 @@ sub get_service_status {
 	}
 	elsif ($p_service eq 'rancher') {
 		$v_domain_name = get_domain_name('rancher');
-		$v_cmd = "curl -k --location --request GET 'https://$v_domain_name/v3'";
+		$v_cmd = "curl -k --max-time 5 --location --request GET 'https://$v_domain_name/v3'";
 		#curl -k --location --request GET 'https://10.20.0.37:31443/v3'
 		#{"type":"error","status":"401","message":"must authenticate"} 
 		# 2nd method:
@@ -38,7 +38,7 @@ sub get_service_status {
 	elsif ($p_service eq 'gitlab') {
 		$v_domain_name = get_domain_name('gitlab');
 		$v_port = (uc($deploy_mode) ne 'IP')?80:32080;
-		$v_cmd = "curl -q -I http://$v_domain_name/users/sign_in";
+		$v_cmd = "curl -q --max-time 5 -I http://$v_domain_name/users/sign_in";
 		#HTTP/1.1 200 OK
 		$v_chk_key = '200 OK';
 		$v_cmd_msg = `$v_cmd 2>&1`;
@@ -47,7 +47,7 @@ sub get_service_status {
 	}
 	elsif ($p_service eq 'redmine') {
 		$v_domain_name = get_domain_name('redmine');
-		$v_cmd = "curl -q -I http://$v_domain_name";
+		$v_cmd = "curl -q --max-time 5 -I http://$v_domain_name";
 		# HTTP/1.1 200 OK
 		$v_chk_key = '200 OK';
 		$v_cmd_msg = `$v_cmd 2>&1`;
@@ -56,7 +56,7 @@ sub get_service_status {
 	}
 	elsif ($p_service eq 'harbor') {
 		$v_domain_name = get_domain_name('harbor');
-		$v_cmd = "curl -k --location --request POST 'https://$v_domain_name/api/v2.0/registries'";
+		$v_cmd = "curl -k --max-time 5 --location --request POST 'https://$v_domain_name/api/v2.0/registries'";
 		#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
 		$v_chk_key = 'UNAUTHORIZED';
 		$v_cmd_msg = `$v_cmd 2>&1`;
@@ -65,7 +65,7 @@ sub get_service_status {
 	}
 	elsif ($p_service eq 'sonarqube') {
 		$v_domain_name = get_domain_name('sonarqube');
-		$v_cmd = "curl -q -I http://$v_domain_name";
+		$v_cmd = "curl -q --max-time 5 -I http://$v_domain_name";
 		# Content-Type: text/html;charset=utf-8
 		$v_chk_key = 'Content-Type: text/html;charset=utf-8';
 		$v_cmd_msg = `$v_cmd 2>&1`;
