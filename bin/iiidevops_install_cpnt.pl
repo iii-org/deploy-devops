@@ -21,7 +21,7 @@ $cmd = "$home/deploy-devops/rancher/install_rancher.pl";
 log_print("\nDeploy Rancher..");
 system($cmd);
 # Check Rancher service is working
-if (get_service_status('rancher')!=1) {
+if (!get_service_status('rancher')) {
 	log_print("Rancher is not working!\n");
 	exit;
 }
@@ -32,7 +32,7 @@ $cmd = "$home/deploy-devops/redmine/install_redmine.pl";
 log_print("Deploy Redmine..");
 system($cmd);
 # Check Redmine service is working
-if (get_service_status('redmine')!=1) {
+if (!get_service_status('redmine')) {
 	log_print("Redmine is not working!\n");
 	exit;
 }
@@ -43,7 +43,7 @@ $cmd = "$home/deploy-devops/harbor/install_harbor.pl";
 log_print("\nDeploy Harbor..");
 system($cmd);
 # Check Harbor service is working
-if (get_service_status('harbor')!=1) {
+if (!get_service_status('harbor')) {
 	log_print("Harbor is not working!\n");
 	exit;
 }
@@ -54,7 +54,7 @@ $cmd = "$home/deploy-devops/sonarqube/install_sonarqube.pl";
 log_print("Deploy Sonarqube..");
 system($cmd);
 # Check Sonarqube service is working
-if (get_service_status('sonarqube')!=1) {
+if (!get_service_status('sonarqube')) {
 	log_print("Sonarqube is not working!\n");
 	exit;
 }
@@ -65,7 +65,7 @@ $cmd = "$home/deploy-devops/gitlab/install_gitlab.pl";
 log_print("\nDeploy Gitlab..");
 system($cmd);
 # Check GitLab service is working
-if (get_service_status('gitlab')!=1) {
+if (!get_service_status('gitlab')) {
 	log_print("GitLab is not working!\n");
 	exit;
 }

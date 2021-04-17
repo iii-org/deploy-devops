@@ -19,14 +19,14 @@ log_print(`TZ='Asia/Taipei' date`);
 
 # Check kubernetes status.
 log_print("Check kubernetes status..\n");
-if (get_service_status('kubernetes')!=1) {
+if (!get_service_status('kubernetes')) {
 	log_print("The Kubernetes cluster is not working properly!\n");
 	exit;
 }
 log_print("Kubernetes cluster is working well!\n");
 
 # Check GitLab service is working
-if (get_service_status('gitlab')!=1) {
+if (!get_service_status('gitlab')) {
 	log_print("GitLab is not working!\n");
 	exit;
 }
@@ -49,28 +49,28 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("GitLab is working well!\n");
 
 # Check Rancher service is working
-if (get_service_status('rancher')!=1) {
+if (!get_service_status('rancher')) {
 	log_print("Rancher is not working!\n");
 	exit;
 }
 log_print("Rancher is working well!\n");
 
 # Check Harbor service is working
-if (get_service_status('harbor')!=1) {
+if (!get_service_status('harbor')) {
 	log_print("Harbor is not working!\n");
 	exit;
 }
 log_print("Harbor is working well!\n");
 
 # Check Redmine service is working
-if (get_service_status('redmine')!=1) {
+if (!get_service_status('redmine')) {
 	log_print("Redmine is not working!\n");
 	exit;
 }
 log_print("Redmine is working well!\n");
 
 # Check Sonarqube service is working
-if (get_service_status('sonarqube')!=1) {
+if (!get_service_status('sonarqube')) {
 	log_print("Sonarqube is not working!\n");
 	exit;
 }

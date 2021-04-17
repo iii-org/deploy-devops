@@ -91,7 +91,7 @@ $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
-	$isChk = (get_service_status('kubernetes')!=1)?3:0;
+	$isChk = (!get_service_status('kubernetes'))?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
