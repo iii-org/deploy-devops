@@ -121,6 +121,7 @@ $the_url = get_domain_name('sonarqube');
 log_print("Successfully deployed Sonarqube! URL - http://$the_url\n");
 
 # Initial SonarQube
+sleep(3);
 initial_sonarqube();
 exit;
 
