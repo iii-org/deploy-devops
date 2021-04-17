@@ -74,7 +74,8 @@ else {
 
 # rancher
 $name = 'rancher';
-$key_value{'rancher-url'} = 'https://'.$rancher_ip.':31443';
+$rancher_hostname=($deploy_mode eq 'IP')?$rancher_ip.':31443':$rancher_domain_name;
+$key_value{'rancher-url'} = 'https://'.$rancher_hostname;
 if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");
