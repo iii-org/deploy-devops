@@ -21,11 +21,19 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$sonarqube_domain_name = get_domain_name('sonarqube');
+if (lc($ARGV[0]) eq 'initial_sonarqube') {
+	initial_sonarqube();
+	exit;
+}
 
-log_print("Install Sonarqube URL: http://$sonarqube_domain_name\n");
+# Check Sonarqube service is working
+if (get_service_status('sonarqube')) {
+	log_print("Sonarqube is running, I skip the installation!\n\n");
+	exit;
+}
+log_print("Install Sonarqube ..\n");
+
 # Deploy Sonarqube on kubernetes cluster
-
 # Modify sonarqube/sonarqube-postgresql/sonarqube-postgresql.yml.tmpl
 $yaml_path = "$Bin/../sonarqube/sonarqube-postgresql";
 $yaml_file = $yaml_path.'/sonarqube-postgresql.yml';
@@ -47,7 +55,6 @@ log_print("Deploy sonarqube-postgresql..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg-----\n");
 
-
 # Modify sonarqube/sonarqube/sonar-server-deployment.yaml.tmpl
 $yaml_path = "$Bin/../sonarqube/sonarqube";
 $yaml_file = $yaml_path.'/sonar-server-deployment.yaml';
@@ -62,10 +69,11 @@ $template =~ s/{{sonarqube_db_passwd}}/$sonarqube_db_passwd/g;
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
+
 # Modify sonarqube/sonarqube/sonar-server-ingress.yaml.tmpl
 $yaml_path = "$Bin/../sonarqube/sonarqube";
 $yaml_file = $yaml_path.'/sonar-server-ingress.yaml';
-if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
+if ($sonarqube_domain_name ne '' && uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
@@ -95,34 +103,34 @@ log_print("-----\n$cmd_msg-----\n");
 log_print("It takes 1 to 3 minutes to deploy Sonarqube service. Please wait.. \n");
 
 # Check Sonarqube service is working
-$cmd = "curl -q --max-time 5 -I http://$sonarqube_domain_name";
-# Content-Type: text/html;charset=utf-8
-$chk_key = 'Content-Type: text/html;charset=utf-8';
 $isChk=1;
 $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
 	log_print('.');
-	$cmd_msg = `$cmd 2>&1`;
-	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	$isChk = (!get_service_status('sonarqube'))?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
-log_print("\n$cmd_msg-----\n");
+log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy Sonarqube!\n");
-	log_print("-----\n$cmd_msg-----\n");
 	exit;
 }
-log_print("Successfully deployed Sonarqube!\n");
+$the_url = get_domain_name('sonarqube');
+log_print("Successfully deployed Sonarqube! URL - http://$the_url\n");
 
 # Initial SonarQube
-if ($sonarqube_admin_token eq '') {
-	initial_sonarqube();
-}
+initial_sonarqube();
 exit;
 
 sub initial_sonarqube {
+	if ($sonarqube_admin_token ne '') {
+		log_print("sonarqube_admin_token was initialized, Skip!\n");
+		return;
+	}
+	
+	$sonarqube_domain_name = get_domain_name('sonarqube');
 	# get admin token
 	# curl --silent --location --request POST 'http://10.50.1.56:31910/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
 	$cmd_add = <<END;
