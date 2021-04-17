@@ -18,12 +18,18 @@ log_print(`TZ='Asia/Taipei' date`);
 
 
 # Check kubernetes status.
-$cmd = "kubectl get pod | grep redmine | tail -1";
+$cmd = "kubectl get componentstatus";
+#NAME                 STATUS    MESSAGE             ERROR
+#scheduler            Healthy   ok
+#controller-manager   Healthy   ok
+#etcd-0               Healthy   {"health":"true"}
 log_print("Check kubernetes status..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n\n");
 #$cmd_msg =~  s/\e\[[\d;]*[a-zA-Z]//g; # Remove ANSI color
-if (index($cmd_msg, 'Running')<0) {
+@arr_msg = split("\n", $cmd_msg);
+$isHealthy = grep{ /Healthy/} @arr_msg;
+if ($isHealthy<3) {
 	log_print("The Kubernetes cluster is not working properly!\n");
 	exit;
 }
@@ -257,7 +263,7 @@ log_print("It takes 3 to 5 minutes to deploy III-DevOps services. Please wait.. 
 $isChk=1;
 while($isChk) {
 	$isChk = 0;
-	foreach $line (split(/\n/, `kubectl get pod`)) {
+	foreach $line (split(/\n/, `kubectl get pod | grep devops`)) {
 		$line =~ s/( )+/ /g;
 		($l_name, $l_ready, $l_status, $l_restarts, $l_age) = split(/ /, $line);
 		if ($l_name eq 'NAME') {next;}
