@@ -27,6 +27,9 @@ sub get_service_status {
 		$v_cmd = "curl -k --location --request GET 'https://$v_domain_name/v3'";
 		#curl -k --location --request GET 'https://10.20.0.37:31443/v3'
 		#{"type":"error","status":"401","message":"must authenticate"} 
+		# 2nd method:
+		#kubectl -n cattle-system rollout status deploy/rancher
+		#deployment "rancher" successfully rolled out
 		$v_chk_key = 'must authenticate';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");

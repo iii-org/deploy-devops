@@ -15,12 +15,8 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-$rancher_url = 'https://'.get_domain_name('rancher');
-log_print("Install Rancher URL: $rancher_url\n");
-# Check Rancher is working
-$cmd_msg = `nc -z -v $rancher_ip 31443 2>&1`;
-$isWorking = index($cmd_msg, 'succeeded!')<0?0:1;
-if ($isWorking) {
+# Check Rancher service is working
+if (get_service_status('rancher')==1) {
 	log_print("Rancher is running, I skip the installation!\n\n");
 	exit;
 }
@@ -65,38 +61,18 @@ $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
 # Check Rancher service is working
-$cmd = "kubectl -n cattle-system rollout status deploy/rancher";
-# deployment "rancher" successfully rolled out
-$chk_key = 'successfully';
 $isChk=1;
 $count=0;
 $wait_sec=600;
 while($isChk && $count<$wait_sec) {
-	#log_print('.');
-	$cmd_msg = `$cmd 2>&1`;
-	log_print($cmd_msg);
-	$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
+	log_print('.');
+	$isChk = (get_service_status('rancher')!=1)?3:0;
 	$count = $count + $isChk;
 	sleep($isChk);
 }
-log_print("-----\n$cmd_msg-----\n");
 if ($isChk) {
 	log_print("Failed to deploy Rancher!\n");
-	log_print("-----\n$cmd_msg-----\n");
 	exit;
 }
 log_print("Successfully deployed Rancher!\n");
 exit;
-
-
-sub log_print {
-	my ($p_msg) = @_;
-
-    print "$p_msg";
-	
-	open(FH, '>>', $logfile) or die $!;
-	print FH $p_msg;
-	close(FH);	
-
-    return;
-}
