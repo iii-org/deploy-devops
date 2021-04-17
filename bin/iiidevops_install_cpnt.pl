@@ -72,11 +72,11 @@ if (!get_service_status('gitlab')) {
 log_print("GitLab is working well!\n");
 
 log_print("The deployment of these services has been completed. The service URLs are: \n");
-log_print("Rancher - https://$rancher_domain_name/\n");
-log_print("GitLab - http://$gitlab_domain_name/\n");
-log_print("Redmine - http://$redmine_domain_name/\n");
-log_print("Harbor - https://$harbor_domain_name/\n");
-log_print("Sonarqube - http://$sonarqube_domain_name/\n");
+log_print("Rancher - https://".get_domain_name('rancher')."/\n");
+log_print("GitLab - http://".get_domain_name('gitlab')."/\n");
+log_print("Redmine - http://".get_domain_name('redmine')."/\n");
+log_print("Harbor - https://".get_domain_name('harbor')."/\n");
+log_print("Sonarqube - http://".get_domain_name('sonarqube')."/\n");
 log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 7. to continue.\n\n");
 
 exit;
