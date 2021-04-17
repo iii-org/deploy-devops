@@ -11,6 +11,7 @@ require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
+require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
@@ -54,7 +55,7 @@ if (-e "$nfs_dir/deploy-config/id_rsa") {
 	$cmd = "mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
 }
 else {
-	$cmd = "sudo -u rkeuser ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa;mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
+	$cmd = "sudo -u rkeuser ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa -q -N '';mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
 }
 system($cmd);
 
@@ -107,20 +108,19 @@ if ($isChk) {
 }
 log_print("Successfully deployed K8s!\n");
 
+# Create Namespace on kubernetes cluster
+$cmd = "kubectl apply -f $Bin/../kubernetes/namespaces/account.yaml";
+log_print("Create Namespace on kubernetes cluster..\n");
+$cmd_msg = `$cmd`;
+log_print("-----\n$cmd_msg\n-----\n\n");
+if (index($cmd_msg, 'namespace/account created')<0 && index($cmd_msg, 'namespace/account unchanged')<0) {
+	log_print("Failed to create namespace on kubernetes cluster!\n");
+	exit;
+}
+log_print("Create namespace on kubernetes cluster OK!\n");
+
 # Install all devops components 
 $cmd = "$Bin/iiidevops_install_cpnt.pl";
 system($cmd);
 
 exit;
-
-sub log_print {
-	my ($p_msg) = @_;
-
-    print "$p_msg";
-	
-	open(FH, '>>', $logfile) or die $!;
-	print FH $p_msg;
-	close(FH);	
-
-    return;
-}
