@@ -18,52 +18,26 @@ log_print(`TZ='Asia/Taipei' date`);
 
 
 # Check kubernetes status.
-$cmd = "kubectl get componentstatus";
-#NAME                 STATUS    MESSAGE             ERROR
-#scheduler            Healthy   ok
-#controller-manager   Healthy   ok
-#etcd-0               Healthy   {"health":"true"}
 log_print("Check kubernetes status..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n\n");
-#$cmd_msg =~  s/\e\[[\d;]*[a-zA-Z]//g; # Remove ANSI color
-@arr_msg = split("\n", $cmd_msg);
-$isHealthy = grep{ /Healthy/} @arr_msg;
-if ($isHealthy<3) {
+if (get_service_status('kubernetes')!=1) {
 	log_print("The Kubernetes cluster is not working properly!\n");
 	exit;
 }
+log_print("Kubernetes cluster is working well!\n");
 
-# Create Namespace on kubernetes cluster
-$cmd = "kubectl apply -f $Bin/../kubernetes/namespaces/account.yaml";
-log_print("Create Namespace on kubernetes cluster..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n\n");
-if (index($cmd_msg, 'namespace/account created')<0 && index($cmd_msg, 'namespace/account unchanged')<0) {
-	log_print("Failed to create namespace on kubernetes cluster!\n");
+# Check GitLab service is working
+if (get_service_status('gitlab')!=1) {
+	log_print("GitLab is not working!\n");
 	exit;
 }
-log_print("Create namespace on kubernetes cluster OK!\n");
 
-
-# Check if Gitlab/Rancher/Harbor/Redmine services are running well
-# Check GitLab service is working
-$gitlab_domain_name = get_domain_name('gitlab');
-$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
-$cmd = "curl -q -I http://$gitlab_domain_name/users/sign_in";
-$chk_key = '200 OK';
-$cmd_msg = `$cmd 2>&1`;
-#HTTP/1.1 200 OK
-if (index($cmd_msg, $chk_key)<0) {
-	log_print("GitLab is not working!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
-}
 # Check token-key 
 #curl --silent --location --request GET 'http://10.50.1.53/api/v4/users' \
 #--header 'PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP'
 # OK -> ,"username":
 # Error -> {"message":"
+$gitlab_domain_name = get_domain_name('gitlab');
+$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
 $cmd = "curl --silent --location --request GET 'http://$gitlab_domain_name/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = ',"username":';
 $cmd_msg = `$cmd 2>&1`;
@@ -75,55 +49,30 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("GitLab is working well!\n");
 
 # Check Rancher service is working
-#curl -k --location --request GET 'https://10.20.0.37:31443/v3'
-#{"type":"error","status":"401","message":"must authenticate"} 
-$rancher_domain_name = get_domain_name('rancher');
-$cmd = "curl -k --location --request GET 'https://$rancher_domain_name/v3'";
-$chk_key = 'must authenticate';
-$cmd_msg = `$cmd 2>&1`;
-if (index($cmd_msg, $chk_key)<0) {
+if (get_service_status('rancher')!=1) {
 	log_print("Rancher is not working!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit;
 }
 log_print("Rancher is working well!\n");
 
 # Check Harbor service is working
-$harbor_domain_name = get_domain_name('harbor');
-$cmd = "curl -k --location --request POST 'https://$harbor_domain_name/api/v2.0/registries'";
-$chk_key = 'UNAUTHORIZED';
-$cmd_msg = `$cmd 2>&1`;
-#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
-if (index($cmd_msg, $chk_key)<0) {
+if (get_service_status('harbor')!=1) {
 	log_print("Harbor is not working!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit;
 }
 log_print("Harbor is working well!\n");
 
 # Check Redmine service is working
-$redmine_domain_name = get_domain_name('redmine');
-$cmd = "curl -q -I http://$redmine_domain_name";
-$chk_key = '200 OK';
-$cmd_msg = `$cmd 2>&1`;
-# HTTP/1.1 200 OK
-if (index($cmd_msg, $chk_key)<0) {
+if (get_service_status('redmine')!=1) {
 	log_print("Redmine is not working!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit;
 }
 log_print("Redmine is working well!\n");
 
 # Check Sonarqube service is working
-$sonarqube_domain_name = get_domain_name('sonarqube');
-$cmd = "curl -q -I http://$sonarqube_domain_name";
-$chk_key = 'Content-Type: text/html;charset=utf-8';
-$cmd_msg = `$cmd 2>&1`;
-# Content-Type: text/html;charset=utf-8
-if (index($cmd_msg, $chk_key)<0) {
+if (get_service_status('sonarqube')!=1) {
 	log_print("Sonarqube is not working!\n");
-	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit;
 }
 log_print("Sonarqube is working well!\n");
 

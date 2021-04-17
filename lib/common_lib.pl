@@ -2,6 +2,82 @@
 # common lib
 #
 
+# Check service status.
+# service : kubernetes, rancher, gitlab, redmine, harbor, sonarqube, iiidevops
+sub get_service_status {
+	my ($p_service) = @_;
+	my ($v_status, $v_cmd, $v_cmd_msg, $v_chk_key, $v_isHealthy, $v_domain_name, $v_port, @arr_msg);
+	
+	if ($p_service eq 'kubernetes') {
+		$v_cmd = "kubectl get componentstatus";
+		#NAME                 STATUS    MESSAGE             ERROR
+		#scheduler            Healthy   ok
+		#controller-manager   Healthy   ok
+		#etcd-0               Healthy   {"health":"true"}
+		$v_chk_key = 'Healthy';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		#log_print("-----\n$v_cmd_msg-----\n");
+		#$v_cmd_msg =~  s/\e\[[\d;]*[a-zA-Z]//g; # Remove ANSI color
+		@arr_msg = split("\n", $v_cmd_msg);
+		$v_isHealthy = grep{ /$v_chk_key/} @arr_msg;
+		$v_status = ($v_isHealthy<3)?0:1;		
+	}
+	elsif ($p_service eq 'rancher') {
+		$v_domain_name = get_domain_name('rancher');
+		$v_cmd = "curl -k --location --request GET 'https://$v_domain_name/v3'";
+		#curl -k --location --request GET 'https://10.20.0.37:31443/v3'
+		#{"type":"error","status":"401","message":"must authenticate"} 
+		$v_chk_key = 'must authenticate';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		#log_print("-----\n$v_cmd_msg-----\n");
+		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+	}
+	elsif ($p_service eq 'gitlab') {
+		$v_domain_name = get_domain_name('gitlab');
+		$v_port = (uc($deploy_mode) ne 'IP')?80:32080;
+		$v_cmd = "curl -q -I http://$v_domain_name/users/sign_in";
+		#HTTP/1.1 200 OK
+		$v_chk_key = '200 OK';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		#log_print("-----\n$v_cmd_msg-----\n");
+		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+	}
+	elsif ($p_service eq 'redmine') {
+		$v_domain_name = get_domain_name('redmine');
+		$v_cmd = "curl -q -I http://$v_domain_name";
+		# HTTP/1.1 200 OK
+		$v_chk_key = '200 OK';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		#log_print("-----\n$v_cmd_msg-----\n");
+		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+	}
+	elsif ($p_service eq 'harbor') {
+		$v_domain_name = get_domain_name('harbor');
+		$v_cmd = "curl -k --location --request POST 'https://$v_domain_name/api/v2.0/registries'";
+		#{"errors":[{"code":"UNAUTHORIZED","message":"UnAuthorized"}]}
+		$v_chk_key = 'UNAUTHORIZED';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		#log_print("-----\n$v_cmd_msg-----\n");
+		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+	}
+	elsif ($p_service eq 'sonarqube') {
+		$v_domain_name = get_domain_name('sonarqube');
+		$v_cmd = "curl -q -I http://$v_domain_name";
+		# Content-Type: text/html;charset=utf-8
+		$v_chk_key = 'Content-Type: text/html;charset=utf-8';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		#log_print("-----\n$v_cmd_msg-----\n");
+		$v_status = (index($v_cmd_msg, $chk_key)<0)?0:1;
+	}
+	elsif ($p_service eq 'iiidevops') {
+	}
+	else {
+		$v_status = -1;
+	}
+
+	return($v_status);
+}
+
 # Deploy Mode $deploy_mode = # IP(Default), DNS, nip.io, xip.io
 # $p_service : rancher, gitlab, redmine, harbor, sonarqube, iiidevops
 # Exp.
