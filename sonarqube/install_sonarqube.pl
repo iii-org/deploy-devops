@@ -121,12 +121,11 @@ $the_url = get_domain_name('sonarqube');
 log_print("Successfully deployed Sonarqube! URL - http://$the_url\n");
 
 # Initial SonarQube
-sleep(3);
 initial_sonarqube();
 exit;
 
 sub initial_sonarqube {
-	if ($sonarqube_admin_token ne '') {
+	if ($sonarqube_admin_token ne 'skip' && $sonarqube_admin_token ne '') {
 		log_print("sonarqube_admin_token was initialized, Skip!\n");
 		return;
 	}

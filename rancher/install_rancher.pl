@@ -61,6 +61,9 @@ log_print("-----\n$cmd\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
+# Display Wait 2-5 min. message
+log_print("It takes 2 to 5 minutes to deploy Rancher service. Please wait.. \n");
+
 # Check Rancher service is working
 $isChk=1;
 $count=0;
