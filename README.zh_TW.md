@@ -60,7 +60,6 @@
 >
 > 安裝開始, 會提示 ssh 登入本機驗證與輸入 rkeuser 密碼, 之後約 15-20 分鐘自動完成所有服務套件的部署, 你應該可以看到如同以下的 URL 資訊.
 >
-> * 如果一切安裝順利, 你應該可以看到如同以下對各項檢查都 OK 的訊息
 > ```
 > rkeuser@iiidevops-71:~$ ~/deploy-devops/bin/iiidevops_install_base.pl
 > :
