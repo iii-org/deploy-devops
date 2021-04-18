@@ -81,6 +81,8 @@
 > * 接著設定 **Rancher Server URL**  (一般而言會顯示出正確 URL, 確認即可)
 >
 > * 等 Cluster - **local** 完成匯入, 將 **local** 改成 **iiidevops-k8s**
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/develop/png/rancher_cluster_name_01.png?raw=true)     
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/develop/png/rancher_cluster_name_02.png?raw=true)     
 
 # Step 5. 透過 GitLab 的管理網頁進行設定
 
