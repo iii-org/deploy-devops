@@ -46,6 +46,19 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
+
+# Set allow_local_requests_from_web_hooks_and_services
+#curl --request PUT --header "PRIVATE-TOKEN: 4hrmyqVkHo5so4ddsWGx" http://gitlab172.iiidevops.org/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true
+# "allow_local_requests_from_web_hooks_and_services":true
+$cmd = "curl --request PUT 'http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+$chk_key = '"allow_local_requests_from_web_hooks_and_services":true';
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("GitLab allow_local_requests_from_web_hooks_and_services is not true!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+
 log_print("GitLab is working well!\n");
 
 # Check Rancher service is working
