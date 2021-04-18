@@ -50,7 +50,7 @@
 > ```bash
 > ~/deploy-devops/bin/generate_env.pl
 > ````
-> * 在各項問題都輸入後, 請檢察輸入的項目是否都正確無誤. 你也可以直接編輯這個環境設定檔 env.pl 來進行環境設定資料的修正
+> * 在各項問題都輸入後, 請檢查輸入的項目是否都正確無誤. 你也可以直接編輯這個環境設定檔 env.pl 來進行環境設定資料的修正
 >
 >   ``` vi ~/deploy-devops/env.pl```
 
@@ -60,7 +60,6 @@
 >
 > 安裝開始, 會提示 ssh 登入本機驗證與輸入 rkeuser 密碼, 之後約 15-20 分鐘自動完成所有服務套件的部署, 你應該可以看到如同以下的 URL 資訊.
 >
-> * 如果一切安裝順利, 你應該可以看到如同以下對各項檢查都 OK 的訊息
 > ```
 > rkeuser@iiidevops-71:~$ ~/deploy-devops/bin/iiidevops_install_base.pl
 > :
