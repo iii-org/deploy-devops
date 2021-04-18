@@ -186,7 +186,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_ip') {
 $ask_nfs_dir = ($ask_nfs_dir eq '')?$nfs_dir:$ask_nfs_dir;
 if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_dir') {
 	if (!defined($ARGV[1])) {
-		$ask_nfs_dir = (defined($ask_nfs_dir) && $ask_nfs_dir ne '{{ask_nfs_dir}}' && $ask_nfs_dir ne '')?$ask_nfs_dir:$data_dir;
+		$ask_nfs_dir = (defined($ask_nfs_dir) && $ask_nfs_dir ne '{{ask_nfs_dir}}' && $ask_nfs_dir ne '')?$ask_nfs_dir:$nfs_dir;
 		$question = "Q1.4 Please enter NFS shared dir?($ask_nfs_dir)";
 		$isAsk = 1;
 		while($isAsk) {
