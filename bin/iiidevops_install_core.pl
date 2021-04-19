@@ -30,14 +30,13 @@ if (!get_service_status('gitlab')) {
 	log_print("GitLab is not working!\n");
 	exit;
 }
-
+$gitlab_domain_name = get_domain_name('gitlab');
+$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
 # Check token-key 
 #curl --silent --location --request GET 'http://10.50.1.53/api/v4/users' \
 #--header 'PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP'
 # OK -> ,"username":
 # Error -> {"message":"
-$gitlab_domain_name = get_domain_name('gitlab');
-$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
 $cmd = "curl --silent --location --request GET 'http://$gitlab_domain_name/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = ',"username":';
 $cmd_msg = `$cmd 2>&1`;
@@ -58,7 +57,6 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-
 log_print("GitLab is working well!\n");
 
 # Check Rancher service is working
@@ -73,6 +71,7 @@ if (!get_service_status('harbor')) {
 	log_print("Harbor is not working!\n");
 	exit;
 }
+$harbor_domain_name = get_domain_name('harbor');
 log_print("Harbor is working well!\n");
 
 # Check Redmine service is working
@@ -80,6 +79,7 @@ if (!get_service_status('redmine')) {
 	log_print("Redmine is not working!\n");
 	exit;
 }
+$redmine_domain_name = get_domain_name('redmine');
 log_print("Redmine is working well!\n");
 
 # Check Sonarqube service is working
@@ -87,6 +87,7 @@ if (!get_service_status('sonarqube')) {
 	log_print("Sonarqube is not working!\n");
 	exit;
 }
+$sonarqube_domain_name = get_domain_name('sonarqube');
 # Check token-key
 #curl -u 72110dbe6fb0f621657204b9db1594cf3bd805a1: --request GET 'http://10.20.0.35:31910/api/authentication/validate'
 #{"valid":true}
@@ -98,7 +99,6 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-
 log_print("Sonarqube is working well!\n");
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster
