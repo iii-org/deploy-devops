@@ -110,7 +110,7 @@
 >   A4. Set GitLab Token OK!
 > 
 >   Q21. Do you want to generate env.pl based on the above information?(Y/n)
->   The original env.pl has been backed up as /home/localadmin/deploy-devops/bin/../env.pl.bak
+>   The original env.pl has been backed up as /home/rkeuser/deploy-devops/bin/../env.pl.bak
 >   -----
 >   11c11
 >   < $gitlab_private_token = '535wZnCJDTL5y22xYYzv'; # Get from GitLab Web
@@ -173,18 +173,18 @@
 > * 在 VM1 建立 cron.txt 內設定上班時間每 10 分鐘進行檢查同步範本
 >
 >   ```bash
->   localadmin@iiidevops-71:~$ vi cron.txt
+>   rkeuser@iiidevops-71:~$ vi cron.txt
 >   ----
->   */10 7-20 * * * /home/localadmin/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
+>   */10 7-20 * * * /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
 >   ----
->   localadmin@iiidevops-71:~$ crontab cron.txt
->   localadmin@iiidevops-71:~$ crontab -l
->   */10 7-20 * * * /home/localadmin/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
+>   rkeuser@iiidevops-71:~$ crontab cron.txt
+>   rkeuser@iiidevops-71:~$ crontab -l
+>   */10 7-20 * * * /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
 >   ```
 > * 接下來就可以在 /tmp/sync-prj-templ.log 內看到同步紀錄, 類似如下的訊息
 >
 >   ```bash
->   localadmin@iiidevops-71:~$ tail /tmp/sync-prj-templ.log
+>   rkeuser@iiidevops-71:~$ tail /tmp/sync-prj-templ.log
 >   ----
 >   :
 >   :
@@ -194,7 +194,7 @@
 >           GitLab-> id:253 path:spring-maraidb-restapi created_at:2021-03-11T09:01:00.607Z
 >   [20].   name:flask-webpage-with-men (2021-03-11T08:10:06Z)
 >           GitLab-> id:254 path:flask-webpage-with-men created_at:2021-03-11T09:01:02.401Z
->   localadmin@iiidevops-71:~$
+>   rkeuser@iiidevops-71:~$
 >   ```
 
 # Step 9. 橫向擴展 K8s 主機
