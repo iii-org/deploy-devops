@@ -87,6 +87,18 @@ if (!get_service_status('sonarqube')) {
 	log_print("Sonarqube is not working!\n");
 	exit;
 }
+# Check token-key
+#curl -u 72110dbe6fb0f621657204b9db1594cf3bd805a1: --request GET 'http://10.20.0.35:31910/api/authentication/validate'
+#{"valid":true}
+$cmd = "curl -u $sonarqube_admin_token: --request GET 'http://$sonarqube_domain_name/api/authentication/validate'";
+$chk_key = '{"valid":true}';
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Sonarqube admin-token is not working!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+
 log_print("Sonarqube is working well!\n");
 
 # Deploy DevOps DB (Postgresql) on kubernetes cluster
