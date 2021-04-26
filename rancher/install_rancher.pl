@@ -61,6 +61,33 @@ log_print("-----\n$cmd\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
 
+# Modify rancher/rancher-ingress.yaml.tmpl
+$yaml_path = "$Bin/../rancher/";
+$yaml_file = $yaml_path.'rancher-ingress.yml';
+if (uc($deploy_mode) ne 'IP') {
+	$tmpl_file = $yaml_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		exit;
+	}
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{rancher_domain_name}}/$rancher_domain_name/g;
+	#log_print("-----\n$template\n-----\n\n");
+	open(FH, '>', $yaml_file) or die $!;
+	print FH $template;
+	close(FH);
+	$cmd = "kubectl apply -f $yaml_file";
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg\n\n");
+}
+else {
+	$cmd = "rm -f $yaml_file";
+	$cmd_msg = `$cmd 2>&1`;
+	if ($cmd_msg ne '') {
+		log_print("$cmd Error!\n$cmd_msg-----\n");
+	}
+}
+
 # Display Wait 2-5 min. message
 log_print("It takes 2 to 5 minutes to deploy Rancher service. Please wait.. \n");
 
