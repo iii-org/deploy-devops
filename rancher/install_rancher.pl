@@ -63,7 +63,7 @@ log_print("-----\n$cmd_msg\n\n");
 
 # Modify rancher/rancher-ingress.yaml.tmpl
 $yaml_path = "$Bin/../rancher/";
-$yaml_file = $yaml_path.'rancher-ingress.yml';
+$yaml_file = $yaml_path.'rancher-ingress.yaml';
 if (uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
