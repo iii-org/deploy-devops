@@ -150,8 +150,12 @@ foreach $item (@{ $hash_catalogs->{'data'} }) {
 $name = 'iii-dev-charts3';
 #$key_value{'branch'} = 'main';
 #$key_value{'helmVersion'} = '2.0';
-#$key_value{'url'} = 'https://github.com/iii-org/devops-charts/';
-%key_value = {};
+#%key_value = {};
+if ($$iiidevops_ver eq 'develop') {
+	$key_value{'url'} = 'https://raw.githubusercontent.com/iii-org/devops-charts-pack-and-index/develop/';
+}else {
+	$key_value{'url'} = 'https://raw.githubusercontent.com/iii-org/devops-charts-pack-and-index/main/';
+}
 if (index($catalogs_name_list, '['.$name.']')<0) {
 	$ret_msg = add_catalogs($name, %key_value);
 	print("$name : $ret_msg\n");
