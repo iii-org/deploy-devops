@@ -88,13 +88,10 @@ else {
 }
 system($cmd);
 
-# Copy ssh key to first_ip
-$cmd = "ssh-copy-id -i $nfs_dir/deploy-config/id_rsa.pub rkeuser\@$first_ip";
-system($cmd);
-# Verify rkeuser permission for running docker 
-$cmd = "ssh rkeuser\@$first_ip -C 'docker ps'";
-$chk_key = 'CREATED';
+# Trust first node & Check rkeuser permission
+$cmd ="cp $nfs_dir/deploy-config/id_rsa.pub /home/rkeuser/.ssh/authorized_keys; chmod 600 /home/rkeuser/.ssh/authorized_keys;ssh $first_ip \"docker ps\"";
 $cmd_msg = `$cmd 2>&1`;
+$chk_key = 'CREATED';
 #CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Verify rkeuser permission for running docker failed!\n");
