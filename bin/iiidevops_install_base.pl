@@ -89,7 +89,7 @@ else {
 system($cmd);
 
 # Trust first node & Check rkeuser permission
-$cmd ="cp $nfs_dir/deploy-config/id_rsa.pub /home/rkeuser/.ssh/authorized_keys; chmod 600 /home/rkeuser/.ssh/authorized_keys;ssh $first_ip \"docker ps\"";
+$cmd ="cp $nfs_dir/deploy-config/id_rsa.pub /home/rkeuser/.ssh/authorized_keys; chmod 600 /home/rkeuser/.ssh/authorized_keys;ssh -o StrictHostKeychecking=no $first_ip \"docker ps\"";
 $cmd_msg = `$cmd 2>&1`;
 $chk_key = 'CREATED';
 #CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
