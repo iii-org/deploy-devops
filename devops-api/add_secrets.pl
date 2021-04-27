@@ -151,7 +151,7 @@ $name = 'iii-dev-charts3';
 #$key_value{'branch'} = 'main';
 #$key_value{'helmVersion'} = '2.0';
 #%key_value = {};
-if ($$iiidevops_ver eq 'develop') {
+if ($iiidevops_ver eq 'develop') {
 	$key_value{'url'} = 'https://raw.githubusercontent.com/iii-org/devops-charts-pack-and-index/develop/';
 }else {
 	$key_value{'url'} = 'https://raw.githubusercontent.com/iii-org/devops-charts-pack-and-index/main/';
