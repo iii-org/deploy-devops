@@ -130,7 +130,7 @@ if (!get_service_status('kubernetes')) {
 log_print("Kubernetes cluster is working well!\n");
 
 # trust first node
-$cmd ="scp $ARGV[0]:/home/rkeuser/.ssh/id_rsa.pub /home/rkeuser/.ssh/authorized_keys; chmod 600 /home/rkeuser/.ssh/authorized_keys;ssh $ARGV[0] \"ssh $ARGV[1] ip a\"";
+$cmd ="scp $ARGV[0]:/home/rkeuser/.ssh/id_rsa.pub /home/rkeuser/.ssh/authorized_keys; chmod 600 /home/rkeuser/.ssh/authorized_keys;ssh $ARGV[0] \"ssh -o StrictHostKeychecking=no $ARGV[1] ip a\"";
 $cmd_msg = `$cmd 2>&1`;
 $chk_key = $ARGV[1];
 if (index($cmd_msg, $chk_key)<0) {
