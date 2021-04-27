@@ -16,7 +16,7 @@ log_print(`TZ='Asia/Taipei' date`);
 
 # Check runtime user
 $cmd = "whoami";
-$cmd_msg = `$cmd`;
+$cmd_msg = `$cmd 2>&1`;
 $chk_key = 'rkeuser';
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Must use 'rkeuser' user to join K8s cluster!\n");
@@ -25,7 +25,7 @@ if (index($cmd_msg, $chk_key)<0) {
 
 # Check my_ip
 $cmd = "ip a";
-$cmd_msg = `$cmd`;
+$cmd_msg = `$cmd 2>&1`;
 $chk_key = $ARGV[1];
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("My IP [$chk_key] is not existed in ip list!\n\n$cmd_msg\n");
@@ -67,7 +67,7 @@ log_print("Validation results OK!\n");
 # Gen K8s ssh key
 $ssh_key_file = '/home/rkeuser/.ssh/id_rsa';
 if (!-e $ssh_key_file) {
-	$cmd = "ssh-keygen -t rsa -C 'tech\@iii-devops.org' -f $ssh_key_file -q -N ''";
+	$cmd = "mkdir -p /home/rkeuser/.ssh; ssh-keygen -t rsa -C 'tech\@iii-devops.org' -f $ssh_key_file -q -N ''";
 	system($cmd);
 }
 # Copy ssh key to first_ip
@@ -83,7 +83,7 @@ else {
 # Get kube_conf & evn.pl
 $kube_conf = '/home/rkeuser/.kube/config';
 $cmd = "scp $ARGV[0]:$kube_conf $kube_conf";
-system($cmd);
+$cmd_msg = `$cmd 2>&1`;
 if (!-e $kube_conf) {
 	log_print("Get kube_conf file [$kube_conf] failed!\n");
 	exit;
@@ -91,7 +91,7 @@ if (!-e $kube_conf) {
 
 $env_file = '/home/rkeuser/deploy-devops/env.pl';
 $cmd = "scp $ARGV[0]:$env_file $env_file";
-system($cmd);
+$cmd_msg = `$cmd 2>&1`;
 if (!-e $env_file) {
 	log_print("Get evn.pl file [$env_file] failed!\n");
 	exit;	
@@ -102,23 +102,21 @@ require("$Bin/deploy-devops/lib/common_lib.pl");
 # Check nfs_clint, docker permission...
 $cmd = "showmount -e $nfs_ip;sudo -u rkeuser docker ps; sudo perl $Bin/deploy-devops/bin/add-insecure-registries.pl $harbor_ip $harbor_domain_name";
 $cmd_msg = `$cmd 2>&1`;
-log_print("-----\n$cmd_msg\n\n");
-
 #/iiidevopsNFS *
 $nfs_check = (index($cmd_msg, "$nfs_dir *")<0)?"ERROR!":"OK!";
 #CONTAINER ID        IMAGE                                             COMMAND                  CREATED             STATUS              
 $permission_check = (index($cmd_msg, "CREATED")<0)?"ERROR!":"OK!";
 #The Docker of the node should be able to trust 10.20.0.96
 $harbor_check = (index($cmd_msg, "The Docker of the node should be able to trust $harbor_ip")<0)?"ERROR!":"OK!";
-
+log_print("NFS Client 	: $nfs_check\n");
+log_print("Docker perm 	: $permission_check\n");
+log_print("Harbor Trust	: $harbor_check\n");
 $chk_key = 'ERROR';
-$cmd_msg = $nfs_check.$permission_check.$harbor_check;
-if (index($cmd_msg, $chk_key)>=0) {
-	log_print("NFS Client 	: $nfs_check\n");
-	log_print("Docker perm 	: $permission_check\n");
-	log_print("Harbor Trust	: $harbor_check\n");
+$chk_msg = $nfs_check.$permission_check.$harbor_check;
+if (index($chk_msg, $chk_key)>=0) {
 	log_print("--------------------------\n");
 	log_print("Validation results failed!\n");
+	log_print("-----\n$cmd_msg\n\n");
 	exit;
 }
 log_print("Validation results OK!\n");
@@ -131,6 +129,17 @@ if (!get_service_status('kubernetes')) {
 }
 log_print("Kubernetes cluster is working well!\n");
 
+# trust first node
+$cmd ="scp $ARGV[0]:/home/rkeuser/.ssh/id_rsa.pub /home/rkeuser/.ssh/authorized_keys; chmod 600 /home/rkeuser/.ssh/authorized_keys;ssh $ARGV[0] \"ssh $ARGV[1] ip a\"";
+$cmd_msg = `$cmd 2>&1`;
+$chk_key = $ARGV[1];
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Set trust first node failed!\n\n$cmd_msg\n");
+	exit;
+}
+log_print("Set trust first node OK!\n");
+
+# Seting my node is ready
 $cmd = "ssh $ARGV[0] 'touch $nfs_dir/deploy-config/$ARGV[1].ready; ls -lt $nfs_dir/deploy-config/'";
 $cmd_msg = `$cmd 2>&1`;
 $chk_key = $ARGV[1].'.ready';
