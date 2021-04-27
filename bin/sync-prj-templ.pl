@@ -31,6 +31,7 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 $github_org = (defined($ARGV[1]))?$ARGV[1]:'iiidevops-templates';
+$local_group = 'local-templates';
 
 # Get GitHub org $github_org (iiidevops-templates) repo list
 # curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
@@ -72,27 +73,31 @@ if ($group_list eq '') {
 else {
 	log_print("group_list : $group_list\n");
 }
+
+# Create $github_org group
 if (index($group_list, "[$github_org]")<0) {
-	# Create $github_org group
-	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
-	$cmd = "curl -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$github_org\",\"path\": \"$github_org\"}' http://$gitlab_ip:32080/api/v4/groups/";	
-	$cmd_msg = `$cmd`;
-	$ret = '';
-	if (index($cmd_msg, $github_org)>0){
-		$hash_msg = decode_json($cmd_msg);
-		$ret = $hash_msg->{'name'};
-		print("[$ret]\n");
-	}
-	if ($ret eq '' || $ret ne $github_org){
+	$ret = create_gitlab_group($github_org);
+	if ($ret<0) {
 		log_print("Add GitLab group [$github_org] Error!\n---\n$cmd_msg\n---\n");
 		exit;
 	}
-	else {
-		log_print("Add GitLab group [$github_org] OK!\n\n");
-	}
+	log_print("Add GitLab group [$github_org] OK!\n\n");
 }
 else {
 	log_print("GitLab group [$github_org] exists!\n\n");
+}
+
+# Create local-templates group
+if (index($group_list, "[$local_group]")<0) {
+	$ret = create_gitlab_group($local_group);
+	if ($ret<0) {
+		log_print("Add GitLab group [$local_group] Error!\n---\n$cmd_msg\n---\n");
+		exit;
+	}
+	log_print("Add GitLab group [$local_group] OK!\n\n");
+}
+else {
+	log_print("GitLab group [$local_group] exists!\n\n");
 }
 
 
@@ -158,6 +163,26 @@ foreach $repo_hash (@ {$hash_github_repo}) {
 }
 
 exit;
+
+sub create_gitlab_group {
+	my ($p_gitlab_groupname) = @_;
+	my ($cmd, $cmd_msg, $ret, %hash_msg);
+	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
+	$cmd = "curl -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}' http://$gitlab_ip:32080/api/v4/groups/";	
+	$cmd_msg = `$cmd`;
+	$ret = '';
+	if (index($cmd_msg, $p_gitlab_groupname)>0){
+		$hash_msg = decode_json($cmd_msg);
+		$ret = $hash_msg->{'name'};
+		print("[$ret]\n");
+	}
+	if ($ret eq '' || $ret ne $p_gitlab_groupname){
+		log_print("---\n$cmd_msg\n---\n");
+		return(-1);
+	}
+
+	return(1);
+}
 
 sub update_github {
 	my ($p_gitlab_id, $p_repo_id, $p_new_name, $p_target_namespace) = @_;
