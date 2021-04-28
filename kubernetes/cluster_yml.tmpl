@@ -64,7 +64,7 @@ services:
     win_extra_args: {}
     win_extra_binds: []
     win_extra_env: []
-    cluster_domain: iiidevops-k8s
+    cluster_domain: cluster.local
     infra_container_image: ""
     cluster_dns_server: 10.43.0.10
     fail_swap_on: false
@@ -157,7 +157,7 @@ ingress:
   default_backend: null
   default_http_backend_priority_class_name: ""
   nginx_ingress_controller_priority_class_name: ""
-cluster_name: ""
+cluster_name: "iiidevops-k8s"
 cloud_provider:
   name: ""
 prefix_path: ""
