@@ -79,6 +79,6 @@ log_print("GitLab - http://".get_domain_name('gitlab')."/\n");
 log_print("Redmine - http://".get_domain_name('redmine')."/\n");
 log_print("Harbor - https://".get_domain_name('harbor')."/\n");
 log_print("Sonarqube - http://".get_domain_name('sonarqube')."/\n");
-log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 7. to continue.\n\n");
+log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
 
 exit;

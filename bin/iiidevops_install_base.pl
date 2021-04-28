@@ -11,6 +11,8 @@ require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
+$is_inscpnt = defined($ARGV[0])?lc($ARGV[0]):''; # 'base' : skip install iiidevops_cpnt
+
 require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
@@ -164,8 +166,13 @@ if (index($cmd_msg, 'namespace/account created')<0 && index($cmd_msg, 'namespace
 }
 log_print("Create namespace on kubernetes cluster OK!\n");
 
-# Install all devops components 
-$cmd = "$Bin/iiidevops_install_cpnt.pl";
-system($cmd);
+# Install all devops components
+if ($is_inscpnt ne 'base') {
+	$cmd = "$Bin/iiidevops_install_cpnt.pl";
+	system($cmd);
+}
+else {
+	log_print("Skip install all devops components!\n");
+}
 
 exit;
