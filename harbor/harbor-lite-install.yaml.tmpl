@@ -1,27 +1,5 @@
-clair:
-  replicas: 1
-registry:
-  replicas: 1
 expose:
-  type: nodePort
-  tls:
-    enabled: true
-    certSource: auto
-    auto:
-      commonName: harbor-common-tls
-    secret:
-      secretName: "harbor-tls"
-  nodePort:
-    name: devops-harbor
-    ports:
-      https:
-        port: 443
-        nodePort: 32443
-  ingress:
-    hosts:
-      core: {{harbor_domain_name}}
-    controller: default
-externalURL: https://{{harbor_domain_name}}
+{{expose_type}}
 
 internalTLS:
   enabled: true
@@ -68,7 +46,7 @@ imagePullPolicy: IfNotPresent
 # and chartmuseum): "RollingUpdate" or "Recreate"
 # Set it as "Recreate" when "RWM" for volumes isn't supported
 updateStrategy:
-  type: RollingUpdate
+  type: "Recreate"
 
 # debug, info, warning, error or fatal
 logLevel: info

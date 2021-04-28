@@ -99,6 +99,44 @@ END
 	log_print("-----\n$cmd_msg-----\n");
 
 	# Modify harbor/harbor-lite-install.yaml.tmpl
+	$harbor_domain_name = get_domain_name('harbor');
+	$harbor_ip_domain_name = ($deploy_mode eq 'IP')?$harbor_ip:$harbor_domain_name;
+	
+	$IP_type =<<END;
+  type: nodePort
+  tls:
+    enabled: true
+    certSource: auto
+    auto:
+      commonName: harbor-common-tls
+    secret:
+      secretName: "harbor-tls"
+  nodePort:
+    name: devops-harbor
+    ports:
+      https:
+        port: 443
+        nodePort: 32443
+  ingress:
+    hosts:
+      core: $harbor_ip_domain_name
+    controller: default
+externalURL: https://$harbor_domain_name
+END
+	$DNS_type =<<END;
+  type: ingress
+  tls:
+    enabled: true
+    certSource: auto
+    secret:
+      secretName: "harbor-self-tls"	
+  ingress:
+    hosts:
+      core: $harbor_domain_name
+    controller: default
+externalURL: https://$harbor_domain_name
+END
+	$expose_type = ($deploy_mode eq 'IP')?$IP_type:$DNS_type;
 	$yaml_path = "$Bin/../harbor/";
 	$yaml_file = $yaml_path.'harbor-lite-install.yaml';
 	$tmpl_file = $yaml_file.'.tmpl';
@@ -106,10 +144,9 @@ END
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
 	}
-	$harbor_domain_name = get_domain_name('harbor');
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
-	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
+	$template =~ s/{{expose_type}}/$expose_type/g;
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
@@ -119,33 +156,6 @@ END
 	$cmd = "helm install harbor --version 1.5.2 harbor/harbor -f $yaml_file";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
-
-	# Modify harbor/harbor-ingress.yaml.tmpl
-	$yaml_path = "$Bin/../harbor/";
-	$yaml_file = $yaml_path.'harbor-ingress.yaml';
-	if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
-		$tmpl_file = $yaml_file.'.tmpl';
-		if (!-e $tmpl_file) {
-			log_print("The template file [$tmpl_file] does not exist!\n");
-			exit;
-		}
-		$template = `cat $tmpl_file`;
-		$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
-		#log_print("-----\n$template\n-----\n\n");
-		open(FH, '>', $yaml_file) or die $!;
-		print FH $template;
-		close(FH);
-		$cmd = "kubectl apply -f $yaml_file";
-		$cmd_msg = `$cmd`;
-		log_print("-----\n$cmd_msg-----\n");
-	}
-	else {
-		$cmd = "rm -f $yaml_file";
-		$cmd_msg = `$cmd 2>&1`;
-		if ($cmd_msg ne '') {
-			log_print("$cmd Error!\n$cmd_msg-----\n");
-		}
-	}
 
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to deploy Harbor service. Please wait.. \n");
