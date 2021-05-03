@@ -7,14 +7,24 @@ $kubeconf_str = defined($ARGV[0])?'--kubeconfig '.$ARGV[0]:'';
 print("\n----------------------------------------\n");
 print(`TZ='Asia/Taipei' date`);
 
+$cmd_kubectl = '/snap/bin/kubectl';
+if (!-e $$cmd_kubectl) {
+	$cmd_kubectl = '/usr/local/bin/kubectl';
+}
 
-$cmd = "/snap/bin/kubectl $kubeconf_str rollout restart deployment devopsapi";
+if (!-e $cmd_kubectl) {
+	print("[$cmd_kubectl] is not exist!!!\n");
+	exit;
+}
+
+
+$cmd = "$cmd_kubectl $kubeconf_str rollout restart deployment devopsapi";
 print("Redeploy devops-api..[$cmd]\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n\n");
 
 
-$cmd = "/snap/bin/kubectl $kubeconf_str rollout restart deployment devopsui";
+$cmd = "$cmd_kubectl $kubeconf_str rollout restart deployment devopsui";
 print("Redeploy devops-ui..[$cmd]\n");
 $cmd_msg = `$cmd`;
 print("-----\n$cmd_msg\n-----\n\n");
