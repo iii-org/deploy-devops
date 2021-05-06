@@ -124,11 +124,13 @@ $cmd_msg = `$cmd`;
 
 # Check the database is ready!
 $isChk=1;
+$cmd = "psql -d 'postgresql://postgres:$db_passwd\@$db_ip:31403' -c 'SELECT version();'";
+# PostgreSQL 12.6 (Debian 12.6-1.pgdg100+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit
+$chk_key = 'PostgreSQL';
 while($isChk) {
 	print('.');
-	$cmd_msg = `nc -z -v $db_ip 31403 2>&1`;
-	# Connection to 192.168.11.205 31403 port [tcp/*] succeeded!
-	$isChk = index($cmd_msg, 'succeeded!')<0?1:0;
+	$cmd_msg = `$cmd 2>&1`;
+	$isChk = index($cmd_msg, $chk_key)<0?3:0;
 	sleep($isChk);
 }
 print("OK!\n");
