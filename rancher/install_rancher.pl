@@ -59,7 +59,7 @@ $cmd = <<END;
 kubectl create namespace cattle-system
 kubectl apply --validate=false -f $Bin/cert-manager.crds.yaml
 kubectl apply -f $Bin/rancher-service.yaml
-helm install rancher --namespace cattle-system  --set hostname=$rancher_hostname ./$Bin/rancher
+helm install rancher --namespace cattle-system  --set hostname=$rancher_hostname $Bin/rancher
 
 END
 
