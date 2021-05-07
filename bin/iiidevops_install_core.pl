@@ -124,7 +124,7 @@ $cmd_msg = `$cmd`;
 
 # Check the database is ready!
 $isChk=1;
-$cmd = "psql -d 'postgresql://postgres:$db_passwd\@$db_ip:31403' connect_timeout=10 -c 'SELECT version();'";
+$cmd = "psql -d 'postgresql://postgres:$db_passwd\@$db_ip:31403' -q -c 'SELECT version();'";
 # PostgreSQL 12.6 (Debian 12.6-1.pgdg100+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit
 $chk_key = 'PostgreSQL';
 while($isChk) {
