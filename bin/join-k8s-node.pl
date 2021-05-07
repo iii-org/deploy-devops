@@ -35,12 +35,10 @@ if (index($cmd_msg, $chk_key)<0) {
 
 # Download iiidevops_install.pl
 $ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
-$cmd = "wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
+$cmd = "rm -f ./iiidevops_install.pl.log; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
 
-log_print("-----\n$cmd_msg\n\n");
-$cmd_msg = `$cmd 2>&1`;
-log_print("-----\n$cmd_msg\n\n");
-
+system($cmd);
+$cmd_msg = `cat ./iiidevops_install.pl.log`;
 # Check remote k8s node info
 #Install docker 19.03.14 ..OK!
 #Install kubectl v1.18 ..OK!
@@ -160,8 +158,8 @@ if (index($cmd_msg, $chk_key)<0) {
 log_print("$ARGV[1] is ready to join K8s cluster!\n");
 
 # Exec update-k8s-cluster.pl @first_node
-log_print("Exec update-k8s-cluster.pl !\n");
-system("ssh $ARGV[0] '~/deploy-devops/bin/update-k8s-cluster.pl'");
+system("ssh $ARGV[0] 'nohup ~/deploy-devops/bin/update-k8s-cluster.pl > /dev/null 2>&1 &'");
+log_print("Exec update-k8s-cluster.pl!\n");
 
 exit;
 
