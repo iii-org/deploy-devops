@@ -26,7 +26,7 @@ if (index($cmd_msg, $chk_key)<0) {
 # Check my_ip
 $cmd = "ip a";
 $cmd_msg = `$cmd 2>&1`;
-$chk_key = $ARGV[1];
+$chk_key = $ARGV[1].'/';
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("My IP [$chk_key] is not existed in ip list!\n\n$cmd_msg\n");
 	exit;
@@ -63,6 +63,15 @@ if (index($cmd_msg, $chk_key)>=0) {
 	exit;
 }
 log_print("Validation results OK!\n");
+
+# Check K8s Node
+$cmd = 'kubectl get node';
+$cmd_msg = `$cmd 2>&1`;
+$chk_key = $ARGV[1].' ';
+if (index($cmd_msg, $chk_key)>=0) {
+	log_print("My IP [$chk_key] is in K8s node list! Stop the process of joining the K8s cluster.\n\n$cmd_msg\n");
+	exit;
+}
 
 # Gen K8s ssh key
 $ssh_key_file = '/home/rkeuser/.ssh/id_rsa';
@@ -149,6 +158,10 @@ if (index($cmd_msg, $chk_key)<0) {
 	exit;
 }
 log_print("$ARGV[1] is ready to join K8s cluster!\n");
+
+# Exec update-k8s-cluster.pl @first_node
+log_print("Exec update-k8s-cluster.pl !\n");
+system("ssh $ARGV[0] '~/deploy-devops/bin/update-k8s-cluster.pl'");
 
 exit;
 
