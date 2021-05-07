@@ -199,4 +199,37 @@
 
 # Step 9. 橫向擴展 K8s 主機
 
-> * 可以在 VM1 執行以下的命令來讓 VM2, VM3.... 加入 K8s cluster.
+> * 可以在擴增的 VM2, VM3.... 安裝好 Ubuntu 20.04 之後執行以下的語法加入 K8s cluster.
+> * 需要使用 **rekuser** 來進行整體安裝程序 
+> > ```bash
+> > sudo useradd -s /bin/bash -d /home/rkeuser/ -m -G sudo rkeuser
+> > sudo passwd rkeuser
+> > su - rkeuser
+> > 
+> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/develop/bin/join-k8s-node.pl;
+> > perl ./join-k8s-node.pl <VM1 IP> <自己的 IP> [版本分支]
+>   ```
+
+> * 例如 VM1 IP 是 10.20.0.71 , 自己的 IP 是 10.20.0.72 使用 develop 分支, 所以語法如下:
+>   ```
+>   perl ./join-k8s-node.pl 10.20.0.71 10.20.0.72 develop
+>   ```
+
+> * 安裝過程 sudo 需要輸入 rkeuser 的密碼
+>   ```
+>   2021-05-07 17:23:09 (30.8 MB/s) - ‘iiidevops_install.pl’ saved [8028/8028]
+>   
+>   [sudo] password for rkeuser:
+>   -----
+>   ```
+
+> * 需要輸入 yes 信任 10.20.0.71 的 fingerprint 與 rkeuser@10.20.0.71 的密碼
+>   ```
+>   The authenticity of host '10.20.0.71 (10.20.0.71)' can't be established.
+>   ECDSA key fingerprint is SHA256:dw+jgzw2Zop3mPIYrVtGM162r+J7ctEFI+aeGeZN6uc.
+>   Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+>   rkeuser@10.20.0.71's password:
+>   ```
+
+> * 約等 3-5 分鐘就可以看到 10.20.0.72 加入 K8s Cluster 當 Worker Node
+
