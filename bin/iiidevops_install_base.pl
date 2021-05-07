@@ -127,7 +127,7 @@ if ($harbor_ip ne '') {
 }
 
 # Install K8s
-system("$Bin/../kubernetes/update-k8s-cluster.pl Initial $first_ip");
+system("$Bin/../kubernetes/update-k8s-setting.pl Initial $first_ip");
 system("sudo -u rkeuser rke up --config $nfs_dir/deploy-config/cluster.yml");
 
 $cmd = "cp -a $nfs_dir/deploy-config/kube_config_cluster.yml $nfs_dir/kube-config/config; ln -f -s $nfs_dir/kube-config/config ~rkeuser/.kube/config";
