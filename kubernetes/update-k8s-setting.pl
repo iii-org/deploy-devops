@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # update K8s cluster.yml script
 #
-# Usage: update-k8s-cluster.pl <cmd> <IP> [<role>]
+# Usage: update-k8s-setting.pl <cmd> <IP> [<role>]
 # <cmd> : Initial / Add / Remove / Modify
 # <role> (Options) worker(Default), controlplane, etcd, all
 #
@@ -30,15 +30,11 @@ $cluster_yml_tmpl = `cat $Bin/cluster_yml.tmpl`;
 $cluster_node_tmpl = `cat $Bin/cluster_node.tmpl`;
 
 if ($cmd eq 'Initial') {
-	$msg = gen_cluster_yml($node_ip);
-	exit;
+	gen_cluster_yml($node_ip);
 }
-
-
-#Get Node List
-#cat cluster.yml | grep K8s_node
-# K8s_node, 10.20.0.37, controlplane_worker_etcd
-# K8s_node, 10.20.0.36, controlplane_worker_etcd
+elsif ($cmd eq 'Add') {
+	add_cluster_yml($node_ip, $node_role);
+}
 
 exit;
 
@@ -47,18 +43,99 @@ sub gen_cluster_yml {
 	my ($p_node_ip) = @_;
 	local($cluster_node, $node_role_list, $node_role, $cluster_yml);
 
-	$node_role_list = 'controlplane_worker_etcd';
-	$node_role = "  - controlplane\n";
-	$node_role .= "  - worker\n";
-	$node_role .= "  - etcd";
+	$cluster_node = add_node_yml($p_node_ip, 'controlplane_worker_etcd');
+	write_cluster_yml($cluster_node);
+
+	return;
+}
+
+sub add_cluster_yml {
+	my ($p_node_ip, $p_node_role) = @_;
+	my ($msg, $cluster_node_list, $line, $t1, $t_ip, $t_role);
+
+	#Get Node List
+	#cat cluster.yml | grep K8s_node
+	# K8s_node, 10.20.0.37, controlplane_worker_etcd
+	# K8s_node, 10.20.0.36, controlplane_worker_etcd
+	$msg = `cat $yml_file | grep K8s_node`;
+	if (index($msg, ' '.$p_node_ip.',')>0) {
+		log_print("IP:[$p_node_ip] is already in K8s Cluster!\n$msg\n\n");
+		return;
+	}
 	
+	$cluster_node_list = '';
+	foreach $line (split("\n", $msg)) {
+		# K8s_node, 10.20.0.37, controlplane_worker_etcd
+		($t1, $t_ip, $t_role) = split(', ', $line);
+		$cluster_node_list .= ($cluster_node_list ne '')?"\n":'';
+		$cluster_node_list .= add_node_yml($t_ip, $t_role);
+	}
+	$cluster_node_list .= ($cluster_node_list ne '')?"\n":'';
+	$cluster_node_list .= add_node_yml($p_node_ip, $p_node_role);
+	write_cluster_yml($cluster_node_list);
+
+	return;
+}
+
+# Gen node section Exp.
+## K8s_node, 10.20.0.95, controlplane_worker_etcd
+#- address: 10.20.0.95
+#  port: "22"
+#  internal_address: 10.20.0.95
+#  role:
+#  - controlplane
+#  - worker
+#  - etcd
+#  hostname_override: ""
+#  user: rkeuser
+#  docker_socket: /var/run/docker.sock
+# :
+# :
+sub add_node_yml {
+	my ($p_node_ip, $p_role_list) = @_;
+	local($cluster_node, $node_role);
+
+	$node_role = gen_node_role($p_role_list);
 	$cluster_node = $cluster_node_tmpl;
 	$cluster_node =~ s/%%node_ip%%/$p_node_ip/g;
-	$cluster_node =~ s/%%node_role_list%%/$node_role_list/g;
+	$cluster_node =~ s/%%node_role_list%%/$p_role_list/g;
 	$cluster_node =~ s/%%node_role%%/$node_role/g;
 	
+	return($cluster_node);
+}
+
+# Gen node role Exp.
+#  role:
+#  - controlplane
+#  - worker
+#  - etcd
+sub gen_node_role {
+	my ($p_role_list) = @_;
+	my ($node_role);
+	
+	$node_role = '';
+	if (index($p_role_list, 'controlplane')>=0) {
+		$node_role .= "  - controlplane";
+	}
+	if (index($p_role_list, 'worker')>=0) {
+		$node_role .= ($node_role ne '')?"\n":'';
+		$node_role .= "  - worker";
+	}
+	if (index($p_role_list, 'etcd')>=0) {
+		$node_role .= ($node_role ne '')?"\n":'';
+		$node_role .= "  - etcd";
+	}
+
+	return($node_role);
+}
+
+# Write full cluster.yml
+sub write_cluster_yml {
+	my ($p_node_list) = @_;
+	my ($cluster_yml);
+
 	$cluster_yml = $cluster_yml_tmpl;
-	$cluster_yml =~ s/%%node_list%%/$cluster_node/g;
+	$cluster_yml =~ s/%%node_list%%/$p_node_list/g;
 	
 	open(FH, '>', $yml_file) or die $!;
 	print FH $cluster_yml;
@@ -66,7 +143,6 @@ sub gen_cluster_yml {
 
 	return;
 }
-
 
 sub log_print {
 	my ($p_msg) = @_;
