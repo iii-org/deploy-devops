@@ -2,7 +2,7 @@
 # remote join Kubernetes cluster node script
 #
 use FindBin qw($Bin);
-$|=-1; # force flush output
+$|=1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";

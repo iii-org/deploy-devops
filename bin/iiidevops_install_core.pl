@@ -3,6 +3,8 @@
 #
 use FindBin qw($Bin);
 use MIME::Base64;
+$|=1; # force flush output
+
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");

@@ -4,6 +4,7 @@
 # Usage: sudo add-insecure-registries.pl <harbor_ip> <harbor_domain_name>
 #
 use FindBin qw($Bin);
+$|=1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
 if (!defined($ARGV[0])) {

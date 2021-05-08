@@ -3,6 +3,8 @@
 #
 use FindBin qw($Bin);
 my $p_config = "$Bin/../env.pl";
+$|=1; # force flush output
+
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
 	exit;
