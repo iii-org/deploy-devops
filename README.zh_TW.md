@@ -231,5 +231,21 @@
 >   rkeuser@10.20.0.71's password:
 >   ```
 
-> * 約等 3-5 分鐘就可以看到 10.20.0.72 加入 K8s Cluster 當 Worker Node
+> * 約等 3-10 分鐘就可以看到 10.20.0.72 加入 K8s Cluster 當 Worker Node
+>   ```
+>   It takes 3 to 10 minutes for 10.20.0.72 to join the K8s cluster. Please wait..
+>   .........................................
+>   :
+>   :
+>   10.20.0.72   NotReady                   <none>                     7s      v1.18.17
+>   :
+>   10.20.0.72   NotReady                   worker                     59s     v1.18.17
+>   10.20.0.72   NotReady                   worker                     64s     v1.18.17
+>   10.20.0.72   NotReady                   worker                     79s     v1.18.17
+>   
+>   --------------------------
+>   Sat 08 May 2021 02:22:23 PM CST
+>   10.20.0.46   Ready                      worker                     84s     v1.18.17
+>   
+>   ```
 
