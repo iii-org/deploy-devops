@@ -1,23 +1,24 @@
-# deploy-devops
+# deploy-devops V2
 ## 安裝環境需求
 
-* III DevOps 系統需安裝在 Ubuntu 20.04 LTS 作業系統, 採用虛擬機 virtual machine(VM) 來進行部署, 讓系統可以依照實際運行狀況進行快速擴充
-* 虛擬機的最小規格為 1 台 8 vCore, 16G RAM, 120G HD , 建議在正式開發產品的環境上需要至少 3 台以上的虛擬機且建議使用 SSD 硬碟, 確保檔案存取速度
+* III DevOps 系統需安裝在 Ubuntu 20.04 LTS 作業系統, 可採用虛擬機 virtual machine(VM) 或實體機來進行部署, 採用虛擬機系統可以依照之後使用狀況進行快速擴充
+* 安裝的主機最小規格為 1 台 8 vCore, 16G RAM, 120G SSD , 正式使用的開發環境需要擴充至 3 台以上的主機, 且建議都使用 SSD 硬碟確保檔案存取速度於執行效能
 * 在開始安裝之前, 您應該要先確認一下的安裝設定資訊
-  * 虛擬機的 IP
-  * 安裝部署的模式 IP, DNS
-	  * IP 模式 : 直接透過 IP 存取 III DevOps 與相關服務, 不同服務會使用不同連接埠 Exp. GitLab 32080, Redmine 32748..
-    * DNS 模式: 提供 Domain names 對應到 III DevOps 與相關服務  Exp. gitlab.iiidevops.org, redmine.iiidevops.org..
-	* GitLab 的 root 密碼
-  * Harbor, Rancher, Redmine, Sonarqube 的 admin 密碼 (可以和 GitLab 的 root 密碼相同)
+  * 主機的網路與 IP 資訊
+  * 安裝部署的模式 IP 或 DNS
+    * IP 模式 : 直接透過 IP 存取 III DevOps 與相關服務, 不同服務會使用不同連接埠 Exp. GitLab 使用 Port:32080, Redmine 使用 Port:32748..
+    * DNS 模式: 提供 Domain names 對應到 III DevOps 與相關服務  Exp. GitLab 使用 gitlab.iiidevops.org, Redmine 使用 redmine.iiidevops.org..
+  * GitLab 的 root 密碼
+  * Harbor, Rancher, Redmine, Sonarqube 的 admin 密碼 (可以都和 GitLab 的 root 密碼相同)
   * III Devops 第一位使用者 ( III DevOps 的系統管理者)
     - 帳號 (不允許 'admin' 與 'root')
     - E-Mail
     - 密碼 (可以和 GitLab 的 root 密碼相同)
+  * 一個 Github 的 access token (scopes 只需要 public_repo 即可, 請參考 https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token )
   
-* 系統安裝之後可以依據實際建立專案的使用需要, 針對 Kubernetes 節點進行橫向擴充 (VM2, VM3, VM4, VM5...) 也可能需要針對 VM1 擴增硬碟大小
+* 系統安裝之後可以依據實際建立專案的使用需要, 進行節點橫向擴充 (VM2, VM3, VM4, VM5...) 也可能需要針對 VM1 擴增硬碟大小
 
-* 如果安裝環境外部有防火牆, 請增加防火牆規則讓使用者的來源 IP 能允許存取 III DevOps 主機(VM) 所有 IP (VM2, VM3, VM4, VM5...) 的 TCP port 80/443/3443/30000~32767 
+* 如果安裝環境外部有防火牆, 請增加防火牆規則讓使用者的來源 IP 能允許存取 III DevOps 主機與所有節點 IP (VM2, VM3, VM4, VM5...) 的 TCP port 80/443/30000~32767 
 
 
 # Step 1. 下載部署程式與安裝 docker 等系統套件
@@ -28,13 +29,13 @@
 > > sudo passwd rkeuser
 > > su - rkeuser
 > > 
-> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/develop/bin/iiidevops_install.pl;
-> > perl ./iiidevops_install.pl develop
+> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl;
+> > perl ./iiidevops_install.pl
 > > ```
 >
 > * 如果一切安裝順利, 你應該可以看到如同以下對各項檢查都 OK 的訊息
 > ```
-> rkeuser@iiidevops-71:~$ perl ./iiidevops_install.pl develop
+> rkeuser@iiidevops-71:~$ perl ./iiidevops_install.pl
 > :
 > :
 > -----Validation results-----
@@ -199,20 +200,20 @@
 
 # Step 9. 橫向擴展 K8s 主機
 
-> * 可以在擴增的 VM2, VM3.... 安裝好 Ubuntu 20.04 之後執行以下的語法加入 K8s cluster.
+> * 在要擴增的 VM2, VM3.... 先安裝好 Ubuntu 20.04 後執行以下的語法加入 K8s cluster.
 > * 需要使用 **rekuser** 來進行整體安裝程序 
 > > ```bash
 > > sudo useradd -s /bin/bash -d /home/rkeuser/ -m -G sudo rkeuser
 > > sudo passwd rkeuser
 > > su - rkeuser
 > > 
-> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/develop/bin/join-k8s-node.pl;
-> > perl ./join-k8s-node.pl <VM1 IP> <自己的 IP> [版本分支]
+> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/join-k8s-node.pl;
+> > perl ./join-k8s-node.pl <VM1 IP> <自己的 IP>
 >   ```
 
-> * 例如 VM1 IP 是 10.20.0.71 , 自己的 IP 是 10.20.0.72 使用 develop 分支, 所以語法如下:
+> * 例如 VM1 IP 是 10.20.0.71 , 自己的 IP 是 10.20.0.72 , 所以語法如下:
 >   ```
->   perl ./join-k8s-node.pl 10.20.0.71 10.20.0.72 develop
+>   perl ./join-k8s-node.pl 10.20.0.71 10.20.0.72
 >   ```
 
 > * 安裝過程 sudo 需要輸入 rkeuser 的密碼
