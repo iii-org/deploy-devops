@@ -162,15 +162,21 @@ system("ssh $ARGV[0] 'nohup ~/deploy-devops/bin/update-k8s-cluster.pl > /dev/nul
 log_print("Exec update-k8s-cluster.pl!\n");
 
 # Check K8s Node
-$cmd = 'kubectl get node';
+$cmd = "kubectl get node | grep '$ARGV[1] '";
 $cmd_msg = `$cmd 2>&1`;
-$chk_key = $ARGV[1].' ';
+$chk_key = 'Ready';
+log_print("--------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 log_print("$cmd_msg\n");
 log_print("It takes 3 to 10 minutes for $ARGV[1] to join the K8s cluster. Please wait.. \n");
 while (index($cmd_msg, $chk_key)<0) {
-	log_print('.');
-	sleep(10);
+	if ($cmd_msg eq '') {
+		log_print('.');
+	}
+	else {
+		log_print("$cmd_msg\n");
+	}
+	sleep(5);
 	$cmd_msg = `$cmd 2>&1`;
 }
 log_print("\n");
