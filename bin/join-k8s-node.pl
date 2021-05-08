@@ -174,12 +174,12 @@ while (index($cmd_msg, $chk_key)<0) {
 		log_print('.');
 	}
 	else {
-		log_print("$cmd_msg\n");
+		log_print("$cmd_msg");
 	}
 	sleep(5);
 	$cmd_msg = `$cmd 2>&1`;
 }
-log_print("\n");
+log_print("\n--------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 log_print("$cmd_msg\n");
 exit;
