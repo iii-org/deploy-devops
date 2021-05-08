@@ -164,7 +164,7 @@ log_print("Exec update-k8s-cluster.pl!\n");
 # Check K8s Node
 $cmd = "kubectl get node | grep '$ARGV[1] '";
 $cmd_msg = `$cmd 2>&1`;
-$chk_key = 'Ready';
+$chk_key = ' Ready ';
 log_print("--------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 log_print("$cmd_msg\n");
