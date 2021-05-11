@@ -47,16 +47,24 @@ $my_pid = $$;
 
 $to_chk=1;
 while ($to_chk) {
-	$to_chk = check_ready_ips();
-	if ($to_chk>0) {
+	$to_update=0;
+	while ($to_chk) {
+		$to_chk = check_ready_ips();
+		$to_update = ($to_update==0 && $to_chk==0)?0:1;
+		if ($to_chk>0) {
+			sleep(10);
+		}
+	}
+	if ($to_update>0) {
+		log_print("\n----------------------------------------\n");
+		log_print(`TZ='Asia/Taipei' date`);
 		# update K8s cluster
 		update_k8s_cluster();
 		sleep(10);
 	}
-	log_print("\n----------------------------------------\n");
-	log_print(`TZ='Asia/Taipei' date`);
 }
-
+log_print("\n----------------------------------------\n");
+log_print(`TZ='Asia/Taipei' date`);
 log_print("Complete the update of K8s cluster!\n");
 exit;
 
