@@ -12,17 +12,17 @@ if (!-e $p_config_tmpl) {
 	exit;
 }
 
-if (!-e $p_conf) {
-	print("The conf file [$p_conf] does not exist!\n");
-	exit;
-}
-
 $nfs_dir = defined($nfs_dir)?$nfs_dir:'/iiidevopsNFS';
 if (-e "$nfs_dir/deploy-config/env.pl") {
 	$cmd_msg = `rm -f $p_config; ln -s $nfs_dir/deploy-config/env.pl $p_config`; 
 }
 if (-e "$nfs_dir/deploy-config/env.conf") {
 	$cmd_msg = `rm -f $p_conf; ln -s $nfs_dir/deploy-config/env.conf $p_conf`; 
+}
+
+if (!-e $p_conf) {
+	print("The conf file [$p_conf] does not exist!\n");
+	exit;
 }
 
 # Parsing env.conf
