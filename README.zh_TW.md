@@ -24,13 +24,13 @@
 # Step 1. 下載部署程式與安裝 docker 環境
 
 > ```bash
-> wget https://raw.githubusercontent.com/iii-org/deploy-devops/v1/bin/iiidevops_install.pl;
-> perl ./iiidevops_install.pl local v1
+> wget https://raw.githubusercontent.com/iii-org/deploy-devops/old_v1/bin/iiidevops_install.pl;
+> perl ./iiidevops_install.pl local old_v1
 > ```
 > * 如果一切安裝順利, 你應該可以看到如同以下對各項檢查都 OK 的訊息
 > 
 > ```
-> localadmin@iiidevops-71:~$ perl ./iiidevops_install.pl local v1
+> localadmin@iiidevops-71:~$ perl ./iiidevops_install.pl local old_v1
 > :
 > :
 > -----Validation results-----
