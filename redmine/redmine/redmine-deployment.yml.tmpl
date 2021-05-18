@@ -12,6 +12,18 @@ spec:
       labels:
         app: redmine
     spec:
+      initContainers:
+      # 修正configmap所需的讀寫權限
+      - name: fix-permission-for-configfile
+        image: busybox
+        command: ['sh', '-c', 'cat /tmp/configuration.yml && cp /tmp/configuration.yml /config-tmp-dir/configuration.yml && chmod -R 777 /config-tmp-dir']
+        # 同時掛載兩個空間(一個有redmine要得檔案, 另外一個有可自由讀寫的空間)
+        volumeMounts:
+        - name: redmine-config-vol
+          mountPath: /tmp/configuration.yml
+          subPath: configuration.yml
+        - name: redmine-config-tmp-dir
+          mountPath: /config-tmp-dir
       containers:
       - name: redmine
         image: redmine:4.1.1
@@ -22,6 +34,21 @@ spec:
           value: {{redmine_db_passwd}}
         - name: REDMINE_DB_DATABASE
           value: redmine
+        volumeMounts:
+        - name: redmine-config-tmp-dir
+          mountPath: /usr/src/redmine/config/configuration.yml
+          subPath: configuration.yml
         ports:
         - containerPort: 3000
           name: ui
+      # 向k8s取得redmine的yaml檔案
+      volumes:
+      - name: redmine-config-vol
+        configMap:
+          name: redmine-config
+          items:
+          - key: configuration.yml
+            path: configuration.yml
+      # 暫存給redmine與初始化需要的儲存空間(會隨刪除消失)
+      - name: redmine-config-tmp-dir
+        emptyDir: {}
