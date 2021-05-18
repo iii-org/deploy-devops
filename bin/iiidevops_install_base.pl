@@ -56,26 +56,43 @@ END
 	log_print("Create nfs directory OK!\n");
 }
 
-# copy env.pl.ans / env.pl to deploy-config/
-$cmd_touch =<<END;
-touch $nfs_dir/deploy-config/env.pl;
-touch $nfs_dir/deploy-config/env.pl.ans;
-END
-$cmd_move =<<END;
-mv $Bin/../env.pl $nfs_dir/deploy-config/;
-mv $Bin/../env.pl.ans $nfs_dir/deploy-config/;
-END
-$cmd_link =<<END;
-ln -s $nfs_dir/deploy-config/env.pl $Bin/../env.pl;
-ln -s $nfs_dir/deploy-config/env.pl.ans $Bin/../env.pl.ans;
-END
-if (!-e "$Bin/../env.pl") {
-	$cmd_msg = `$cmd_touch`;
+# copy env.pl.ans / env.pl / env.conf to deploy-config/
+#if (length(`dpkg -l | grep "ii  iiidevops "`)>0) {
+#}
+# If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
+#$nfs_dir = '/iiidevopsNFS';
+#$p_config = "$Bin/deploy-devops/env.pl";
+$cmd_msg = '';
+$n_config = "$nfs_dir/deploy-config/env.pl";
+$t_config = "$Bin/../env.pl";
+if (-e $n_config) {
+	$cmd_msg .= `rm $t_config;ln -s $n_config $t_config`; 
+	log_print("$t_config file link is automatically created ..OK!\n");
 }
-else {
-	$cmd_msg = `$cmd_move`;
+elsif (-e $t_config) {
+	$cmd_msg .= `mv $t_config $n_config; ln -s $n_config $t_config`; 
 }
-$cmd_msg .= `$cmd_link`;
+
+$n_config = "$nfs_dir/deploy-config/env.pl.ans";
+$t_config = "$Bin/../env.pl.ans";
+if (-e $n_config) {
+	$cmd_msg .= `rm $t_config;ln -s $n_config $t_config`; 
+	log_print("$t_config file link is automatically created ..OK!\n");
+}
+elsif (-e $t_config) {
+	$cmd_msg .= `mv $t_config $n_config; ln -s $n_config $t_config`; 
+}
+
+$n_config = "$nfs_dir/deploy-config/env.conf";
+$t_config = "$Bin/../env.conf";
+if (-e $n_config) {
+	$cmd_msg .= `rm $t_config;ln -s $n_config $t_config`; 
+	log_print("$t_config file link is automatically created ..OK!\n");
+}
+elsif (-e $t_config) {
+	$cmd_msg .= `mv $t_config $n_config; ln -s $n_config $t_config`; 
+}
+
 if ($cmd_msg ne '') {
 	log_print("Move env.pl to $nfs_dir/deploy-config/ ERROR!\n----\n$cmd_msg\n");
 }
