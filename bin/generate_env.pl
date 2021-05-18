@@ -532,7 +532,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'redmine_api_key') {
 		}
 	}
 	else {
-		$ask_redmine_api_key = $ARGV[1];
+		$value = (lc($ARGV[1]) eq 'auto')?sha1_hex(random_password(20)):$ARGV[1];
+		$ask_redmine_api_key = $value;
 		$answer = "A6.2 Set Redmine API key OK!";
 	}
 	print ("$answer\n\n");
@@ -710,7 +711,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'auto_password') {
 		}
 	}
 	else {
-		$ask_auto_password = $ARGV[1];
+		$value = (lc($ARGV[1]) eq 'auto')?random_password(20):$ARGV[1];
+		$ask_auto_password = $value;
 		$answer = "A10a. Set auto password OK!";
 	}
 	print ("$answer\n\n");
@@ -744,7 +746,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 		}
 	}
 	else {
-		$ask_random_key = $ARGV[1];
+		$value = (lc($ARGV[1]) eq 'auto')?random_password(20):$ARGV[1];
+		$ask_random_key = $value;
 		$answer = "A10b. Set random key OK!";
 	}
 	print ("$answer\n\n");

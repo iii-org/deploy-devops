@@ -9,7 +9,9 @@ $p_config_ans_bak = $p_config_ans.".bak";
 
 $nfs_dir = defined($nfs_dir)?$nfs_dir:'/iiidevopsNFS';
 if (-e "$nfs_dir/deploy-config/env.pl.ans") {
-	$cmd_msg = `rm -f $p_config_ans; ln -s $nfs_dir/deploy-config/env.pl.ans $p_config_ans`; 
+	#$cmd_msg = `rm -f $p_config_ans; ln -s $nfs_dir/deploy-config/env.pl.ans $p_config_ans`; 
+	print("The conf ans file [env.pl.ans] exist!\n");
+	exit;
 }
 if (-e "$nfs_dir/deploy-config/env.conf") {
 	$cmd_msg = `rm -f $p_conf; ln -s $nfs_dir/deploy-config/env.conf $p_conf`; 
@@ -118,6 +120,22 @@ if (-e $p_config_ans) {
 	# convert env.pl.ans to env.pl
 	$cmd = "$Bin/generate_env.pl convert";
 	system($cmd);
+
+	# redmine_api_key
+	if (lc($hash_conf{'REDMINE_API_KEY'}) eq 'skip') {
+		$cmd = "$Bin/generate_env.pl redmine_api_key auto force";
+		system($cmd);
+	}
+	# auto_password
+	if (lc($hash_conf{'AUTO_PWD'}) eq 'skip') {
+		$cmd = "$Bin/generate_env.pl auto_password auto force";
+		system($cmd);
+	}
+	# random_key
+	if (lc($hash_conf{'RANDOM_KEY'}) eq 'skip') {
+		$cmd = "$Bin/generate_env.pl random_key auto force";
+		system($cmd);
+	}
 
 exit;
 
