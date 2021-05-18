@@ -67,17 +67,23 @@ if (-e $p_config_tmpl_ans) {
 	require($p_config_tmpl_ans);
 }
 
-# 0. get host IP
-$host = hostname();
-$host_ip = inet_ntoa(scalar gethostbyname($host || 'localhost'));
-
 # Set the specified key value
 if (defined($ARGV[0])) {
-	if (index($ans_tmpl, '{{ask_'.$ARGV[0].'}}')<0) {
+	if (index($ans_tmpl, '{{ask_'.$ARGV[0].'}}')<0 && lc($ARGV[0]) ne 'convert') {
 		print("The specified key: [$ARGV[0]] is unknown!\n");
 		exit;
 	}
 }
+
+# convert env.pl.ans to env.pl
+if ($ARGV[0] eq 'convert') {
+	convert();
+	exit;
+}
+
+# 0. get host IP
+$host = hostname();
+$host_ip = inet_ntoa(scalar gethostbyname($host || 'localhost'));
 
 # 1.1 Set $vm1_ip
 #\$ask_vm1_ip = '{{ask_vm1_ip}}';
@@ -796,6 +802,14 @@ else {
 	$Y_N = prompt_for_input($question);
 }
 if (lc($Y_N) ne 'n') {
+	convert();
+}
+
+exit;
+
+# convert env.pl.ans to env.pl
+sub convert {
+	
 	if (-e $p_config) {
 		`cat $p_config > $p_config_bak`;
 		print("The original env.pl has been backed up as $p_config_bak\n");
@@ -845,10 +859,9 @@ if (lc($Y_N) ne 'n') {
 		$cmd_msg = `cat $p_config`;
 	}
 	print("-----\n$cmd_msg-----\n");
+	
+	return;
 }
-# No longer needed 
-
-exit;
 
 
 sub write_ans {
