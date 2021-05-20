@@ -32,35 +32,36 @@ if (index($cmd_msg, $chk_key)<0) {
 	exit;
 }
 
+if (length(`dpkg -l | grep "ii  iiidevops "`)<0) {
+	# Download iiidevops_install.pl
+	$ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
+	$cmd = "rm -f ./iiidevops_install.pl.log; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
 
-# Download iiidevops_install.pl
-$ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
-$cmd = "rm -f ./iiidevops_install.pl.log; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
+	system($cmd);
+	$cmd_msg = `cat ./iiidevops_install.pl.log`;
+	# Check remote k8s node info
+	#Install docker 19.03.14 ..OK!
+	#Install kubectl v1.18 ..OK!
+	#Install helm ..OK!
+	#Install rke v1.2.7 ..OK!
+	$docker_check = (index($cmd_msg, "Install docker 19.03.14 ..OK!")<0)?"ERROR!":"OK!";
+	$kubectl_check = (index($cmd_msg, "Install kubectl v1.18 ..OK!")<0)?"ERROR!":"OK!";
+	$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
+	$rke_check = (index($cmd_msg, "Install rke v1.2.7 ..OK!")<0)?"ERROR!":"OK!";
 
-system($cmd);
-$cmd_msg = `cat ./iiidevops_install.pl.log`;
-# Check remote k8s node info
-#Install docker 19.03.14 ..OK!
-#Install kubectl v1.18 ..OK!
-#Install helm ..OK!
-#Install rke v1.2.7 ..OK!
-$docker_check = (index($cmd_msg, "Install docker 19.03.14 ..OK!")<0)?"ERROR!":"OK!";
-$kubectl_check = (index($cmd_msg, "Install kubectl v1.18 ..OK!")<0)?"ERROR!":"OK!";
-$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
-$rke_check = (index($cmd_msg, "Install rke v1.2.7 ..OK!")<0)?"ERROR!":"OK!";
-
-$chk_key = 'ERROR';
-$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
-if (index($cmd_msg, $chk_key)>=0) {
-	log_print("Docker    	: $docker_check\n");
-	log_print("Kubectl   	: $kubectl_check\n");
-	log_print("Helm	     	: $helm_check\n");
-	log_print("RKE	     	: $rke_check\n");
-	log_print("--------------------------\n");
-	log_print("Validation results failed!\n");
-	exit;
+	$chk_key = 'ERROR';
+	$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
+	if (index($cmd_msg, $chk_key)>=0) {
+		log_print("Docker    	: $docker_check\n");
+		log_print("Kubectl   	: $kubectl_check\n");
+		log_print("Helm	     	: $helm_check\n");
+		log_print("RKE	     	: $rke_check\n");
+		log_print("--------------------------\n");
+		log_print("Validation results failed!\n");
+		exit;
+	}
+	log_print("Validation results OK!\n");
 }
-log_print("Validation results OK!\n");
 
 # Check K8s Node
 $cmd = 'kubectl get node';
