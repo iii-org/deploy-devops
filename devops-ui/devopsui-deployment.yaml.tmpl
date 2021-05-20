@@ -15,6 +15,6 @@ spec:
       containers:
       - name: devopsui
         image: iiiorg/devops-ui:{{iiidevops_ver}}
-        imagePullPolicy: Always
+        imagePullPolicy: {{image_pull_policy}}
         ports:
         - containerPort: 80

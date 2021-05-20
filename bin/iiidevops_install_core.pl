@@ -140,6 +140,9 @@ print("OK!\n");
 # iiidevops_ver
 $iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
 
+# imagePullPolicy
+$image_pull_policy = ($iiidevops_ver eq '1')?'IfNotPresent':'Always';
+
 # Deploy DevOps API (Python Flask) on kubernetes cluster
 $yaml_path = "$Bin/../devops-api/";
 $yaml_file = $yaml_path.'devopsapi-deployment.yaml';
@@ -151,6 +154,7 @@ if (!-e $tmpl_file) {
 
 $template = `cat $tmpl_file`;
 $template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
+$template =~ s/{{image_pull_policy}}/$image_pull_policy/g;
 $template =~ s/{{db_passwd}}/$db_passwd/g;
 $template =~ s/{{db_ip}}/$db_ip/g;
 $template =~ s/{{jwt_secret_key}}/$jwt_secret_key/g;
@@ -201,6 +205,7 @@ if (!-e $tmpl_file) {
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
+$template =~ s/{{image_pull_policy}}/$image_pull_policy/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
