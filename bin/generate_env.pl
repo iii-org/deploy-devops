@@ -24,7 +24,7 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 }
 
 $ans_tmpl = <<END;
-# generate_env_answer
+# generate_env_answer v2.0.1
 \$ask_deploy_mode = '{{ask_deploy_mode}}';
 \$ask_iiidevops_ver = '{{ask_iiidevops_ver}}';
 \$ask_vm1_ip = '{{ask_vm1_ip}}';
@@ -55,6 +55,9 @@ $ans_tmpl = <<END;
 \$ask_checkmarx_password = '{{ask_checkmarx_password}}';
 \$ask_checkmarx_secret = '{{ask_checkmarx_secret}}';
 \$ask_webinspect_base_url = '{{ask_webinspect_base_url}}';
+\$ask_webinspect_type = '{{ask_webinspect_type}}';
+\$ask_webinspect_username = '{{ask_webinspect_username}}';
+\$ask_webinspect_password = '{{ask_webinspect_password}}';
 \$ask_auto_password = '{{ask_auto_password}}';
 \$ask_random_key = '{{ask_random_key}}';
 
