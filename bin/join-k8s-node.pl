@@ -32,7 +32,7 @@ if (index($cmd_msg, $chk_key)<0) {
 	exit;
 }
 
-if (length(`dpkg -l | grep "ii  iiidevops "`)<0) {
+if (length(`dpkg -l | grep "ii  iiidevops "`)==0) {
 	# Download iiidevops_install.pl
 	$ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
 	$cmd = "rm -f ./iiidevops_install.pl.log; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
@@ -84,7 +84,7 @@ if (!-e $ssh_key_file.'.pub') {
 	exit;	
 }
 else {
-	$cmd = "ssh-copy-id -i $ssh_key_file.pub $ARGV[0]";
+	$cmd = "ssh-copy-id -f -i $ssh_key_file.pub $ARGV[0]";
 	system($cmd);
 }
 
