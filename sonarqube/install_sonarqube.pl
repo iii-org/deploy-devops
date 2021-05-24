@@ -3,6 +3,8 @@
 #
 use FindBin qw($Bin);
 use JSON::MaybeXS qw(encode_json decode_json);
+$|=1; # force flush output
+
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
@@ -29,6 +31,10 @@ if (lc($ARGV[0]) eq 'initial_sonarqube') {
 # Check Sonarqube service is working
 if (get_service_status('sonarqube')) {
 	log_print("Sonarqube is running, I skip the installation!\n\n");
+	# Check $sonarqube_admin_token
+	if ($sonarqube_admin_token eq '' || lc($sonarqube_admin_token) eq 'skip') {
+		initial_sonarqube();
+	}
 	exit;
 }
 log_print("Install Sonarqube ..\n");

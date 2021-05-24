@@ -3,6 +3,8 @@
 #
 use FindBin qw($Bin);
 use MIME::Base64;
+$|=1; # force flush output
+
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
@@ -124,7 +126,7 @@ $cmd_msg = `$cmd`;
 
 # Check the database is ready!
 $isChk=1;
-$cmd = "psql -d 'postgresql://postgres:$db_passwd\@$db_ip:31403' connect_timeout=10 -c 'SELECT version();'";
+$cmd = "psql -d 'postgresql://postgres:$db_passwd\@$db_ip:31403' -q -c 'SELECT version();'";
 # PostgreSQL 12.6 (Debian 12.6-1.pgdg100+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit
 $chk_key = 'PostgreSQL';
 while($isChk) {
@@ -138,6 +140,9 @@ print("OK!\n");
 # iiidevops_ver
 $iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
 
+# imagePullPolicy
+$image_pull_policy = ($iiidevops_ver eq '1')?'IfNotPresent':'Always';
+
 # Deploy DevOps API (Python Flask) on kubernetes cluster
 $yaml_path = "$Bin/../devops-api/";
 $yaml_file = $yaml_path.'devopsapi-deployment.yaml';
@@ -149,6 +154,7 @@ if (!-e $tmpl_file) {
 
 $template = `cat $tmpl_file`;
 $template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
+$template =~ s/{{image_pull_policy}}/$image_pull_policy/g;
 $template =~ s/{{db_passwd}}/$db_passwd/g;
 $template =~ s/{{db_ip}}/$db_ip/g;
 $template =~ s/{{jwt_secret_key}}/$jwt_secret_key/g;
@@ -199,6 +205,7 @@ if (!-e $tmpl_file) {
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
+$template =~ s/{{image_pull_policy}}/$image_pull_policy/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;

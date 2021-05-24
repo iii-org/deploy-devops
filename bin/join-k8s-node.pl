@@ -2,7 +2,7 @@
 # remote join Kubernetes cluster node script
 #
 use FindBin qw($Bin);
-$|=-1; # force flush output
+$|=1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
@@ -26,43 +26,51 @@ if (index($cmd_msg, $chk_key)<0) {
 # Check my_ip
 $cmd = "ip a";
 $cmd_msg = `$cmd 2>&1`;
-$chk_key = $ARGV[1];
+$chk_key = $ARGV[1].'/';
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("My IP [$chk_key] is not existed in ip list!\n\n$cmd_msg\n");
 	exit;
 }
 
+if (length(`dpkg -l | grep "ii  iiidevops "`)<0) {
+	# Download iiidevops_install.pl
+	$ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
+	$cmd = "rm -f ./iiidevops_install.pl.log; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
 
-# Download iiidevops_install.pl
-$ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
-$cmd = "wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
+	system($cmd);
+	$cmd_msg = `cat ./iiidevops_install.pl.log`;
+	# Check remote k8s node info
+	#Install docker 19.03.14 ..OK!
+	#Install kubectl v1.18 ..OK!
+	#Install helm ..OK!
+	#Install rke v1.2.7 ..OK!
+	$docker_check = (index($cmd_msg, "Install docker 19.03.14 ..OK!")<0)?"ERROR!":"OK!";
+	$kubectl_check = (index($cmd_msg, "Install kubectl v1.18 ..OK!")<0)?"ERROR!":"OK!";
+	$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
+	$rke_check = (index($cmd_msg, "Install rke v1.2.7 ..OK!")<0)?"ERROR!":"OK!";
 
-log_print("-----\n$cmd_msg\n\n");
+	$chk_key = 'ERROR';
+	$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
+	if (index($cmd_msg, $chk_key)>=0) {
+		log_print("Docker    	: $docker_check\n");
+		log_print("Kubectl   	: $kubectl_check\n");
+		log_print("Helm	     	: $helm_check\n");
+		log_print("RKE	     	: $rke_check\n");
+		log_print("--------------------------\n");
+		log_print("Validation results failed!\n");
+		exit;
+	}
+	log_print("Validation results OK!\n");
+}
+
+# Check K8s Node
+$cmd = 'kubectl get node';
 $cmd_msg = `$cmd 2>&1`;
-log_print("-----\n$cmd_msg\n\n");
-
-# Check remote k8s node info
-#Install docker 19.03.14 ..OK!
-#Install kubectl v1.18 ..OK!
-#Install helm ..OK!
-#Install rke v1.2.7 ..OK!
-$docker_check = (index($cmd_msg, "Install docker 19.03.14 ..OK!")<0)?"ERROR!":"OK!";
-$kubectl_check = (index($cmd_msg, "Install kubectl v1.18 ..OK!")<0)?"ERROR!":"OK!";
-$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
-$rke_check = (index($cmd_msg, "Install rke v1.2.7 ..OK!")<0)?"ERROR!":"OK!";
-
-$chk_key = 'ERROR';
-$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
+$chk_key = $ARGV[1].' ';
 if (index($cmd_msg, $chk_key)>=0) {
-	log_print("Docker    	: $docker_check\n");
-	log_print("Kubectl   	: $kubectl_check\n");
-	log_print("Helm	     	: $helm_check\n");
-	log_print("RKE	     	: $rke_check\n");
-	log_print("--------------------------\n");
-	log_print("Validation results failed!\n");
+	log_print("My IP [$chk_key] is in K8s node list! Stop the process of joining the K8s cluster.\n\n$cmd_msg\n");
 	exit;
 }
-log_print("Validation results OK!\n");
 
 # Gen K8s ssh key
 $ssh_key_file = '/home/rkeuser/.ssh/id_rsa';
@@ -150,6 +158,31 @@ if (index($cmd_msg, $chk_key)<0) {
 }
 log_print("$ARGV[1] is ready to join K8s cluster!\n");
 
+# Exec update-k8s-cluster.pl @first_node
+system("ssh $ARGV[0] 'nohup ~/deploy-devops/bin/update-k8s-cluster.pl > /dev/null 2>&1 &'");
+log_print("Exec update-k8s-cluster.pl!\n");
+
+# Check K8s Node
+$cmd = "kubectl get node | grep '$ARGV[1] '";
+$cmd_msg = `$cmd 2>&1`;
+$chk_key = ' Ready ';
+log_print("--------------------------\n");
+log_print(`TZ='Asia/Taipei' date`);
+log_print("$cmd_msg\n");
+log_print("It takes 3 to 10 minutes for $ARGV[1] to join the K8s cluster. Please wait.. \n");
+while (index($cmd_msg, $chk_key)<0) {
+	if ($cmd_msg eq '') {
+		log_print('.');
+	}
+	else {
+		log_print("$cmd_msg");
+	}
+	sleep(5);
+	$cmd_msg = `$cmd 2>&1`;
+}
+log_print("\n--------------------------\n");
+log_print(`TZ='Asia/Taipei' date`);
+log_print("$cmd_msg\n");
 exit;
 
 

@@ -15,7 +15,7 @@ spec:
       containers:
       - name: devopsapi
         image: iiiorg/devops-api:{{iiidevops_ver}}
-        ##imagePullPolicy: Always
+        ##imagePullPolicy: {{image_pull_policy}}
         ports:
         - containerPort: 10009
         env:
@@ -92,6 +92,8 @@ spec:
         volumeMounts:
         - name: kube-config
           mountPath: /root/.kube
+        - name: deploy-config
+          mountPath: /usr/src/app/deploy-config
         - name: iii-logs
           mountPath: /usr/src/app/logs
       volumes:
@@ -99,6 +101,10 @@ spec:
         nfs:
           server: {{nfs_ip}}
           path: /{{nfs_dir}}/kube-config		  
+      - name: deploy-config
+        nfs:
+          server: {{nfs_ip}}
+          path: /{{nfs_dir}}/deploy-config		  
       - name: iii-logs
         nfs:
           server: {{nfs_ip}}

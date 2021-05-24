@@ -4,6 +4,8 @@
 use FindBin qw($Bin);
 use Digest::SHA qw(sha1_hex);
 use Digest::MD5 qw(md5_hex);
+$|=1; # force flush output
+
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");

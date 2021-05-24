@@ -67,17 +67,23 @@ if (-e $p_config_tmpl_ans) {
 	require($p_config_tmpl_ans);
 }
 
-# 0. get host IP
-$host = hostname();
-$host_ip = inet_ntoa(scalar gethostbyname($host || 'localhost'));
-
 # Set the specified key value
 if (defined($ARGV[0])) {
-	if (index($ans_tmpl, '{{ask_'.$ARGV[0].'}}')<0) {
+	if (index($ans_tmpl, '{{ask_'.$ARGV[0].'}}')<0 && lc($ARGV[0]) ne 'convert') {
 		print("The specified key: [$ARGV[0]] is unknown!\n");
 		exit;
 	}
 }
+
+# convert env.pl.ans to env.pl
+if ($ARGV[0] eq 'convert') {
+	convert();
+	exit;
+}
+
+# 0. get host IP
+$host = hostname();
+$host_ip = inet_ntoa(scalar gethostbyname($host || 'localhost'));
 
 # 1.1 Set $vm1_ip
 #\$ask_vm1_ip = '{{ask_vm1_ip}}';
@@ -526,7 +532,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'redmine_api_key') {
 		}
 	}
 	else {
-		$ask_redmine_api_key = $ARGV[1];
+		$value = (lc($ARGV[1]) eq 'auto')?sha1_hex(random_password(20)):$ARGV[1];
+		$ask_redmine_api_key = $value;
 		$answer = "A6.2 Set Redmine API key OK!";
 	}
 	print ("$answer\n\n");
@@ -704,7 +711,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'auto_password') {
 		}
 	}
 	else {
-		$ask_auto_password = $ARGV[1];
+		$value = (lc($ARGV[1]) eq 'auto')?random_password(20):$ARGV[1];
+		$ask_auto_password = $value;
 		$answer = "A10a. Set auto password OK!";
 	}
 	print ("$answer\n\n");
@@ -738,7 +746,8 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 		}
 	}
 	else {
-		$ask_random_key = $ARGV[1];
+		$value = (lc($ARGV[1]) eq 'auto')?random_password(20):$ARGV[1];
+		$ask_random_key = $value;
 		$answer = "A10b. Set random key OK!";
 	}
 	print ("$answer\n\n");
@@ -796,6 +805,14 @@ else {
 	$Y_N = prompt_for_input($question);
 }
 if (lc($Y_N) ne 'n') {
+	convert();
+}
+
+exit;
+
+# convert env.pl.ans to env.pl
+sub convert {
+	
 	if (-e $p_config) {
 		`cat $p_config > $p_config_bak`;
 		print("The original env.pl has been backed up as $p_config_bak\n");
@@ -845,10 +862,9 @@ if (lc($Y_N) ne 'n') {
 		$cmd_msg = `cat $p_config`;
 	}
 	print("-----\n$cmd_msg-----\n");
+	
+	return;
 }
-# No longer needed 
-
-exit;
 
 
 sub write_ans {

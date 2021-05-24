@@ -4,7 +4,7 @@
 # Usage: iiidevops_install.pl
 #
 use FindBin qw($Bin);
-$|=-1; # force flush output
+$|=1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
 $ins_repo = (!defined($ARGV[0]))?'master':$ARGV[0];

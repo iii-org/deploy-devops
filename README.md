@@ -1,166 +1,117 @@
-# deploy-devops
-## Installation environment and requriments
+# deploy-devops V2
+## 安裝環境需求
 
-* Ubuntu 20.04 LTS virtual machine(VM) (The minimum resource configuration of a VM is 8 vCore, 16G RAM, 120G HD; however, for production environment, it should be 3 or more VMs with SSD driver)
-* Before installation, you should decide on these configuration settings
-  * IP of VM
-  * Deploy mode:IP or DNS or nip.io or xip.io (nip.io and xip.io are only for test environment)
-	- IP : External access IP of VM
-    - DNS: Domain names of III DevOps, GitLab, Redmine, Harbor, Sonarqube.
-  * GitLab root password
-  * Harbor, Rancher, Redmine, Sonarqube admin password
-  * III-devops first user (super user) 
-    - account ('admin' and 'root' are not allowed)
+* III DevOps 系統需安裝在 Ubuntu 20.04 LTS 作業系統, 可採用虛擬機 virtual machine(VM) 或實體機來進行部署, 採用虛擬機系統可以依照之後使用狀況進行快速擴充
+* 安裝的主機最小規格為 1 台 8 vCore, 16G RAM, 120G SSD , 正式使用的開發環境需要擴充至 3 台以上的主機, 且建議都使用 SSD 硬碟確保檔案存取速度於執行效能
+* 在開始安裝之前, 您應該要先確認一下的安裝設定資訊
+  * 主機的網路與 IP 資訊
+  * 安裝部署的模式 IP 或 DNS
+    * IP 模式 : 直接透過 IP 存取 III DevOps 與相關服務, 不同服務會使用不同連接埠 Exp. GitLab 使用 Port:32080, Redmine 使用 Port:32748..
+    * DNS 模式: 提供 Domain names 對應到 III DevOps 與相關服務  Exp. GitLab 使用 gitlab.iiidevops.org, Redmine 使用 redmine.iiidevops.org..
+  * GitLab 的 root 密碼
+  * Harbor, Rancher, Redmine, Sonarqube 的 admin 密碼 (可以都和 GitLab 的 root 密碼相同)
+  * III Devops 第一位使用者 ( III DevOps 的系統管理者)
+    - 帳號 (不允許 'admin' 與 'root')
     - E-Mail
-    - password
+    - 密碼 (可以和 GitLab 的 root 密碼相同)
+  * 一個 Github 的 access token (scopes 只需要 public_repo 即可, 請參考 https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token )
+  
+* 系統安裝之後可以依據實際建立專案的使用需要, 進行節點橫向擴充 (VM2, VM3, VM4, VM5...) 也可能需要針對 VM1 擴增硬碟大小
 
-* You can scale out the Kubernetes nodes (VM2, VM3, VM4, VM5...) and scale up the VM1 according to actual performance requirements.
-
-* You should add firewall policy allow rules - From src(User) To dest(VM) TCP port 80/443/3443/30000~32767
+* 如果安裝環境外部有防火牆, 請增加防火牆規則讓使用者的來源 IP 能允許存取 III DevOps 主機與所有節點 IP (VM2, VM3, VM4, VM5...) 的 TCP port 80/443/30000~32767 
 
 
-# Step 1. Download deploy-devops and Install docker
+# Step 1. 下載部署程式與安裝 docker 等系統套件
 
-> ```bash
-> wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl;
-> perl ./iiidevops_install.pl local
+> * 需要使用 **rekuser** 來進行整體安裝程序 
+> > ```bash
+> > sudo useradd -s /bin/bash -d /home/rkeuser/ -m -G sudo rkeuser
+> > sudo passwd rkeuser
+> > su - rkeuser
+> > 
+> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl;
+> > perl ./iiidevops_install.pl
+> > ```
+>
+> * 如果一切安裝順利, 你應該可以看到如同以下對各項檢查都 OK 的訊息
 > ```
-> * If everything is correct, you will see that all check items are OK shown below.
-> 
-> ```
-> localadmin@iiidevops-71:~$ perl ./iiidevops_install.pl local
+> rkeuser@iiidevops-71:~$ perl ./iiidevops_install.pl
 > :
 > :
 > -----Validation results-----
 > Install docker 19.03.14 ..OK!
 > Install kubectl v1.18 ..OK!
-> Install helm v3.5 ..OK!
+> Install helm ..OK!
+> Install rke v1.2.7 ..OK!
 > ```
+>
 
-# Step 2. Generate configuration setting information file "env.pl"
+# Step 2. 產生 III DevOps 安裝環境設定檔 "env.pl"
 
 > ```bash
 > ~/deploy-devops/bin/generate_env.pl
 > ````
-> * After entering, please check whether the configuration setting information is correct.  You can also edit this env.pl configuration file data.
+> * 在各項問題都輸入後, 請檢查輸入的項目是否都正確無誤. 你也可以直接編輯這個環境設定檔 env.pl 來進行環境設定資料的修正
 >
 >   ``` vi ~/deploy-devops/env.pl```
 
-# Step 3. Deploy NFS and Rancher
+# Step 3. 部署 NFS,Rancher,Redmine,Harbor,GitLab與Sonarqube
 
-> ``` sudo ~/deploy-devops/bin/iiidevops_install_base.pl```
+> ``` ~/deploy-devops/bin/iiidevops_install_base.pl```
 >
-> After the deployment is complete, you should be able to see the URL information of these services as shown below.
+> 安裝開始, 會提示 ssh 登入本機驗證與輸入 rkeuser 密碼, 之後約 15-20 分鐘自動完成所有服務套件的部署, 你應該可以看到如同以下的 URL 資訊.
 >
-> * Rancher - https://10.20.0.71:3443/
-
-# Step 4. Set up Rancher from the web UI
-
-> * Rancher - https://10.20.0.71:3443/
-> * **Use the $rancher_admin_password entered in Step 2.(~/deploy-devops/env.pl) to set the admin password**
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)  
->   
-> * set **Rancher Server URL**  
-
-## Create a Kubernetes by Rancher
-> * Add Cluster/ From existing nodes(Custom)  
->   * Cluster Name:  **iiidevops-k8s**
->   * Kubernetes Version: Then newest kubernetes version  Exp. **v.118.15-rancher1-1**
->   * Network provider: **Calico**  
->   * CNI Plugin MTU Override: **1440**  
->   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-add-cluster.png?raw=true)  
->   * Click Next to  save the setting (It will take a while. If  you receive the error message "Failed while: Wait for Condition: InitialRolesPopulated: True", just click 'Next' again.)
->   * Node Options: Chose etcd, Control plane, worker
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-node-option.png?raw=true)  
-
-## Copy the command to add-k8s.sh and build the K8s cluster
-> * Copy the command to /iiidevopsNFS/deploy-config/add_k8s.sh 
->
->   ```vi /iiidevopsNFS/deploy-config/add_k8s.sh```
->
-> * Execute the following command to build the K8s cluster.
->
->   ```sh /iiidevopsNFS/deploy-config/add_k8s.sh```
->
->   It should display as below.
->   ```bash
->   localadmin@iiidevops-71:~$ sh /iiidevopsNFS/deploy-config/add_k8s.sh
->   Unable to find image 'rancher/rancher-agent:v2.4.5' locally
->   v2.4.5: Pulling from rancher/rancher-agent
->   d7c3167c320d: Already exists
->   :
->   :
->   :
->   Digest: sha256:f263b6df0dccfafe5249618498287cae19673999face1a1555ac58f665974418
->   Status: Downloaded newer image for rancher/rancher-agent:v2.4.5
->   73f824ccd94f5e7b871bcd13f1a0023c6f63af0036cb9a73927f61461a75b3ae
->   ```
->
-> * After executing this command, it takes about 5 to 10 minutes to build the cluster.  
-> * Rancher Web UI will automatically refresh to use the new SSL certificate. You may need to login again. After the iiidevops-k8s cluster is activated, you can get the kubeconfig file.
->
-
-## Get iiidevops-k8s Kubeconfig File
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-cluster-kubeconfig.png?raw=true)  
-> Put on kubeconfig file to **~/.kube/config** and **/iiidevopsNFS/kube-config/config** and also keep it.
-> ```bash
->  touch /iiidevopsNFS/kube-config/config
->  ln -s /iiidevopsNFS/kube-config/config ~/.kube/config
->  vi /iiidevopsNFS/kube-config/config
 > ```
-> After pasting the Kubeconfig File, you can use the following command to check if the configuration is working properly.
->
-> > ```kubectl cluster-info```
->
-> It should display as below.
->
-> ```bash
-> localadmin@iiidevops-71:~$ kubectl cluster-info
-> Kubernetes master is running at https://10.20.0.71:3443/k8s/clusters/c-fg42q
-> CoreDNS is running at https://10.20.0.71:3443/k8s/clusters/c-fg42q/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-> 
-> To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+> rkeuser@iiidevops-71:~$ ~/deploy-devops/bin/iiidevops_install_base.pl
+> :
+> :
+> The deployment of these services has been completed. The service URLs are:
+> Rancher - https://10.20.0.71:31443/
+> GitLab - http://10.20.0.71:32080/
+> Redmine - http://10.20.0.71:32748/
+> Harbor - https://10.20.0.71:32443/
+> Sonarqube - http://10.20.0.71:31910/
 > ```
-
-# Step 5. Deploy GitLab, Redmine, Harbor, Sonarqube on kubernetes cluster
-
-> ```~/deploy-devops/bin/iiidevops_install_cpnt.pl```
 >
->
-> After the deployment is complete, you should be able to see the URL information of these services as shown below.
->
-> * GitLab - http://10.20.0.71:32080/
-> * Redmine - http://10.20.0.71:32748/
-> * Harbor - http://10.20.0.71:32443/
-> * Sonarqube - http://10.20.0.71:31910/
 
-# Step 6. Set up GitLab from the web UI
+# Step 4. 透過 Rancher 的管理網頁進行設定
+
+> * Rancher - https://10.20.0.71:31443/
+> * **請使用 Step 2.(~/deploy-devops/env.pl) 內所設定的 $rancher_admin_password 來輸入設定 Rancher 的 admin password**
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/set-racnher-admin-password.png?raw=true)     
+> * 接著設定 **Rancher Server URL**  (一般而言會顯示出正確 URL, 確認即可)
+>
+> * 等 Cluster - **local** 完成匯入, 將 **local** 改成 **iiidevops-k8s**
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/develop/png/rancher_cluster_name_01.png?raw=true)     
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/develop/png/rancher_cluster_name_02.png?raw=true)     
+
+# Step 5. 透過 GitLab 的管理網頁進行設定
 
 > * GitLab - http://10.20.0.71:32080/
-> * **Log in with the account root and password ($gitlab_root_passwd) you entered in step 2.(~/deploy-devops/env.pl)**
+> * **使用 root 和 step 2.(~/deploy-devops/env.pl) 所設定的密碼進行登入**
 >
 
-## Generate **root personal access tokens** 
-> * User/Administrator/User seetings, generate the root personal access tokens and keep it.  
+## 產生 **root personal access tokens** 
+> * 至 User/Administrator/User seetings, 產生 root personal access tokens 並將這個 token 複製出來.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/root-settings.png?raw=true)  
 >
-> * Access Tokens / Name : **root-pat** / Scopes : Check all / Create personal access token  
+> * Access Tokens / Name : 輸入 **root-pat** / Scopes : 選取全部 / Create personal access token
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/generate-root-persional-access-token.png?raw=true)
 >
-> * Keep Your New Personal Access Token 
+> * 複製這個新產生的 Personal Access Token 
 >   ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-rootpat.png?raw=true)  
 >
-> * Modify the **$gitlab_private_token** value in env.pl
+> * 設定 env.pl 內的 **$gitlab_private_token** 
 >
 >   ```~/deploy-devops/bin/generate_env.pl gitlab_private_token [Personal Access Token]```
 >
->   It should display as below.
+>   執行後, 你應該可以看到如同以下的訊息.
 >   ```bash
->   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl gitlab_private_token 535wZnCJDTL5y22xYYzv
+>   rkeuser@iiidevops-71:~$ ~/deploy-devops/bin/generate_env.pl gitlab_private_token 535wZnCJDTL5y22xYYzv
 >   A4. Set GitLab Token OK!
 > 
 >   Q21. Do you want to generate env.pl based on the above information?(Y/n)
->   The original env.pl has been backed up as /home/localadmin/deploy-devops/bin/../env.pl.bak
+>   The original env.pl has been backed up as /home/rkeuser/deploy-devops/bin/../env.pl.bak
 >   -----
 >   11c11
 >   < $gitlab_private_token = '535wZnCJDTL5y22xYYzv'; # Get from GitLab Web
@@ -170,123 +121,71 @@
 >   ```
 >
 
-## Set up Rancher pipeline and Gitlab hook
-> * Choose Global/ Cluster(**iiidevops-k8s**)/ Project(Default)  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
-> * Choose Tools/Pipline, select **Gitlab**  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
-> Get the "Redirect URI" and then open GitLab web UI
->
+# Step 6. 設定 Rancher 的 pipeline 與 Gitlab 進行連動
 
-> Use root account/ settings/ Applications
+## 回到 Rancher 管理網頁
+> * 點選 Global/ Cluster(**iiidevops-k8s**)/ Project(Default)
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-choose-cluster-project.png?raw=true)  
+> * 點選 Tools/Pipline, 選擇 **Gitlab**
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-hook.png?raw=true)  
+> * 複製 "Redirect URI"
+
+## 回到 GitLab 管理網頁
+> 點選 root account/ settings/ Applications
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-root-setting.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-usersetting-application.png?raw=true)  
-> Setting Applications  
-> insert Name : **iiidevops-k8s**, Redirect URI: [from Rancher] and chose all optional, and save application.
+> 設定 Applications
+> Name: 輸入 **iiidevops-k8s**, Redirect URI: [貼上剛剛在 Rancher 上複製的值] 並且勾選所有的項目, 然後儲存這個 application.
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-setting-application.png?raw=true)  
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-application-info.png?raw=true)  
-> Take the "Application ID" and "Secret", go to rancher pipeline, insert application id, secret and private gitlab url. Exp. **10.20.0.71:32080** 
+> 取得這個 "Application ID" 和 "Secret"
+## 回到 Rancher 管理網頁
+> 點選 rancher pipeline, 貼上 application id 和 secret, 然後輸入 gitlab url. 例如 **10.20.0.71:32080**
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-setting-applicationsecret.png?raw=true)  
-> Authorize  
+> 點選進行授權
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/gitlab-authorize.png?raw=true)  
-> Done  
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)  
->
-> Switch back to GitLab web UI
+> 點選 Done 完成設定
+> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/rancher-hook-down.png?raw=true)    
 
-
-## Enable Outbound requests from web hooks
-> * Admin Area/Settings/Network/Outbound reuests, enable **allow request to the local network from web hooks and service** / Save changes
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/allow-request-to-the-local-netowrk.png?raw=true)  
->
-
-# Step 7. Check Harbor Project(Option)
-
-> * Harbor - https://10.20.0.71:32443/
-> * **Log in with the account admin and password ($harbour_admin_password) you entered in step 2.(~/deploy-devops/env.pl)**
-> 
-> * Check Project - dockerhub (Access Level : **Public** , Type : **Proxy Cache**) was added.
-> ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/harbor_dockerhub_project.png?raw=true)  
-> * If the project dockerhub is not created, you can exectue the command to manually create it.   
-> 
->   ```~/deploy-devops/harbor/install_harbor.pl create_dockerhub_proxy```
->
-
-# Step 8. Deploy III DevOps
+# Step 7. 部署 III DevOps 系統
 
 > ```~/deploy-devops/bin/iiidevops_install_core.pl```
 >
-> You should wait 3 to 5 minutes to complete the deployment and initial system setup. Then, you can access the URL as shown below.
+> 你可能需要等 3 到 5 分鐘來完成部署與一些系統初始值的建立. 然後你應該可以看到如同以下的 URL 訊息.
 >
 > ```
 > :
 > :
-> .
-> 
-> Add Secrets Credentials
-> -----
-> nexus : Create Secrets /home/localadmin/deploy-devops/devops-api/secrets/nexus-secret.json..OK!
-> checkmarx : Create Secrets /home/localadmin/deploy-devops/devops-api/secrets/checkmarx-secret.json..OK!
-> webinspect : Create Secrets /home/localadmin/deploy-devops/devops-api/secrets/webinspect-secret.json..OK!
-> 
-> Add Registry Credentials
-> -----
-> harbor-local : Create Registry /home/localadmin/deploy-devops/devops-api/secrets/harbor-local-registry.json..OK!
-> 
-> The deployment of III DevOps services has been completed. Please try to connect to the following URL.
-> III DevOps URL - http://10.20.0.71:30775
->
+> The deployment of III-DevOps services has been completed. Please try to connect to the following URL.
+> III-DevOps - http://10.20.0.71:30775
 > ```
 
-## Go to Web UI to login 
+## 透過網頁進行登入
 > * III DevOps URL -  http://10.20.0.71:30775/
 > ![alt text](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui.png?raw=true)  
 >
-> Use the **$admin_init_login** and **$admin_init_password** entered in Step 2.(~/deploy-devops/env.pl) to login to III DevOps
+> 使用 Step 2.(~/deploy-devops/env.pl) 所設定的 **$admin_init_login** 管理者帳號與 **$admin_init_password** 密碼進行系統登入
 
-# Step 9. Scale-out K8s Node
+# Step 8. 設定自動更新專案範本
 
-> * Execute the following command on VM1 to make VM2, VM3.... join the K8s cluster.
+> * III DevOps 維護熱門軟體開發使用框架與資料庫專案範本 - https://github.com/iiidevops-templates
+> * 請先申請個人在 github 上的 Token (scopes 只需要 public_repo 即可) - https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 >
->   ```~/deploy-devops/bin/add-k8s-node.pl [user@vm2_ip]```
->
->   It should display as below.
->   ```bash
->   localadmin@iiidevops-71:~$ ~/deploy-devops/bin/add-k8s-node.pl localadmin@10.20.0.72
->   :
->   :
->   :
->   -----Validation results-----
->   Docker          : OK!
->   Kubectl         : OK!
->   NFS Client      : OK!
->   Harbor Cert     : OK!
->   -----
->   NAME           STATUS   ROLES                      AGE   VERSION
->   iiidevops-71   Ready    controlplane,etcd,worker   23h   v1.18.12
->   ```
->   * After executing this command, it will take about 3 to 5 minutes for the node to join the cluster.
-
-# Step 10. Auto update III DevOps project templates
-
-> * III DevOps provides popular software development frameworks and database project templates - https://github.com/iiidevops-templates
-> * Please get the personal token on github first (scopes : public_repo) - https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
->
-> * Create cron.txt on VM1 and set it to synchronize with github every 10 minutes during working hours
+> * 在 VM1 建立 cron.txt 內設定上班時間每 10 分鐘進行檢查同步範本
 >
 >   ```bash
->   localadmin@iiidevops-71:~$ vi cron.txt
+>   rkeuser@iiidevops-71:~$ vi cron.txt
 >   ----
->   */10 7-20 * * * /home/localadmin/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
+>   */10 7-20 * * * /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
 >   ----
->   localadmin@iiidevops-71:~$ crontab cron.txt
->   localadmin@iiidevops-71:~$ crontab -l
->   */10 7-20 * * * /home/localadmin/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
+>   rkeuser@iiidevops-71:~$ crontab cron.txt
+>   rkeuser@iiidevops-71:~$ crontab -l
+>   */10 7-20 * * * /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl my_github_id:3563cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxf3ba4 >> /tmp/sync-prj-templ.log 2>&1
 >   ```
-> * You can see the synchronization log in /tmp/sync-prj-templ.log . It should display as below.
+> * 接下來就可以在 /tmp/sync-prj-templ.log 內看到同步紀錄, 類似如下的訊息
 >
 >   ```bash
->   localadmin@iiidevops-71:~$ tail /tmp/sync-prj-templ.log
+>   rkeuser@iiidevops-71:~$ tail /tmp/sync-prj-templ.log
 >   ----
 >   :
 >   :
@@ -296,6 +195,58 @@
 >           GitLab-> id:253 path:spring-maraidb-restapi created_at:2021-03-11T09:01:00.607Z
 >   [20].   name:flask-webpage-with-men (2021-03-11T08:10:06Z)
 >           GitLab-> id:254 path:flask-webpage-with-men created_at:2021-03-11T09:01:02.401Z
->   localadmin@iiidevops-71:~$
+>   rkeuser@iiidevops-71:~$
+>   ```
+
+# Step 9. 橫向擴展 K8s 主機
+
+> * 在要擴增的 VM2, VM3.... 先安裝好 Ubuntu 20.04 後執行以下的語法加入 K8s cluster.
+> * 需要使用 **rekuser** 來進行整體安裝程序 
+> > ```bash
+> > sudo useradd -s /bin/bash -d /home/rkeuser/ -m -G sudo rkeuser
+> > sudo passwd rkeuser
+> > su - rkeuser
+> > 
+> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/join-k8s-node.pl;
+> > perl ./join-k8s-node.pl <VM1 IP> <自己的 IP>
+>   ```
+
+> * 例如 VM1 IP 是 10.20.0.71 , 自己的 IP 是 10.20.0.72 , 所以語法如下:
+>   ```
+>   perl ./join-k8s-node.pl 10.20.0.71 10.20.0.72
+>   ```
+
+> * 安裝過程 sudo 需要輸入 rkeuser 的密碼
+>   ```
+>   2021-05-07 17:23:09 (30.8 MB/s) - ‘iiidevops_install.pl’ saved [8028/8028]
+>   
+>   [sudo] password for rkeuser:
+>   -----
+>   ```
+
+> * 需要輸入 yes 信任 10.20.0.71 的 fingerprint 與 rkeuser@10.20.0.71 的密碼
+>   ```
+>   The authenticity of host '10.20.0.71 (10.20.0.71)' can't be established.
+>   ECDSA key fingerprint is SHA256:dw+jgzw2Zop3mPIYrVtGM162r+J7ctEFI+aeGeZN6uc.
+>   Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+>   rkeuser@10.20.0.71's password:
+>   ```
+
+> * 約等 3-10 分鐘就可以看到 10.20.0.72 加入 K8s Cluster 當 Worker Node
+>   ```
+>   It takes 3 to 10 minutes for 10.20.0.72 to join the K8s cluster. Please wait..
+>   .........................................
+>   :
+>   :
+>   10.20.0.72   NotReady                   <none>                     7s      v1.18.17
+>   :
+>   10.20.0.72   NotReady                   worker                     59s     v1.18.17
+>   10.20.0.72   NotReady                   worker                     64s     v1.18.17
+>   10.20.0.72   NotReady                   worker                     79s     v1.18.17
+>   
+>   --------------------------
+>   Sat 08 May 2021 02:22:23 PM CST
+>   10.20.0.46   Ready                      worker                     84s     v1.18.17
+>   
 >   ```
 
