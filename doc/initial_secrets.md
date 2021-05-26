@@ -14,6 +14,9 @@ Define installation template - https://github.com/iii-org/deploy-devops/tree/mas
 
 ## webinspect
 - wi-base-url
+- wi-type (If you use WIE set `WIE`, otherwise omit it)
+- wi-username (If you use WIE)
+- wi-password (If you use WIE)
 
 ## gitlab
 - git-host

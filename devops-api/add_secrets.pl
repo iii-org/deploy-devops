@@ -55,6 +55,9 @@ else {
 # webinspect
 $name = 'webinspect';
 $key_value{'wi-base-url'} = $webinspect_base_url;
+$key_value{'wi-type'} = $webinspect_type;
+$key_value{'wi-username'} = $webinspect_username;
+$key_value{'wi-password'} = $webinspect_password;
 if (index($secrets_name_list, '['.$name.']')<0) {
 	$ret_msg = add_secrets($name, %key_value);
 	print("$name : $ret_msg\n");

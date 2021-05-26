@@ -24,7 +24,7 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 }
 
 $ans_tmpl = <<END;
-# generate_env_answer
+# generate_env_answer v2.0.1
 \$ask_deploy_mode = '{{ask_deploy_mode}}';
 \$ask_iiidevops_ver = '{{ask_iiidevops_ver}}';
 \$ask_vm1_ip = '{{ask_vm1_ip}}';
@@ -55,6 +55,9 @@ $ans_tmpl = <<END;
 \$ask_checkmarx_password = '{{ask_checkmarx_password}}';
 \$ask_checkmarx_secret = '{{ask_checkmarx_secret}}';
 \$ask_webinspect_base_url = '{{ask_webinspect_base_url}}';
+\$ask_webinspect_type = '{{ask_webinspect_type}}';
+\$ask_webinspect_username = '{{ask_webinspect_username}}';
+\$ask_webinspect_password = '{{ask_webinspect_password}}';
 \$ask_auto_password = '{{ask_auto_password}}';
 \$ask_random_key = '{{ask_random_key}}';
 
@@ -90,7 +93,7 @@ $host_ip = inet_ntoa(scalar gethostbyname($host || 'localhost'));
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	if (!defined($ARGV[1])) {
 		$ask_vm1_ip = (defined($ask_vm1_ip) && $ask_vm1_ip ne '{{ask_vm1_ip}}' && $ask_vm1_ip ne '')?$ask_vm1_ip:$host_ip;
-		$question = "Q1.1 Please enter the base service (Rancher) IP?($ask_vm1_ip)";
+		$question = "Q1.1 Please enter the base service IP?($ask_vm1_ip)";
 		$isAsk = 1;
 		while($isAsk) {
 			$ans_ip = prompt_for_input($question);
@@ -124,7 +127,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	if (!defined($ARGV[1])) {
 		$ask_vm2_ip = (defined($ask_vm2_ip) && $ask_vm2_ip ne '{{ask_vm2_ip}}' && $ask_vm2_ip ne '')?$ask_vm2_ip:$ask_vm1_ip;
-		$question = "Q1.2 Please enter other services running in K8s IP (Gitlab, Redmine, Harbor, Sonarqube, III DevOps)?($ask_vm2_ip)";
+		$question = "Q1.2 Please enter other services running in K8s IP (Rancher, Gitlab, Redmine, Harbor, Sonarqube, III DevOps)?($ask_vm2_ip)";
 		$isAsk = 1;
 		while($isAsk) {
 			$ans_ip = prompt_for_input($question);
@@ -224,7 +227,7 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_dir') {
 
 # 2.1 set III-DevOps installation version
 #\$ask_iiidevops_ver = '{{ask_iiidevops_ver}}';
-$ver_str = '[1] [1.0] [1.3] [develop]';
+$ver_str = '[1] [develop]';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
 	if (!defined($ARGV[1])) {
 		$ask_iiidevops_ver = (defined($ask_iiidevops_ver) && $ask_iiidevops_ver ne '{{ask_iiidevops_ver}}' && $ask_iiidevops_ver ne '')?$ask_iiidevops_ver:'';
@@ -238,9 +241,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q2.1 Please enter the III-DevOps installation version: $ver_str ?";
-			$ask_iiidevops_ver = prompt_for_input($question);
 			$ask_iiidevops_ver = ($ask_iiidevops_ver eq '')?'1':$ask_iiidevops_ver;
+			$question = "Q2.1 Please enter the III-DevOps installation version(Options:$ver_str)?($ask_iiidevops_ver)";
+			$ask_iiidevops_ver = prompt_for_input($question);
 			$isAsk = (index($ver_str, '['.$ask_iiidevops_ver.']')<0);
 			if ($isAsk) {
 				print("A2.1 The version is wrong, please re-enter!\n");
@@ -265,9 +268,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
 	}
 }
 
-# 2.2 set Deploy Mode # IP(Default), DNS, nip.io, xip.io
+# 2.2 set Deploy Mode # IP(Default), DNS
 #\$ask_deploy_mode = '{{ask_deploy_mode}}';
-$mode_str = '[IP] [DNS] [nip.io] [xip.io]';
+$mode_str = '[IP] [DNS]';
 if (!defined($ARGV[0]) || $ARGV[0] eq 'deploy_mode') {
 	if (!defined($ARGV[1])) {
 		$ask_deploy_mode = (defined($ask_deploy_mode) && $ask_deploy_mode ne '{{ask_deploy_mode}}' && $ask_deploy_mode ne '')?$ask_deploy_mode:'';
@@ -281,9 +284,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'deploy_mode') {
 			$isAsk=1;
 		}
 		while ($isAsk) {
-			$question = "Q2.2 Please enter the deployment mode: $mode_str ?";
-			$ask_deploy_mode = prompt_for_input($question);
 			$ask_deploy_mode = ($ask_deploy_mode eq '')?'IP':$ask_deploy_mode;
+			$question = "Q2.2 Please enter the deployment mode (Options:$mode_str)?($ask_deploy_mode)";
+			$ask_deploy_mode = prompt_for_input($question);
 			$isAsk = (index($mode_str, '['.$ask_deploy_mode.']')<0);
 			if ($isAsk) {
 				print("A2.2 The deployment mode is wrong, please re-enter!\n");
@@ -848,6 +851,9 @@ sub convert {
 	$env_template =~ s/{{ask_checkmarx_password}}/$ask_checkmarx_password/g;
 	$env_template =~ s/{{ask_checkmarx_secret}}/$ask_checkmarx_secret/g;	
 	$env_template =~ s/{{ask_webinspect_base_url}}/$ask_webinspect_base_url/g;
+	$env_template =~ s/{{ask_webinspect_type}}/$ask_webinspect_type/g;
+	$env_template =~ s/{{ask_webinspect_username}}/$ask_webinspect_username/g;
+	$env_template =~ s/{{ask_webinspect_password}}/$ask_webinspect_password/g;
 	$env_template =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/g;
 	$env_template =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/g;
 	$env_template =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/g;
@@ -899,6 +905,9 @@ sub write_ans {
 	$ans_file =~ s/{{ask_checkmarx_password}}/$ask_checkmarx_password/;
 	$ans_file =~ s/{{ask_checkmarx_secret}}/$ask_checkmarx_secret/;
 	$ans_file =~ s/{{ask_webinspect_base_url}}/$ask_webinspect_base_url/;
+	$ans_file =~ s/{{ask_webinspect_type}}/$ask_webinspect_type/;
+	$ans_file =~ s/{{ask_webinspect_username}}/$ask_webinspect_username/;
+	$ans_file =~ s/{{ask_webinspect_password}}/$ask_webinspect_password/;
 	$ans_file =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/;
 	$ans_file =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;
 	$ans_file =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;

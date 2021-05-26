@@ -92,6 +92,36 @@ else {
 	}
 }
 
+# redmine-config.yaml
+$yaml_file = $yaml_path.'redmine-config.yaml';
+$cmd = "kubectl apply -f $yaml_file";
+$cmd_msg = `$cmd 2>&1`;
+if (index($cmd_msg, 'error:')>=0) {
+	log_print("Failed to deploy redmine config!\n$cmd_msg\n");
+	exit;
+}
+log_print("Deploy redmine config..\n$cmd_msg\n");
+
+# Check Redmine config is working
+$isChk=1;
+$count=0;
+$wait_sec=90;
+$cmd = "kubectl get configmap | grep redmine-config";
+$chk_key = 'redmine-config ';
+while($isChk && $count<$wait_sec) {
+	log_print('.');
+	$cmd_msg = `$cmd 2>&1`;
+	$isChk = (index($cmd_msg, $chk_key)<0)?1:0;
+	$count = $count + $isChk;
+	sleep($isChk);
+}
+log_print("\n");
+if ($isChk) {
+	log_print("Failed to deploy Redmine config!\n");
+	exit;
+}
+log_print("Deploy redmine config OK!\n");
+
 $cmd = "kubectl apply -f $yaml_path";
 log_print("Deploy redmine..\n");
 $cmd_msg = `$cmd`;
