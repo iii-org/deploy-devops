@@ -191,10 +191,12 @@ sub import_init_data {
 	$api_key = $redmine_api_key; # 100f750e76fb671a003ee3859825363095e0162e
 	$salt = md5_hex($redmine_db_passwd); # 0bdb14a0f8068a7c07fc05b738f1558f
 	$hashed_password = sha1_hex($salt.sha1_hex($redmine_admin_passwd)); # 459d496226c2251344c23344fa0aa73a11c2ebee
+	$the_host_name = get_domain_name('redmine');
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{api_key}}/$api_key/g;
 	$template =~ s/{{salt}}/$salt/g;
 	$template =~ s/{{hashed_password}}/$hashed_password/g;
+	$template =~ s/{{redmine_domain_name}}/$the_host_name/g;	
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $sql_file) or die $!;
 	print FH $template;
