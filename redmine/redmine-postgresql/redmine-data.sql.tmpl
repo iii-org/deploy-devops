@@ -38,9 +38,9 @@ Select setval( pg_get_serial_sequence('enumerations', 'id'), (Select Max(id) Fro
 INSERT INTO "issue_statuses" ("id", "name", "is_closed", "position", "default_done_ratio") VALUES
 	(1, 'Active', 'false', 1, NULL),
 	(2, 'Assigned', 'false', 2, NULL),
-	(3, 'Solved', 'false', 3, NULL),
-	(4, 'Responded', 'false', 4, NULL),
-	(5, 'Finished', 'false', 5, NULL),
+	(3, 'InProgress', 'false', 3, NULL),
+	(4, 'Solved', 'false', 4, NULL),
+	(5, 'Verified', 'false', 5, NULL),
 	(6, 'Closed', 'true', 6, NULL);
 Select setval( pg_get_serial_sequence('issue_statuses', 'id'), (Select Max(id) From issue_statuses), TRUE);
 
