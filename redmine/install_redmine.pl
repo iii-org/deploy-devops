@@ -87,7 +87,7 @@ else {
 $yaml_path = "$Bin/../redmine/redmine/";
 $yaml_file = $yaml_path.'redmine-ingress.yml';
 if ($redmine_domain_name ne '' && uc($deploy_mode) ne 'IP') {
-	$tmpl_file = $ingress_tmpl_file;
+	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
