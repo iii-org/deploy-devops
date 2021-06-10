@@ -18,6 +18,8 @@ if ($redmine_ip eq '') {
 	exit;
 }
 
+$p_force=(lc($ARGV[0]) eq 'force');
+
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 require("$Bin/../lib/common_lib.pl");
@@ -25,7 +27,7 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 # Check Redmine service is working
-if (get_service_status('redmine')) {
+if (!$p_force && get_service_status('redmine')) {
 	log_print("Redmine is running, I skip the installation!\n\n");
 	exit;
 }
@@ -69,16 +71,30 @@ print FH $template;
 close(FH);
 
 # Modify redmine/redmine/redmine-ingress.yaml.tmpl <- {{redmine_domain_name}}
+if ($redmine_domain_name_tls ne '') {
+	if (!check_secert_tls($redmine_domain_name_tls)) {
+		log_print("The Secert TLS [$redmine_domain_name_tls] does not exist in K8s!\n");
+		exit;		
+	}
+	$url = 'https://';
+	$ingress_tmpl_file = 'redmine-ingress-ssl.yml.tmpl';
+}
+else {
+	$url = 'http://';
+	$ingress_tmpl_file = 'redmine-ingress.yml.tmpl';
+}
+
 $yaml_path = "$Bin/../redmine/redmine/";
 $yaml_file = $yaml_path.'redmine-ingress.yml';
 if ($redmine_domain_name ne '' && uc($deploy_mode) ne 'IP') {
-	$tmpl_file = $yaml_file.'.tmpl';
+	$tmpl_file = $ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
+	$template =~ s/{{redmine_domain_name_tls}}/$redmine_domain_name_tls/g;
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
@@ -93,6 +109,7 @@ else {
 }
 
 # redmine-config.yaml
+$yaml_path = "$Bin/../redmine/redmine/";
 $yaml_file = $yaml_path.'redmine-config.yaml';
 $cmd = "kubectl apply -f $yaml_file";
 $cmd_msg = `$cmd 2>&1`;
@@ -129,6 +146,7 @@ log_print("-----\n$cmd_msg-----\n");
 
 # Display Wait 3 min. message
 log_print("It takes 1 to 3 minutes to deploy Redmine service. Please wait.. \n");
+sleep(5);
 
 # Check Redmine service is working
 $isChk=1;
@@ -146,7 +164,7 @@ if ($isChk) {
 	exit;
 }
 $the_url = get_domain_name('redmine');
-log_print("Successfully deployed Redmine! URL - http://$the_url\n");
+log_print("Successfully deployed Redmine! URL - $url$the_url\n");
 
 # Check psql version
 chk_psql();
@@ -181,6 +199,15 @@ sub chk_psql {
 # import initial data
 sub import_init_data {
 
+	# check imported already
+	$sql = "select value from tokens where user_id=1 and action='api'";
+	$cmd = "psql -d 'postgresql://postgres:$redmine_db_passwd\@$redmine_ip:32749/redmine' -c \"$sql\"";
+	$cmd_msg = `$cmd 2>&1`;
+	if (index($cmd_msg, $redmine_api_key)>0) {
+		log_print("Initial data is imported already!\n");
+		return;
+	}
+	
 	$sql_path = "$Bin/../redmine/redmine-postgresql/";
 	$sql_file = $sql_path.'redmine-data.sql';
 	$tmpl_file = $sql_file.'.tmpl';

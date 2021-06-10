@@ -49,9 +49,10 @@ sub get_service_status {
 	}
 	elsif ($p_service eq 'redmine') {
 		$v_domain_name = get_domain_name('redmine');
-		$v_cmd = "curl -q --max-time 5 -I http://$v_domain_name";
+		$v_http = ($redmine_domain_name_tls ne '')?'https':'http';
+		$v_cmd = "curl -q --max-time 5 -I $v_http://$v_domain_name";
 		# HTTP/1.1 200 OK
-		$v_chk_key = '200 OK';
+		$v_chk_key = ($redmine_domain_name_tls ne '')?'HTTP/2 200':'HTTP/1.1 200';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
 		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
