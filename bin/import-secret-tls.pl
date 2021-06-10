@@ -1,14 +1,14 @@
 #!/usr/bin/perl
-# add secret-tls script
+# import secret-tls script
 #
-# Usage: sudo add-secret-tls.pl <tls_name> <cert_file> <key_file>
+# Usage:	import-secret-tls.pl <tls_name> <cert_file> <key_file> [namespace]
 #
 use FindBin qw($Bin);
 $|=1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
-if (!defined($ARGV[0] || !defined($ARGV[1] || !defined($ARGV[2])) {
-	print("Usage:	sudo $prgname <tls_name> <cert_file> <key_file>\n");
+if (!defined($ARGV[0]) || !defined($ARGV[1]) || !defined($ARGV[2])) {
+	print("Usage:	$prgname <tls_name> <cert_file> <key_file> [namespace]\n");
 	exit;
 }
 $logfile = "$Bin/$prgname.log";
@@ -19,6 +19,7 @@ log_print(`TZ='Asia/Taipei' date`);
 $tls_name = $ARGV[0];
 $cert_file = $ARGV[1];
 $key_file = $ARGV[2];
+$namespace = defined($ARGV[3])?'-n '.$ARGV[3]:'';
 
 $cmd_kubectl = '/snap/bin/kubectl';
 if (!-e $$cmd_kubectl) {
@@ -40,8 +41,18 @@ if (!-e $key_file) {
 	exit;
 }
 
+# Get secret-tls info
+$cmd = "$cmd_kubectl get secret $tls_name $namespace";
+$cmd_msg = `$cmd 2>&1`;
+#devops-iiidevops-tls   kubernetes.io/tls   2      12m
+if (index($cmd_msg, 'kubernetes.io/tls')>0) {
+	$cmd = "$cmd_kubectl delete secret $tls_name $namespace";
+	$cmd_msg = `$cmd 2>&1`;	
+	log_print("-----\n$cmd_msg-----\n");
+}
+
 # Add secret-tls into K8s default namespace
-$cmd = "$cmd_kubectl create secret tls $tls_name --cert=$cert_file --key=$key_file";
+$cmd = "$cmd_kubectl create secret tls $tls_name --cert=$cert_file --key=$key_file $namespace";
 $cmd_msg = `$cmd 2>&1`;
 log_print("-----\n$cmd_msg-----\n");
 exit;
