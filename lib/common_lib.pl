@@ -69,9 +69,13 @@ sub get_service_status {
 	}
 	elsif ($p_service eq 'sonarqube') {
 		$v_domain_name = get_domain_name('sonarqube');
-		$v_cmd = "curl -q --max-time 5 -I http://$v_domain_name";
+		$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
+		$v_cmd = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
+		$v_cmd .= " -q --max-time 5 -I $v_http://$v_domain_name";
+		# HTTP/1.1 200 OK
+		$v_chk_key = ($sonarqube_domain_name_tls ne '')?'HTTP/2 200':'HTTP/1.1 200';
 		# Content-Type: text/html;charset=utf-8
-		$v_chk_key = 'Content-Type: text/html;charset=utf-8';
+		#$v_chk_key = 'Content-Type: text/html;charset=utf-8';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
 		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);

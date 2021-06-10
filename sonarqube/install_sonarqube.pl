@@ -17,6 +17,8 @@ if ($sonarqube_ip eq '') {
 	exit;
 }
 
+$p_force=(lc($ARGV[0]) eq 'force');
+
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 require("$Bin/../lib/common_lib.pl");
@@ -29,7 +31,7 @@ if (lc($ARGV[0]) eq 'initial_sonarqube') {
 }
 
 # Check Sonarqube service is working
-if (get_service_status('sonarqube')) {
+if (!$p_force && get_service_status('sonarqube')) {
 	log_print("Sonarqube is running, I skip the installation!\n\n");
 	# Check $sonarqube_admin_token
 	if ($sonarqube_admin_token eq '' || lc($sonarqube_admin_token) eq 'skip') {
@@ -77,10 +79,23 @@ print FH $template;
 close(FH);
 
 # Modify sonarqube/sonarqube/sonar-server-ingress.yaml.tmpl
+if ($sonarqube_domain_name_tls ne '') {
+	if (!check_secert_tls($sonarqube_domain_name_tls)) {
+		log_print("The Secert TLS [$sonarqube_domain_name_tls] does not exist in K8s!\n");
+		exit;		
+	}
+	$url = 'https://';
+	$ingress_tmpl_file = 'sonarqube-ingress-ssl.yml.tmpl';
+}
+else {
+	$url = 'http://';
+	$ingress_tmpl_file = 'sonarqube-ingress.yml.tmpl';
+}
+
 $yaml_path = "$Bin/../sonarqube/sonarqube";
 $yaml_file = $yaml_path.'/sonar-server-ingress.yaml';
 if ($sonarqube_domain_name ne '' && uc($deploy_mode) ne 'IP') {
-	$tmpl_file = $yaml_file.'.tmpl';
+	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
@@ -107,6 +122,7 @@ log_print("-----\n$cmd_msg-----\n");
 
 # Display Wait 3 min. message
 log_print("It takes 1 to 3 minutes to deploy Sonarqube service. Please wait.. \n");
+sleep(5);
 
 # Check Sonarqube service is working
 $isChk=1;
