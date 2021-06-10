@@ -251,6 +251,11 @@ sub manual_secret_tls {
 		log_print("The Secert TLS [$harbor_domain_name_tls] does not exist in K8s!\n");
 		exit;		
 	}
+
+	# Add helm chart harbor repo - https://artifacthub.io/packages/helm/harbor/harbor/1.5.2
+	$cmd = "helm repo add harbor https://helm.goharbor.io";
+	$cmd_msg = `$cmd 2>&1`;
+	log_print("-----\n$cmd_msg-----\n");	
 	
 	$yaml_path = "$Bin/../harbor/";
 	$yaml_file = $yaml_path.'harbor-manual-secret.yaml';
