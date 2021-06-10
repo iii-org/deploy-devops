@@ -111,6 +111,7 @@ log_print("-----\n$cmd_msg-----\n");
 
 # Display Wait 2-10 min. message
 log_print("It takes 2 to 10 minutes to deploy GitLab service. Please wait.. \n");
+sleep(5);
 
 # Check GitLab service is working
 $isChk=1;
