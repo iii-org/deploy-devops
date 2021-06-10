@@ -189,7 +189,8 @@ END
 		$isRun=0;
 		$cmd_msg = `$cmd`;
 		if ($cmd_msg ne '' && index($cmd_msg, "'dockerhub' is already used")<=0) {
-			log_print("Add dockerhub Registry Error: $cmd_msg");
+			log_print('.');
+			#log_print("Add dockerhub Registry Error: $cmd_msg");
 			sleep(5);
 			$count ++;
 			$isRun=1;
@@ -199,7 +200,7 @@ END
 		log_print("The dockerhub Registry is already exists, skip adding.\n");
 	}
 	else {
-		log_print("Add dockerhub Registry OK.\n");
+		log_print("\nAdd dockerhub Registry OK.\n");
 	}
 	
 $cmd =<<END;
@@ -222,7 +223,8 @@ END
 		$isRun=0;
 		$cmd_msg = `$cmd`;
 		if ($cmd_msg ne '' && index($cmd_msg, "The project named dockerhub already exists")<=0) {
-			log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+			log_print('.');
+			#log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
 			sleep(5);
 			$count ++;
 			$isRun=1;
@@ -232,7 +234,7 @@ END
 		log_print("The dockerhub Projcet is already exists, skip adding.\n");
 	}
 	else {
-		log_print("Add dockerhub Projcet OK.\n");
+		log_print("\nAdd dockerhub Projcet OK.\n");
 	}
 	
 	return;
