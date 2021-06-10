@@ -60,8 +60,11 @@ if ($repo_num==0){
 }
 
 # Check if the GitLab group $github_org (iiidevops-templates) exists
+$gitlab_domain_name = get_domain_name('gitlab');
+$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 # curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/
-$cmd = "curl -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/groups/";
+$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/";
 log_print("Get GitLab group list..\n");
 $cmd_msg = `$cmd`;
 $hash_msg = decode_json($cmd_msg);
@@ -108,7 +111,7 @@ else {
 #	By default, this request returns 20 results at a time because the API results are paginated.
 #	https://docs.gitlab.com/ee/api/README.html#pagination
 # curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/iiidevops-templates/projects?per_page=100
-$cmd = "curl -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/groups/$github_org/projects?per_page=100";
+$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/$github_org/projects?per_page=100";
 log_print("Get GitLab group $github_org project list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, '"message"')>0) {
@@ -170,7 +173,7 @@ sub create_gitlab_group {
 	my ($p_gitlab_groupname) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
-	$cmd = "curl -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}' http://$gitlab_ip:32080/api/v4/groups/";	
+	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}' $v_http://$gitlab_domain_name/api/v4/groups/";	
 	$cmd_msg = `$cmd`;
 	$ret = '';
 	if (index($cmd_msg, $p_gitlab_groupname)>0){
@@ -201,7 +204,7 @@ sub delete_gitlab {
 	my ($cmd, $cmd_msg);
 
 	#curl --request DELETE --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/projects/2
-	$cmd = "curl -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" http://$gitlab_ip:32080/api/v4/projects/$p_gitlab_id";
+	$cmd = "$v_cmd -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$p_gitlab_id";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, 'Accepted')<0) {
 		log_print("delete_gitlab [$p_gitlab_id] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
@@ -217,7 +220,7 @@ sub import_github {
 	my ($cmd, $cmd_msg, $arg_user);
 
 	# curl --request POST --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" --data "personal_access_token=de8b68c3ee3eccdf7d4d69c6260bff66482283a9&repo_id=336984846&new_name=django-postgresql-todo&target_namespace=iiidevops-templates" https://gitlab-demo.iiidevops.org/api/v4/import/github
-	$cmd = "curl -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace\" http://$gitlab_ip:32080/api/v4/import/github";
+	$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace\" $v_http://$gitlab_domain_name/api/v4/import/github";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");

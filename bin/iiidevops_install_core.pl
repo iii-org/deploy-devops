@@ -260,7 +260,7 @@ log_print("-----\n$cmd_msg\n-----\n\n");
 
 # Display Wait 5 min. message
 log_print("It takes 3 to 5 minutes to deploy III-DevOps services. Please wait.. \n");
-sleep(5)
+sleep(5);
 
 # check deploy status
 $isChk=1;
