@@ -39,9 +39,10 @@ sub get_service_status {
 		$v_domain_name = get_domain_name('gitlab');
 		#$v_port = (uc($deploy_mode) ne 'IP')?80:32080;
 		$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
-		$v_cmd = "curl -q --max-time 5 -I $v_http://$v_domain_name/users/sign_in";
-		#HTTP/1.1 200 OK
-		$v_chk_key = '200 OK';
+		$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
+		$v_cmd .= " -q --max-time 5 -I $v_http://$v_domain_name/users/sign_in";
+		#HTTP/1.1 200 OK , HTTP/2 200
+		$v_chk_key = ($gitlab_domain_name_tls ne '')?'HTTP/2 200':'HTTP/1.1 200';
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
 		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
@@ -202,6 +203,25 @@ sub get_domain_name {
 	}
 	
 	return($v_domain_name);
+}
+
+# Check secret tls
+sub check_secert_tls {
+	my ($p_secert_tls, $p_namespace) = @_;
+	my ($cmd_kubectl, $v_namespace, $v_cmd, $v_cmd_msg, $v_ret);
+	
+	$cmd_kubectl = '/snap/bin/kubectl';
+	if (!-e $$cmd_kubectl) {
+		$cmd_kubectl = '/usr/local/bin/kubectl';
+	}
+
+	$v_namespace = ($p_namespace ne '')?'-n '.$p_namespace:'';
+	$v_cmd = "$cmd_kubectl get secret $p_secert_tls $v_namespace";
+	$v_cmd_msg = `$v_cmd 2>&1`;
+	#devops-iiidevops-tls   kubernetes.io/tls   2      12m
+	$v_ret = (index($v_cmd_msg, 'kubernetes.io/tls')>0);
+	
+	return($v_ret);
 }
 
 # $logfile

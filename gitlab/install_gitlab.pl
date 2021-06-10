@@ -16,6 +16,8 @@ if ($gitlab_ip eq '') {
 	exit;
 }
 
+$p_force=(lc($ARGV[0]) eq 'force');
+
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 require("$Bin/../lib/common_lib.pl");
@@ -23,7 +25,7 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 # Check GitLab service is working
-if (get_service_status('gitlab')) {
+if (!$p_force && get_service_status('gitlab')) {
 	log_print("GitLab is running, I skip the installation!\n\n");
 	exit;
 }
@@ -33,12 +35,16 @@ log_print("Install GitLab ..\n");
 # Modify gitlab/gitlab-deployment.yml.tmpl
 $gitlab_domain_name = get_domain_name('gitlab');
 if ($gitlab_domain_name_tls ne '') {
+	if (!check_secert_tls($gitlab_domain_name_tls)) {
+		log_print("The Secert TLS [$gitlab_domain_name_tls] does not exist in K8s!\n");
+		exit;		
+	}
 	$gitlab_url = 'https://'.$gitlab_domain_name;
-	$ingress_file = 'gitlab-ingress-ssl.yml';
+	$ingress_tmpl_file = 'gitlab-ingress-ssl.yml.tmpl';
 }
 else {
 	$gitlab_url = 'http://'.$gitlab_domain_name;
-	$ingress_file = 'gitlab-ingress.yml';
+	$ingress_tmpl_file = 'gitlab-ingress.yml.tmpl';
 }
 $yaml_path = "$Bin/../gitlab/";
 $yaml_file = $yaml_path.'gitlab-deployment.yml';
@@ -57,11 +63,11 @@ open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
 
-# Modify gitlab/gitlab-ingress.yaml.tmpl
+# Modify gitlab/gitlab-ingress.yml.tmpl
 $yaml_path = "$Bin/../gitlab/";
-$yaml_file = $yaml_path.$ingress_file;
+$yaml_file = $yaml_path.'gitlab-ingress.yml';
 if (uc($deploy_mode) ne 'IP') {
-	$tmpl_file = $yaml_file.'.tmpl';
+	$tmpl_file = $ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
