@@ -84,7 +84,7 @@ core:
   ## Startup probe values
   startupProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 30
 
 jobservice:
   replicas: 1
@@ -104,7 +104,7 @@ database:
   type: internal
   internal:
     # The initial superuser password for internal database
-    password: "{{harbor_admin_password}}"
+    password: "{{harbor_db_password}}"
 
 redis:
   # if external Redis is used, set "type" to "external"

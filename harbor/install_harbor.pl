@@ -28,15 +28,18 @@ if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
 	exit;
 }
 
-# Check Harbor service is working
-if (get_service_status('harbor')) {
-	log_print("Harbor is running, I skip the installation!\n\n");
-	exit;
+if (lc($ARGV[0]) eq 'manual_secret_tls') {
+	manual_secret_tls();
 }
-log_print("Install Harbor ..\n");
-
-# Generate install yaml and exec install.sh
-install_harbor();
+else {
+	# Check Harbor service is working
+	if (get_service_status('harbor')) {
+		log_print("Harbor is running, I skip the installation!\n\n");
+		exit;
+	}
+	log_print("Install Harbor ..\n");
+	install_harbor();
+}
 
 # Check Harbor service is working
 $isChk=1;
@@ -148,6 +151,7 @@ END
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
+	$template =~ s/{{harbor_db_password}}/$harbor_db_password/g;
 	$template =~ s/{{expose_type}}/$expose_type/g;
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $yaml_file) or die $!;
@@ -231,5 +235,47 @@ END
 		log_print("Add dockerhub Projcet OK.\n");
 	}
 	
+	return;
+}
+
+sub manual_secret_tls {
+	if ($harbor_domain_name_tls eq '') {
+		log_print("The Secert TLS is not defined!\n");
+		exit;
+	}
+	if ($harbor_domain_name eq '') {
+		log_print("The Harbor domain name is not defined!\n");
+		exit;
+	}
+	if (!check_secert_tls($harbor_domain_name_tls)) {
+		log_print("The Secert TLS [$harbor_domain_name_tls] does not exist in K8s!\n");
+		exit;		
+	}
+	
+	$yaml_path = "$Bin/../harbor/";
+	$yaml_file = $yaml_path.'harbor-manual-secret.yaml';
+	$tmpl_file = $yaml_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		exit;
+	}
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
+	$template =~ s/{{harbor_db_password}}/$harbor_db_password/g;
+	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
+	$template =~ s/{{harbor_domain_name_tls}}/$harbor_domain_name_tls/g;
+	#log_print("-----\n$template\n-----\n\n");
+	open(FH, '>', $yaml_file) or die $!;
+	print FH $template;
+	close(FH);
+	
+	log_print("Upgrade Harbor service..\n");
+	$cmd = "helm upgrade harbor --version=1.5.2 harbor/harbor -f $yaml_file --timeout=3600s --wait";
+	$cmd_msg = `$cmd`;
+	log_print("-----\n$cmd_msg-----\n");
+
+	# Display Wait 3 min. message
+	log_print("It takes 1 to 3 minutes to upgrade Harbor service. Please wait.. \n");
+
 	return;
 }
