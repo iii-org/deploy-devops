@@ -6,7 +6,7 @@
 # service : kubernetes, rancher, gitlab, redmine, harbor, sonarqube, iiidevops
 sub get_service_status {
 	my ($p_service) = @_;
-	my ($v_status, $v_cmd, $v_cmd_msg, $v_chk_key, $v_isHealthy, $v_domain_name, $v_port, @arr_msg);
+	my ($v_status, $v_cmd, $v_cmd_msg, $v_chk_key, $v_isHealthy, $v_domain_name, $v_port, $v_http, @arr_msg);
 	
 	if ($p_service eq 'kubernetes') {
 		$v_cmd = "kubectl get componentstatus";
@@ -37,8 +37,9 @@ sub get_service_status {
 	}
 	elsif ($p_service eq 'gitlab') {
 		$v_domain_name = get_domain_name('gitlab');
-		$v_port = (uc($deploy_mode) ne 'IP')?80:32080;
-		$v_cmd = "curl -q --max-time 5 -I http://$v_domain_name/users/sign_in";
+		#$v_port = (uc($deploy_mode) ne 'IP')?80:32080;
+		$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+		$v_cmd = "curl -q --max-time 5 -I $v_http://$v_domain_name/users/sign_in";
 		#HTTP/1.1 200 OK
 		$v_chk_key = '200 OK';
 		$v_cmd_msg = `$v_cmd 2>&1`;

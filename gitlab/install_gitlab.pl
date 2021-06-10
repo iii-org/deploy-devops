@@ -32,6 +32,14 @@ log_print("Install GitLab ..\n");
 # Deploy GitLab on kubernetes cluster
 # Modify gitlab/gitlab-deployment.yml.tmpl
 $gitlab_domain_name = get_domain_name('gitlab');
+if ($gitlab_domain_name_tls ne '') {
+	$gitlab_url = 'https://'.$gitlab_domain_name;
+	$ingress_file = 'gitlab-ingress-ssl.yml';
+}
+else {
+	$gitlab_url = 'http://'.$gitlab_domain_name;
+	$ingress_file = 'gitlab-ingress.yml';
+}
 $yaml_path = "$Bin/../gitlab/";
 $yaml_file = $yaml_path.'gitlab-deployment.yml';
 $tmpl_file = $yaml_file.'.tmpl';
@@ -40,7 +48,7 @@ if (!-e $tmpl_file) {
 	exit;
 }
 $template = `cat $tmpl_file`;
-$template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;
+$template =~ s/{{gitlab_url}}/$gitlab_url/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
 $template =~ s/{{nfs_dir}}/$nfs_dir/g;
@@ -51,7 +59,7 @@ close(FH);
 
 # Modify gitlab/gitlab-ingress.yaml.tmpl
 $yaml_path = "$Bin/../gitlab/";
-$yaml_file = $yaml_path.'gitlab-ingress.yml';
+$yaml_file = $yaml_path.$ingress_file;
 if (uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
@@ -60,6 +68,7 @@ if (uc($deploy_mode) ne 'IP') {
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;
+	$template =~ s/{{gitlab_domain_name_tls}}/$gitlab_domain_name_tls/g;
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
@@ -112,7 +121,6 @@ if ($isChk) {
 	log_print("Failed to deploy GitLab!\n");
 	exit;
 }
-$the_url = get_domain_name('gitlab');
-log_print("Successfully deployed GitLab! URL - http://$the_url\n");
+log_print("Successfully deployed GitLab! URL - $gitlab_url\n");
 
 exit;

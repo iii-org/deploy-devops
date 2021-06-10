@@ -14,60 +14,24 @@ if (!-e $p_config_tmpl) {
 	exit;
 }
 
+$p_config_ans = $p_config.".ans";
+$p_config_ans_tmpl = $p_config_ans.".tmpl";
+if (!-e $p_config_ans_tmpl) {
+	print("The template file [$p_config_ans_tmpl] does not exist!\n");
+	exit;
+}
+$ans_tmpl = `cat $p_config_ans_tmpl`;
+if (-e $p_config_ans) {
+	require($p_config_ans);
+}
+
 $nfs_dir = defined($nfs_dir)?$nfs_dir:'/iiidevopsNFS';
 
 if (-e "$nfs_dir/deploy-config/env.pl") {
 	$cmd_msg = `rm -f $p_config; ln -s $nfs_dir/deploy-config/env.pl $p_config`; 
 }
 if (-e "$nfs_dir/deploy-config/env.pl.ans") {
-	$cmd_msg = `rm -f $p_config.ans; ln -s $nfs_dir/deploy-config/env.pl.ans $p_config.ans`; 
-}
-
-$ans_tmpl = <<END;
-# generate_env_answer v2.0.1
-\$ask_deploy_mode = '{{ask_deploy_mode}}';
-\$ask_iiidevops_ver = '{{ask_iiidevops_ver}}';
-\$ask_vm1_ip = '{{ask_vm1_ip}}';
-\$ask_vm2_ip = '{{ask_vm2_ip}}';
-\$ask_nfs_ip = '{{ask_nfs_ip}}';
-\$ask_nfs_dir = '{{ask_nfs_dir}}';
-\$ask_rancher_domain_name = '{{ask_rancher_domain_name}}';
-\$ask_gitlab_domain_name = '{{ask_gitlab_domain_name}}';
-\$ask_harbor_domain_name = '{{ask_harbor_domain_name}}';
-\$ask_redmine_domain_name = '{{ask_redmine_domain_name}}';
-\$ask_sonarqube_domain_name = '{{ask_sonarqube_domain_name}}';
-\$ask_k8sctl_domain_name = '{{ask_k8sctl_domain_name}}';
-\$ask_ingress_domain_name = '{{ask_ingress_domain_name}}';
-\$ask_iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
-\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
-\$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
-\$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';
-\$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
-\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
-\$ask_sonarqube_admin_passwd = '{{ask_sonarqube_admin_passwd}}';
-\$ask_sonarqube_admin_token = '{{ask_sonarqube_admin_token}}';
-\$ask_harbor_admin_password = '{{ask_harbor_admin_password}}';
-\$ask_admin_init_login = '{{ask_admin_init_login}}';
-\$ask_admin_init_email = '{{ask_admin_init_email}}';
-\$ask_admin_init_password = '{{ask_admin_init_password}}';
-\$ask_checkmarx_origin = '{{ask_checkmarx_origin}}';
-\$ask_checkmarx_username = '{{ask_checkmarx_username}}';
-\$ask_checkmarx_password = '{{ask_checkmarx_password}}';
-\$ask_checkmarx_secret = '{{ask_checkmarx_secret}}';
-\$ask_webinspect_base_url = '{{ask_webinspect_base_url}}';
-\$ask_webinspect_type = '{{ask_webinspect_type}}';
-\$ask_webinspect_username = '{{ask_webinspect_username}}';
-\$ask_webinspect_password = '{{ask_webinspect_password}}';
-\$ask_auto_password = '{{ask_auto_password}}';
-\$ask_random_key = '{{ask_random_key}}';
-
-1;
-END
-# No longer needed key
-
-$p_config_tmpl_ans = $p_config.".ans";
-if (-e $p_config_tmpl_ans) {
-	require($p_config_tmpl_ans);
+	$cmd_msg = `rm -f $p_config_ans; ln -s $nfs_dir/deploy-config/env.pl.ans $p_config_ans`; 
 }
 
 # Set the specified key value
@@ -113,9 +77,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm1_ip') {
 	$answer = "A1.1 Set [$ask_vm1_ip] for Base Service";
 	print ("$answer\n\n");
 	if ($ask_vm1_ip ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_vm1_ip;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_vm1_ip=$tmp;
 		}
 		write_ans();
@@ -147,9 +111,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'vm2_ip') {
 	$answer = "A1.2 Set [$ask_vm2_ip] for other services";
 	print ("$answer\n\n");
 	if ($ask_vm2_ip ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_vm2_ip;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_vm2_ip=$tmp;
 		}
 		write_ans();
@@ -181,9 +145,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_ip') {
 	$answer = "A1.3 Set [$ask_nfs_ip] for NFS service";
 	print ("$answer\n\n");
 	if ($ask_nfs_ip ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_nfs_ip;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_nfs_ip=$tmp;
 		}
 		write_ans();
@@ -216,9 +180,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'nfs_dir') {
 	$answer = "A1.4 Set [$ask_nfs_dir] for NFS shared dir";
 	print ("$answer\n\n");
 	if ($ask_nfs_dir ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_nfs_dir;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_nfs_dir=$tmp;
 		}
 		write_ans();
@@ -259,9 +223,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_ver') {
 	}
 	print ("$answer\n\n");
 	if ($ask_iiidevops_ver ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_iiidevops_ver;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_iiidevops_ver=$tmp;
 		}
 		write_ans();
@@ -302,9 +266,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'deploy_mode') {
 	}
 	print ("$answer\n\n");
 	if ($ask_deploy_mode ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_deploy_mode;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_deploy_mode=$tmp;
 		}
 		write_ans();
@@ -361,9 +325,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'gitlab_root_password') {
 	$ask_gitlab_root_password = $password1;
 	print ("$answer\n\n");
 	if ($ask_gitlab_root_password ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_gitlab_root_password;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_gitlab_root_password=$tmp;
 		}
 		write_ans();
@@ -406,9 +370,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'gitlab_private_token') {
 	}
 	print ("$answer\n\n");
 	if ($ask_gitlab_private_token ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_gitlab_private_token;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_gitlab_private_token=$tmp;
 		}
 		write_ans();
@@ -456,9 +420,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'rancher_admin_password') {
 	$ask_rancher_admin_password = $password1;
 	print ("$answer\n\n");
 	if ($ask_rancher_admin_password ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_rancher_admin_password;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_rancher_admin_password=$tmp;
 		}
 		write_ans();
@@ -506,9 +470,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'redmine_admin_password') {
 	$ask_redmine_admin_password = $password1;
 	print ("$answer\n\n");
 	if ($ask_redmine_admin_password ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_redmine_admin_password;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_redmine_admin_password=$tmp;
 		}
 		write_ans();
@@ -541,9 +505,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'redmine_api_key') {
 	}
 	print ("$answer\n\n");
 	if ($ask_redmine_api_key ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_redmine_api_key;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_redmine_api_key=$tmp;
 		}
 		write_ans();
@@ -591,9 +555,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'sonarqube_admin_passwd') {
 	$ask_sonarqube_admin_passwd = $password1;
 	print ("$answer\n\n");
 	if ($ask_sonarqube_admin_passwd ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_sonarqube_admin_passwd;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_sonarqube_admin_passwd=$tmp;
 		}
 		write_ans();
@@ -632,9 +596,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'sonarqube_admin_token') {
 	}
 	print ("$answer\n\n");
 	if ($ask_sonarqube_admin_token ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_sonarqube_admin_token;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_sonarqube_admin_token=$tmp;
 		}
 		write_ans();
@@ -682,9 +646,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'harbor_admin_password') {
 	$ask_harbor_admin_password = $password1;
 	print ("$answer\n\n");
 	if ($ask_harbor_admin_password ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_harbor_admin_password;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_harbor_admin_password=$tmp;
 		}
 		write_ans();
@@ -720,9 +684,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'auto_password') {
 	}
 	print ("$answer\n\n");
 	if ($ask_auto_password ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_auto_password;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_auto_password=$tmp;
 		}
 		write_ans();
@@ -755,9 +719,9 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 	}
 	print ("$answer\n\n");
 	if ($ask_random_key ne '') {
-		if (-e $p_config_tmpl_ans) {
+		if (-e $p_config_ans) {
 			$tmp=$ask_random_key;
-			require($p_config_tmpl_ans);
+			require($p_config_ans);
 			$ask_random_key=$tmp;
 		}
 		write_ans();
@@ -836,6 +800,13 @@ sub convert {
 	$env_template =~ s/{{ask_k8sctl_domain_name}}/$ask_k8sctl_domain_name/g;
 	$env_template =~ s/{{ask_ingress_domain_name}}/$ask_ingress_domain_name/g;
 	$env_template =~ s/{{ask_iiidevops_domain_name}}/$ask_iiidevops_domain_name/g;
+	$env_template =~ s/{{ask_rancher_domain_name_tls}}/$ask_rancher_domain_name_tls/g;
+	$env_template =~ s/{{ask_gitlab_domain_name_tls}}/$ask_gitlab_domain_name_tls/g;
+	$env_template =~ s/{{ask_harbor_domain_name_tls}}/$ask_harbor_domain_name_tls/g;
+	$env_template =~ s/{{ask_redmine_domain_name_tls}}/$ask_redmine_domain_name_tls/g;
+	$env_template =~ s/{{ask_sonarqube_domain_name_tls}}/$ask_sonarqube_domain_name_tls/g;
+	$env_template =~ s/{{ask_ingress_domain_name_tls}}/$ask_ingress_domain_name_tls/g;
+	$env_template =~ s/{{ask_iiidevops_domain_name_tls}}/$ask_iiidevops_domain_name_tls/g;
 	$env_template =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/g;
 	$env_template =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/g;
 	$env_template =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/g;
@@ -890,6 +861,13 @@ sub write_ans {
 	$ans_file =~ s/{{ask_k8sctl_domain_name}}/$ask_k8sctl_domain_name/g;
 	$ans_file =~ s/{{ask_ingress_domain_name}}/$ask_ingress_domain_name/g;
 	$ans_file =~ s/{{ask_iiidevops_domain_name}}/$ask_iiidevops_domain_name/g;
+	$ans_file =~ s/{{ask_rancher_domain_name_tls}}/$ask_rancher_domain_name_tls/g;
+	$ans_file =~ s/{{ask_gitlab_domain_name_tls}}/$ask_gitlab_domain_name_tls/g;
+	$ans_file =~ s/{{ask_harbor_domain_name_tls}}/$ask_harbor_domain_name_tls/g;
+	$ans_file =~ s/{{ask_redmine_domain_name_tls}}/$ask_redmine_domain_name_tls/g;
+	$ans_file =~ s/{{ask_sonarqube_domain_name_tls}}/$ask_sonarqube_domain_name_tls/g;
+	$ans_file =~ s/{{ask_ingress_domain_name_tls}}/$ask_ingress_domain_name_tls/g;
+	$ans_file =~ s/{{ask_iiidevops_domain_name_tls}}/$ask_iiidevops_domain_name_tls/g;
 	$ans_file =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/;
 	$ans_file =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/;
 	$ans_file =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;
@@ -912,7 +890,7 @@ sub write_ans {
 	$ans_file =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;
 	$ans_file =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;
 	
-	open(FH, '>', $p_config_tmpl_ans) or die $!;
+	open(FH, '>', $p_config_ans) or die $!;
 	print FH $ans_file;
 	close(FH);
 	

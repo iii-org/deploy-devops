@@ -1,0 +1,25 @@
+# Source: db/templates/ingressdbgui.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: gitlab-ing
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1g"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+  - hosts:
+    - "{{gitlab_domain_name}}"
+    secretName: {{gitlab_domain_name_tls}}
+  rules:
+  - host: "{{gitlab_domain_name}}"
+    http:
+      paths:
+      - backend:
+          serviceName: gitlab-service
+          servicePort: 443
+        path: "/"
+        pathType: "ImplementationSpecific"

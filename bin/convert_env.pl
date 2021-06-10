@@ -22,44 +22,12 @@ if (!-e $p_conf) {
 	exit;
 }
 
-$ans_tmpl = <<END;
-# generate_env_answer
-\$ask_deploy_mode = '{{ask_deploy_mode}}';
-\$ask_iiidevops_ver = '{{ask_iiidevops_ver}}';
-\$ask_vm1_ip = '{{ask_vm1_ip}}';
-\$ask_vm2_ip = '{{ask_vm2_ip}}';
-\$ask_nfs_ip = '{{ask_nfs_ip}}';
-\$ask_nfs_dir = '{{ask_nfs_dir}}';
-\$ask_rancher_domain_name = '{{ask_rancher_domain_name}}';
-\$ask_gitlab_domain_name = '{{ask_gitlab_domain_name}}';
-\$ask_harbor_domain_name = '{{ask_harbor_domain_name}}';
-\$ask_redmine_domain_name = '{{ask_redmine_domain_name}}';
-\$ask_sonarqube_domain_name = '{{ask_sonarqube_domain_name}}';
-\$ask_k8sctl_domain_name = '{{ask_k8sctl_domain_name}}';
-\$ask_ingress_domain_name = '{{ask_ingress_domain_name}}';
-\$ask_iiidevops_domain_name = '{{ask_iiidevops_domain_name}}';
-\$ask_gitlab_root_password = '{{ask_gitlab_root_password}}';
-\$ask_gitlab_private_token = '{{ask_gitlab_private_token}}';
-\$ask_rancher_admin_password = '{{ask_rancher_admin_password}}';
-\$ask_redmine_admin_password = '{{ask_redmine_admin_password}}';
-\$ask_redmine_api_key = '{{ask_redmine_api_key}}';
-\$ask_sonarqube_admin_passwd = '{{ask_sonarqube_admin_passwd}}';
-\$ask_sonarqube_admin_token = '{{ask_sonarqube_admin_token}}';
-\$ask_harbor_admin_password = '{{ask_harbor_admin_password}}';
-\$ask_admin_init_login = '{{ask_admin_init_login}}';
-\$ask_admin_init_email = '{{ask_admin_init_email}}';
-\$ask_admin_init_password = '{{ask_admin_init_password}}';
-\$ask_checkmarx_origin = '{{ask_checkmarx_origin}}';
-\$ask_checkmarx_username = '{{ask_checkmarx_username}}';
-\$ask_checkmarx_password = '{{ask_checkmarx_password}}';
-\$ask_checkmarx_secret = '{{ask_checkmarx_secret}}';
-\$ask_webinspect_base_url = '{{ask_webinspect_base_url}}';
-\$ask_auto_password = '{{ask_auto_password}}';
-\$ask_random_key = '{{ask_random_key}}';
-
-1;
-END
-
+$p_config_ans_tmpl = $p_config_ans.".tmpl";
+if (!-e $p_config_ans_tmpl) {
+	print("The template file [$p_config_ans_tmpl] does not exist!\n");
+	exit;
+}
+$ans_tmpl = `cat $p_config_ans_tmpl`;
 
 # Parsing env.conf
 $hash_conf = {};
