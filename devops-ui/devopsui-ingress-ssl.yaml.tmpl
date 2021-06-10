@@ -1,0 +1,26 @@
+# Source: db/templates/ingressdbgui.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: devopsui-ing
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+    nginx.ingress.kubernetes.io/proxy-ssl-protocols: "TLSv1.3"
+    nginx.ingress.kubernetes.io/ssl-prefer-server-ciphers: "true"
+    nginx.ingress.kubernetes.io/ssl-ciphers: "EECDH+AESGCM:EDH+AESGCM"
+    nginx.ingress.kubernetes.io/websocket-services: "devopsui-service"
+spec:
+  tls:
+  - hosts:
+    - "{{iiidevops_domain_name}}"
+    secretName: {{iiidevops_domain_name_tls}}
+  rules:
+  - host: "{{iiidevops_domain_name}}"
+    http:
+      paths:
+      - backend:
+          serviceName: devopsui-service
+          servicePort: 80
+        path: "/"
+        pathType: "ImplementationSpecific"

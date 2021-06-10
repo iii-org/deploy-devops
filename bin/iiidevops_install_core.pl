@@ -33,13 +33,16 @@ if (!get_service_status('gitlab')) {
 	exit;
 }
 $gitlab_domain_name = get_domain_name('gitlab');
-$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
+$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
+
+#$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
 # Check token-key 
 #curl --silent --location --request GET 'http://10.50.1.53/api/v4/users' \
 #--header 'PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP'
 # OK -> ,"username":
 # Error -> {"message":"
-$cmd = "curl --silent --location --request GET 'http://$gitlab_domain_name/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+$cmd = "$v_cmd --silent --location --request GET '$v_http://$gitlab_domain_name/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = ',"username":';
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_key)<0) {
@@ -51,7 +54,7 @@ if (index($cmd_msg, $chk_key)<0) {
 # Set allow_local_requests_from_web_hooks_and_services
 #curl --request PUT --header "PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP" http://10.50.1.53/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true
 # "allow_local_requests_from_web_hooks_and_services":true
-$cmd = "curl --request PUT 'http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+$cmd = "$v_cmd --request PUT '$v_http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = '"allow_local_requests_from_web_hooks_and_services":true';
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_key)<0) {
@@ -90,10 +93,12 @@ if (!get_service_status('sonarqube')) {
 	exit;
 }
 $sonarqube_domain_name = get_domain_name('sonarqube');
+$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
+$v_cmd = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
 # Check token-key
 #curl -u 72110dbe6fb0f621657204b9db1594cf3bd805a1: --request GET 'http://10.20.0.35:31910/api/authentication/validate'
 #{"valid":true}
-$cmd = "curl -u $sonarqube_admin_token: --request GET 'http://$sonarqube_domain_name/api/authentication/validate'";
+$cmd = "$v_cmd -u $sonarqube_admin_token: --request GET '$v_http://$sonarqube_domain_name/api/authentication/validate'";
 $chk_key = '{"valid":true}';
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_key)<0) {
@@ -211,16 +216,30 @@ open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
 
+if ($iiidevops_domain_name_tls ne '') {
+	if (!check_secert_tls($iiidevops_domain_name_tls)) {
+		log_print("The Secert TLS [$iiidevops_domain_name_tls] does not exist in K8s!\n");
+		exit;		
+	}
+	$url = 'https://';
+	$ingress_tmpl_file = 'devopsui-ingress-ssl.yaml.tmpl';
+}
+else {
+	$url = 'http://';
+	$ingress_tmpl_file = 'devopsui-ingress.yaml.tmpl';
+}
+
 $yaml_path = "$Bin/../devops-ui/";
 $yaml_file = $yaml_path.'devopsui-ingress.yaml';
 if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
-	$tmpl_file = $yaml_file.'.tmpl';
+	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{iiidevops_domain_name}}/$iiidevops_domain_name/g;
+	$template =~ s/{{iiidevops_domain_name_tls}}/$iiidevops_domain_name_tls/g;
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
@@ -241,6 +260,7 @@ log_print("-----\n$cmd_msg\n-----\n\n");
 
 # Display Wait 5 min. message
 log_print("It takes 3 to 5 minutes to deploy III-DevOps services. Please wait.. \n");
+sleep(5)
 
 # check deploy status
 $isChk=1;
@@ -282,4 +302,4 @@ system("$Bin/../bin/sync-prj-templ.pl $sync_key");
 log_print("----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 log_print("\nThe deployment of III-DevOps services has been completed. Please try to connect to the following URL.\n");
-log_print("III-DevOps - http://$iiidevops_domain_name\n\n");
+log_print("III-DevOps - $url$iiidevops_domain_name\n\n");
