@@ -85,15 +85,15 @@ if ($sonarqube_domain_name_tls ne '') {
 		exit;		
 	}
 	$url = 'https://';
-	$ingress_tmpl_file = 'sonarqube-ingress-ssl.yml.tmpl';
+	$ingress_tmpl_file = 'sonar-server-ingress-ssl.yaml.tmpl';
 }
 else {
 	$url = 'http://';
-	$ingress_tmpl_file = 'sonarqube-ingress.yml.tmpl';
+	$ingress_tmpl_file = 'sonar-server-ingress.yaml.tmpl';
 }
 
-$yaml_path = "$Bin/../sonarqube/sonarqube";
-$yaml_file = $yaml_path.'/sonar-server-ingress.yaml';
+$yaml_path = "$Bin/../sonarqube/sonarqube/";
+$yaml_file = $yaml_path.'sonar-server-ingress.yaml';
 if ($sonarqube_domain_name ne '' && uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
@@ -102,6 +102,7 @@ if ($sonarqube_domain_name ne '' && uc($deploy_mode) ne 'IP') {
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{sonarqube_domain_name}}/$sonarqube_domain_name/g;
+	$template =~ s/{{sonarqube_domain_name_tls}}/$sonarqube_domain_name_tls/g;
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
@@ -140,7 +141,7 @@ if ($isChk) {
 	exit;
 }
 $the_url = get_domain_name('sonarqube');
-log_print("Successfully deployed Sonarqube! URL - http://$the_url\n");
+log_print("Successfully deployed Sonarqube! URL - $url$the_url\n");
 
 # Initial SonarQube
 initial_sonarqube();
