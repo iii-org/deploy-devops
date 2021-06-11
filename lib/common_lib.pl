@@ -230,6 +230,42 @@ sub check_secert_tls {
 	return($v_ret);
 }
 
+# Call Gitlab API
+sub call_gitlab_api {
+	my ($p_method, $p_api, $p_data) = @_;
+	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http);
+	
+	$v_domain_name = get_domain_name('gitlab');
+	$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+	$v_curl = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
+
+	#$v_cmd = "$v_curl --request PUT '$v_http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	$v_cmd = "$v_curl --request $p_method '$v_http://$v_domain_name/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	$v_msg = `$v_cmd 2>&1`;
+	
+	return($v_msg);
+}
+
+# Call SonarQube API
+sub call_sonarqube_api {
+	my ($p_method, $p_api, $p_data) = @_;
+	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http);
+	
+	# Default token
+	$sonarqube_admin_token = ($sonarqube_admin_token eq '')?'YWRtaW46YWRtaW4=':$sonarqube_admin_token;
+	
+	$v_domain_name = get_domain_name('sonarqube');
+	$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+	$v_curl = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
+
+	#$v_cmd = "$v_curl -u $sonarqube_admin_token: --request GET '$v_http://$v_domain_name/api/authentication/validate'";
+	$v_cmd = "$v_curl -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
+	$v_msg = `$v_cmd 2>&1`;
+
+	return($v_msg);
+}
+
+
 # $logfile
 sub log_print {
 	my ($p_msg) = @_;

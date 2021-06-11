@@ -32,37 +32,34 @@ if (!get_service_status('gitlab')) {
 	log_print("GitLab is not working!\n");
 	exit;
 }
-$gitlab_domain_name = get_domain_name('gitlab');
-$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
-$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
-
-#$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
-# Check token-key 
-#curl --silent --location --request GET 'http://10.50.1.53/api/v4/users' \
-#--header 'PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP'
-# OK -> ,"username":
-# Error -> {"message":"
-$cmd = "$v_cmd --silent --location --request GET '$v_http://$gitlab_domain_name/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = ',"username":';
-$cmd_msg = `$cmd 2>&1`;
+$cmd_msg = call_gitlab_api('GET', 'users');
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("GitLab private-token is not working!\n");
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
+log_print("GitLab is working well!\n");
 
 # Set allow_local_requests_from_web_hooks_and_services
-#curl --request PUT --header "PRIVATE-TOKEN: 7ZWkyr8PYwLyCvncKHwP" http://10.50.1.53/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true
-# "allow_local_requests_from_web_hooks_and_services":true
-$cmd = "$v_cmd --request PUT '$v_http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = '"allow_local_requests_from_web_hooks_and_services":true';
-$cmd_msg = `$cmd 2>&1`;
+$cmd_msg = call_gitlab_api('PUT', 'application/settings?allow_local_requests_from_web_hooks_and_services=true');
 if (index($cmd_msg, $chk_key)<0) {
-	log_print("GitLab allow_local_requests_from_web_hooks_and_services is not true!\n");
+	log_print("Set GitLab allow_local_requests_from_web_hooks_and_services failed!\n");
 	log_print("-----\n$cmd_msg-----\n");
 	exit;	
 }
-log_print("GitLab is working well!\n");
+log_print("Set GitLab allow_local_requests_from_web_hooks_and_services = true!\n");
+
+# Set signup_enabled
+$chk_key = '"signup_enabled":false';
+$cmd_msg = call_gitlab_api('PUT', 'application/settings?signup_enabled=false');
+if (index($cmd_msg, $chk_key)<0) {
+	log_print("Set GitLab signup_enabled failed!\n");
+	log_print("-----\n$cmd_msg-----\n");
+	exit;	
+}
+log_print("Set GitLab signup_enabled = false!\n");
 
 # Check Rancher service is working
 if (!get_service_status('rancher')) {
@@ -92,15 +89,11 @@ if (!get_service_status('sonarqube')) {
 	log_print("Sonarqube is not working!\n");
 	exit;
 }
-$sonarqube_domain_name = get_domain_name('sonarqube');
-$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
-$v_cmd = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
 # Check token-key
 #curl -u 72110dbe6fb0f621657204b9db1594cf3bd805a1: --request GET 'http://10.20.0.35:31910/api/authentication/validate'
 #{"valid":true}
-$cmd = "$v_cmd -u $sonarqube_admin_token: --request GET '$v_http://$sonarqube_domain_name/api/authentication/validate'";
 $chk_key = '{"valid":true}';
-$cmd_msg = `$cmd 2>&1`;
+$cmd_msg = call_sonarqube_api('GET', 'authentication/validate');
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Sonarqube admin-token is not working!\n");
 	log_print("-----\n$cmd_msg-----\n");
