@@ -81,6 +81,8 @@ spec:
           value: "{{k8sctl_domain_name}}"		  
         - name: INGRESS_EXTERNAL_BASE
           value: "{{ingress_domain_name}}"
+        - name: INGRESS_EXTERNAL_TLS
+          value: "{{ingress_domain_name_tls}}"
         - name: WEBINSPECT_BASE_URL
           value: "{{webinspect_base_url}}"
         - name: ADMIN_INIT_LOGIN
