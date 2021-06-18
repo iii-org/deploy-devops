@@ -38,6 +38,8 @@ spec:
         - name: redmine-config-tmp-dir
           mountPath: /usr/src/redmine/config/configuration.yml
           subPath: configuration.yml
+        - name: redmine-files-dir
+          mountPath: /usr/src/redmine/files
         ports:
         - containerPort: 3000
           name: ui
@@ -52,3 +54,8 @@ spec:
       # 暫存給redmine與初始化需要的儲存空間(會隨刪除消失)
       - name: redmine-config-tmp-dir
         emptyDir: {}
+        - name: redmine-files-dir
+      - name: redmine-files-dir
+        nfs:
+          server: {{nfs_ip}}
+          path: /{{nfs_dir}}/redmine-files		  

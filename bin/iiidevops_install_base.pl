@@ -37,6 +37,8 @@ sudo mkdir -p $nfs_dir/gitlab/logs;
 sudo chmod -R 777 $nfs_dir/gitlab;
 sudo mkdir -p $nfs_dir/redmine-postgresql;
 sudo chmod 777 $nfs_dir/redmine-postgresql;
+sudo mkdir -p $nfs_dir/redmine-files;
+sudo chmod 777 $nfs_dir/redmine-files;
 sudo mkdir -p $nfs_dir/devopsdb;
 sudo chmod 777 $nfs_dir/devopsdb;
 sudo mkdir -p $nfs_dir/kube-config;
