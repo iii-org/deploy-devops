@@ -65,6 +65,8 @@ if (!-e $tmpl_file) {
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{redmine_db_passwd}}/$redmine_db_passwd/g;
+$template =~ s/{{nfs_ip}}/$nfs_ip/g;
+$template =~ s/{{nfs_dir}}/$nfs_dir/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
