@@ -61,7 +61,7 @@ sub install_k8s {
 		log_print("K8s is running, I skip the installation!\n\n");
 		exit;
 	}
-	if ($ingress_domain_name ne '' ) {
+	if ($ingress_domain_name_tls ne '' ) {
 		if (!check_secert_tls($ingress_domain_name_tls)) {
 			log_print("The Secert TLS [$ingress_domain_name_tls] does not exist in K8s!\n");
 			exit;
