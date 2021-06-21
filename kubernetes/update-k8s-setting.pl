@@ -28,14 +28,15 @@ $cmd = $ARGV[0];
 $node_ip  = $ARGV[1];
 $node_role = (defined($ARGV[2]))?$ARGV[2]:'worker';
 $yml_file = "$nfs_dir/deploy-config/cluster.yml";
-$cluster_yml_tmpl = `cat $Bin/cluster_yml.tmpl`;
-$cluster_node_tmpl = `cat $Bin/cluster_node.tmpl`;
 
 if ($cmd eq 'Initial') {
 	gen_cluster_yml($node_ip);
 }
 elsif ($cmd eq 'Add') {
 	add_cluster_yml($node_ip, $node_role);
+}
+elsif ($cmd eq 'TLS') {
+	tls_cluster_yml();
 }
 
 exit;
@@ -46,7 +47,28 @@ sub gen_cluster_yml {
 	local($cluster_node, $node_role_list, $node_role, $cluster_yml);
 
 	$cluster_node = add_node_yml($p_node_ip, 'controlplane_worker_etcd');
-	write_cluster_yml($cluster_node);
+	write_cluster_yml($cluster_node, $ingress_domain_name_tls);
+
+	return;
+}
+
+sub tls_cluster_yml {
+	my ($msg, $cluster_node_list, $line, $t1, $t_ip, $t_role);
+
+	#Get Node List
+	#cat cluster.yml | grep K8s_node
+	# K8s_node, 10.20.0.37, controlplane_worker_etcd
+	# K8s_node, 10.20.0.36, controlplane_worker_etcd
+	$msg = `cat $yml_file | grep K8s_node`;
+	$cluster_node_list = '';
+	foreach $line (split("\n", $msg)) {
+		# K8s_node, 10.20.0.37, controlplane_worker_etcd
+		($t1, $t_ip, $t_role) = split(', ', $line);
+		$cluster_node_list .= ($cluster_node_list ne '')?"\n":'';
+		$cluster_node_list .= add_node_yml($t_ip, $t_role);
+	}
+	$cluster_node_list .= ($cluster_node_list ne '')?"\n":'';
+	write_cluster_yml($cluster_node_list, $ingress_domain_name_tls);
 
 	return;
 }
@@ -74,7 +96,7 @@ sub add_cluster_yml {
 	}
 	$cluster_node_list .= ($cluster_node_list ne '')?"\n":'';
 	$cluster_node_list .= add_node_yml($p_node_ip, $p_node_role);
-	write_cluster_yml($cluster_node_list);
+	write_cluster_yml($cluster_node_list, $ingress_domain_name_tls);
 
 	return;
 }
@@ -95,8 +117,9 @@ sub add_cluster_yml {
 # :
 sub add_node_yml {
 	my ($p_node_ip, $p_role_list) = @_;
-	local($cluster_node, $node_role);
+	local($cluster_node_tmpl, $cluster_node, $node_role);
 
+	$cluster_node_tmpl = `cat $Bin/cluster_node.tmpl`;
 	$node_role = gen_node_role($p_role_list);
 	$cluster_node = $cluster_node_tmpl;
 	$cluster_node =~ s/%%node_ip%%/$p_node_ip/g;
@@ -133,11 +156,20 @@ sub gen_node_role {
 
 # Write full cluster.yml
 sub write_cluster_yml {
-	my ($p_node_list) = @_;
-	my ($cluster_yml);
+	my ($p_node_list, $p_tls) = @_;
+	my ($cluster_yml_tmpl, $ingress_yml_tmpl, $cluster_yml);
 
+	$cluster_yml_tmpl = `cat $Bin/cluster_yml.tmpl`;
+	if ($p_tls ne '') {
+		$ingress_yml_tmpl = `cat $Bin/ingress_tls_yml.tmpl`;
+		$ingress_yml_tmpl =~ s/%%ingress_domain_name_tls%%/$p_tls/g;
+	}
+	else {
+		$ingress_yml_tmpl = `cat $Bin/ingress_yml.tmpl`;
+	}
 	$cluster_yml = $cluster_yml_tmpl;
 	$cluster_yml =~ s/%%node_list%%/$p_node_list/g;
+	$cluster_yml =~ s/%%ingress%%/$ingress_yml_tmpl/g;
 	
 	open(FH, '>', $yml_file) or die $!;
 	print FH $cluster_yml;

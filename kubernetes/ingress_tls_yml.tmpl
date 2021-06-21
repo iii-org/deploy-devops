@@ -1,0 +1,21 @@
+ingress:
+  provider: "nginx"
+  options: {
+    use-forwarded-headers: 'true'
+  }
+  node_selector: {}
+  extra_args: {
+    default-ssl-certificate: "%%ingress_domain_name_tls%%"
+  }
+  dns_policy: ""
+  extra_envs: []
+  extra_volumes: []
+  extra_volume_mounts: []
+  update_strategy: null
+  http_port: 0
+  https_port: 0
+  network_mode: ""
+  tolerations: []
+  default_backend: null
+  default_http_backend_priority_class_name: ""
+  nginx_ingress_controller_priority_class_name: ""
