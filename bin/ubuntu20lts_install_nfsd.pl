@@ -26,10 +26,10 @@ if ($isWorking) {
 	exit;
 }
 
-$cmd = "sudo apt install nfs-kernel-server -y";
-log_print("Install NFS service Package..\n");
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n");
+#$cmd = "sudo apt install nfs-kernel-server -y";
+#log_print("Install NFS service Package..\n");
+#$cmd_msg = `$cmd`;
+#log_print("-----\n$cmd_msg\n-----\n");
 
 $cmd_msg = `sudo cat /etc/exports`;
 if (index($cmd_msg, $nfs_dir)<0) {

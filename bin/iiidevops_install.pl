@@ -33,7 +33,7 @@ if ($OSVer ne '20.04') {
 # Install OS Packages
 $cmd = <<END;
 sudo apt update
-sudo apt-get install unzip nfs-common libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client apt-transport-https ca-certificates curl gnupg-agent software-properties-common snap -y;
+sudo apt-get install unzip nfs-common nfs-kernel-server libterm-readkey-perl libjson-maybexs-perl postgresql-client-common postgresql-client apt-transport-https ca-certificates curl gnupg-agent software-properties-common snap -y;
 END
 log_print("Install OS Packages..\n");
 system($cmd);
