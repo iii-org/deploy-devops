@@ -17,6 +17,11 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+if (lc($ARGV[0]) eq 'manual_secret_tls') {
+	manual_secret_tls();
+	exit;
+}
+
 # Check Rancher service is working
 if (get_service_status('rancher')) {
 	log_print("Rancher is running, I skip the installation!\n\n");
@@ -112,3 +117,37 @@ $the_url = get_domain_name('rancher');
 log_print("Successfully deployed Rancher! URL - https://$the_url\n");
 
 exit;
+
+sub manual_secret_tls {
+	if ($rancher_domain_name_tls eq '') {
+		log_print("The Secert TLS is not defined!\n");
+		exit;
+	}
+	if ($rancher_domain_name eq '') {
+		log_print("The Rancher domain name is not defined!\n");
+		exit;
+	}
+	if (!check_secert_tls($rancher_domain_name_tls)) {
+		log_print("The Secert TLS [$rancher_domain_name_tls] does not exist in K8s!\n");
+		exit;		
+	}
+
+	# Add helm chart rancher repo - https://releases.rancher.com/server-charts/stable
+	$cmd = "helm repo add rancher-stable https://releases.rancher.com/server-charts/stable";
+	$cmd_msg = `$cmd 2>&1`;
+	log_print("-----\n$cmd_msg-----\n");	
+
+	log_print("Upgrade Rancher service..\n");
+	$cmd = "helm upgrade rancher --version=2.4.15 rancher-stable/rancher --namespace cattle-system --set hostname=$rancher_domain_name --set ingress.tls.source=secret --timeout=3600s --wait";
+	system($cmd);
+	#~/deploy-devops/bin/import-secret-tls.pl tls-rancher-ingress rancher.devops.iiidevops.org/fullchain1.pem rancher.devops.iiidevops.org/privkey1.pem cattle-system
+	$cmd = "kubectl -n cattle-system patch deploy/cattle-cluster-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"cluster-register\", \"image\": \"rancher/rancher-agent:v2.4.15\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
+	system($cmd);
+	$cmd = "kubectl -n cattle-system patch daemonset/cattle-node-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"agent\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
+	system($cmd);
+
+	# Display Wait 2-5 min. message
+	log_print("It takes 2 to 5 minutes to upgrade Rancher service. Please wait.. \n");
+
+	return;
+}
