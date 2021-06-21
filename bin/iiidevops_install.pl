@@ -100,7 +100,7 @@ else {
 # Disable swap
 $cmd = <<END;
 sudo swapoff -a;
-sudo sed -ri '/\sswap\s/s/^#?/#/' /etc/fstab;
+sudo sed -ri '/\\sswap\\s/s/^#?/#/' /etc/fstab;
 END
 log_print("Disable swap..\n");
 system($cmd);
