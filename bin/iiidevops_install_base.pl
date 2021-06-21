@@ -20,15 +20,6 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 $home = "$Bin/../../";
 
-# NFS
-if ($first_ip eq $nfs_ip) {
-	$cmd = "sudo $home/deploy-devops/bin/ubuntu20lts_install_nfsd.pl";
-	system($cmd);
-}
-else {
-	log_print("Skip NFS configuration!\n");
-}
-
 # Create NFS Dir & Services Data Dir
 if ($nfs_dir eq '') {
 	log_print("The nfs_dir is not setting!\n");
@@ -109,6 +100,15 @@ if ($cmd_msg ne '') {
 }
 else {
 	log_print("Move env.pl to $nfs_dir/deploy-config/ OK!\n");
+}
+
+# NFS
+if ($first_ip eq $nfs_ip) {
+	$cmd = "sudo $home/deploy-devops/bin/ubuntu20lts_install_nfsd.pl";
+	system($cmd);
+}
+else {
+	log_print("Skip NFS configuration!\n");
 }
 
 # Add insecure-registries
