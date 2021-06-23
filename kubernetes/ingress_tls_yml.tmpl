@@ -5,7 +5,7 @@ ingress:
   }
   node_selector: {}
   extra_args: {
-    default-ssl-certificate: "%%ingress_domain_name_tls%%"
+    default-ssl-certificate: "default/%%ingress_domain_name_tls%%"
   }
   dns_policy: ""
   extra_envs: []

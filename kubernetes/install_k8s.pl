@@ -118,7 +118,7 @@ sub manual_secret_tls {
 	}
 
 	# Update K8s cluster	
-	system("$Bin/update-k8s-setting.pl TLS");
+	system("$Bin/update-k8s-setting.pl TLS localhost");
 	system("sudo -u rkeuser rke up --config $nfs_dir/deploy-config/cluster.yml");
 	
 
