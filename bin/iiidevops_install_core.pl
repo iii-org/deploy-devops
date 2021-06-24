@@ -150,11 +150,6 @@ $gitlab_domain_name = get_domain_name('gitlab');
 $v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
 $gitlab_url = $v_http.'//'.$gitlab_domain_name;
 
-# rancher_url
-$rancher_domain_name = get_domain_name('rancher');
-$v_http = ($rancher_domain_name_tls ne '')?'https':'http';
-$rancher_url = $v_http.'//'.$rancher_domain_name;
-
 # sonarqube_url
 $sonarqube_domain_name = get_domain_name('sonarqube');
 $v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
@@ -181,7 +176,7 @@ $template =~ s/{{redmine_api_key}}/$redmine_api_key/g;
 $template =~ s/{{gitlab_url}}/$gitlab_url/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
-$template =~ s/{{rancher_url}}/$rancher_url/g;
+$template =~ s/{{rancher_ip}}/$rancher_ip/g;
 $template =~ s/{{rancher_admin_password}}/$rancher_admin_password/g;
 $template =~ s/{{harbor_ip}}/$harbor_ip/g;
 $template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
