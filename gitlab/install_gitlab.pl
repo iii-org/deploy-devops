@@ -35,10 +35,41 @@ log_print("Install GitLab ..\n");
 # Modify gitlab/gitlab-deployment.yml.tmpl
 $gitlab_domain_name = get_domain_name('gitlab');
 if ($gitlab_domain_name_tls ne '') {
+	# Check & import cert files
+	$cert_path = "$nfs_dir/deploy-config/";
+	$cert_path = (-e $cert_path.'gitlab-cert/')?$cert_path.'gitlab-cert/':$cert_path.'devops-cert/';
+	$cer_file = "$cert_path/fullchain.pem";
+	if (!-e $cer_file) {
+		log_print("The cert file [$cer_file] does not exist!\n");
+		exit;
+	}
+	$key_file = "$cert_path/privkey.pem";
+	if (!-e $key_file) {
+		log_print("The key file [$key_file] does not exist!\n");
+		exit;
+	}
+	system("$Bin/../bin/import-secret-tls.pl $gitlab_domain_name_tls $cer_file $key_file");
 	if (!check_secert_tls($gitlab_domain_name_tls)) {
 		log_print("The Secert TLS [$gitlab_domain_name_tls] does not exist in K8s!\n");
 		exit;		
 	}
+
+	# Copy to gitlab dir
+	$gitlab_ssl_dir = "$nfs_dir/gitlab/config/ssl";
+	system("sudo mkdir -p $gitlab_ssl_dir");
+	$gitlab_cer_file = "$gitlab_ssl_dir/$gitlab_domain_name.crt";
+	system("sudo cp $cer_file $gitlab_cer_file");
+	if (!-e $gitlab_cer_file) {
+		log_print("Copy cert file to [$gitlab_cer_file] failed!\n");
+		exit;
+	}
+	$gitlab_key_file = "$gitlab_ssl_dir/$gitlab_domain_name.key";
+	system("sudo cp $key_file $gitlab_key_file");
+	if (!-e $gitlab_key_file) {
+		log_print("Copy cert file to [$gitlab_key_file] failed!\n");
+		exit;
+	}
+	
 	$gitlab_url = 'https://'.$gitlab_domain_name;
 	$ingress_tmpl_file = 'gitlab-ingress-ssl.yml.tmpl';
 }
