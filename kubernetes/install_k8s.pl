@@ -112,6 +112,18 @@ sub manual_secret_tls {
 		log_print("The ingress domain name is not defined!\n");
 		exit;
 	}
+	# Check & import cert files
+	$cer_file = "$nfs_dir/deploy-config/ingress-default-cert/fullchain1.pem";
+	if (!-e $cer_file) {
+		log_print("The cert file [$cer_file] does not exist!\n");
+		exit;
+	}
+	$key_file = "$nfs_dir/deploy-config/ingress-default-cert/privkey1.pem";
+	if (!-e $key_file) {
+		log_print("The key file [$key_file] does not exist!\n");
+		exit;
+	}
+	$cmd = "$Bin/../bin/import-secret-tls.pl $ingress_domain_name_tls $cer_file $key_file";
 	if (!check_secert_tls($ingress_domain_name_tls)) {
 		log_print("The Secert TLS [$ingress_domain_name_tls] does not exist in K8s!\n");
 		exit;		
