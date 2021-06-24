@@ -68,6 +68,7 @@ if (index($cmd_msg, $chk_key)<0) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
 		exit;
 	}
+	$template = `cat $tmpl_file`;
 	open(FH, '>', $yaml_file) or die $!;
 	print FH $template;
 	close(FH);
