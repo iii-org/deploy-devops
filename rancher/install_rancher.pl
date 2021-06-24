@@ -119,17 +119,26 @@ log_print("Successfully deployed Rancher! URL - https://$the_url\n");
 exit;
 
 sub manual_secret_tls {
-	if ($rancher_domain_name_tls eq '') {
-		log_print("The Secert TLS is not defined!\n");
+	if ($rancher_domain_name_tls ne 'tls-rancher-ingress') {
+		log_print("The Secert TLS must be defined as 'tls-rancher-ingress'!\n");
 		exit;
 	}
 	if ($rancher_domain_name eq '') {
 		log_print("The Rancher domain name is not defined!\n");
 		exit;
 	}
-	if (!check_secert_tls($rancher_domain_name_tls, 'cattle-system')) {
-		log_print("The Secert TLS [$rancher_domain_name_tls] does not exist in K8s!\n");
-		exit;		
+	# Check & import cert files
+	$cert_path = "$nfs_dir/deploy-config/";
+	$cert_path = (-e $cert_path.'rancher-cert/')?$cert_path.'rancher-cert/':$cert_path.'devops-cert/';
+	$cer_file = "$cert_path/fullchain.pem";
+	if (!-e $cer_file) {
+		log_print("The cert file [$cer_file] does not exist!\n");
+		exit;
+	}
+	$key_file = "$cert_path/privkey.pem";
+	if (!-e $key_file) {
+		log_print("The key file [$key_file] does not exist!\n");
+		exit;
 	}
 
 	# Add helm chart rancher repo - https://releases.rancher.com/server-charts/stable
@@ -145,6 +154,11 @@ sub manual_secret_tls {
 	system($cmd);
 	$cmd = "kubectl -n cattle-system patch daemonset/cattle-node-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"agent\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
 	system($cmd);
+	system("$Bin/../bin/import-secret-tls.pl tls-rancher-ingress $cer_file $key_file cattle-system");
+	#if (!check_secert_tls('tls-rancher-ingress', 'cattle-system')) {
+	#	log_print("The Secert TLS [$rancher_domain_name_tls] does not exist in K8s!\n");
+	#	exit;		
+	#}	
 
 	# Display Wait 2-5 min. message
 	log_print("It takes 2 to 5 minutes to upgrade Rancher service. Please wait.. \n");
