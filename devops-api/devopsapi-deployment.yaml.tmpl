@@ -32,7 +32,7 @@ spec:
         - name: REDMINE_INTERNAL_BASE_URL
           value: "http://redmine-service:3000"
         - name: REDMINE_EXTERNAL_BASE_URL
-          value: "http://{{redmine_domain_name}}"
+          value: "{{redmine_url}}"
         - name: REDMINE_ADMIN_ACCOUNT
           value: "admin"
         - name: REDMINE_ADMIN_PASSWORD
@@ -40,7 +40,7 @@ spec:
         - name: REDMINE_API_KEY
           value: "{{redmine_api_key}}"
         - name: GITLAB_BASE_URL
-          value: "http://gitlab-service:{{gitlab_port}}"
+          value: "{{gitlab_url}}"
         - name: GITLAB_ADMIN_ACCOUNT
           value: "root"
         - name: GITLAB_ADMIN_PASSWORD
@@ -48,7 +48,7 @@ spec:
         - name: GITLAB_PRIVATE_TOKEN
           value: "{{gitlab_private_token}}"
         - name: RANCHER_IP_PORT
-          value: "{{rancher_ip}}:31443"
+          value: "{{rancher_url}}"
         - name: RANCHER_ADMIN_ACCOUNT
           value: "admin"
         - name: RANCHER_ADMIN_PASSWORD
@@ -66,7 +66,7 @@ spec:
         - name: SONARQUBE_INTERNAL_BASE_URL
           value: "http://sonarqube-server-service:9000/api"
         - name: SONARQUBE_EXTERNAL_BASE_URL
-          value: "http://{{sonarqube_domain_name}}"
+          value: "{{sonarqube_url}}"
         - name: SONARQUBE_ADMIN_TOKEN
           value: "{{sonarqube_admin_token}}"
         - name: HARBOR_INTERNAL_BASE_URL

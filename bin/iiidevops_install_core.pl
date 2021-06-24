@@ -81,7 +81,6 @@ if (!get_service_status('redmine')) {
 	log_print("Redmine is not working!\n");
 	exit;
 }
-$redmine_domain_name = get_domain_name('redmine');
 log_print("Redmine is working well!\n");
 
 # Check Sonarqube service is working
@@ -141,6 +140,26 @@ $iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
 # imagePullPolicy
 $image_pull_policy = ($iiidevops_ver eq '1')?'IfNotPresent':'Always';
 
+# redmine_url
+$redmine_domain_name = get_domain_name('redmine');
+$v_http = ($redmine_domain_name_tls ne '')?'https':'http';
+$redmine_url = $v_http.'//'.$redmine_domain_name;
+
+# gitlab_url
+$gitlab_domain_name = get_domain_name('gitlab');
+$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+$gitlab_url = $v_http.'//'.$gitlab_domain_name;
+
+# rancher_url
+$rancher_domain_name = get_domain_name('rancher');
+$v_http = ($rancher_domain_name_tls ne '')?'https':'http';
+$rancher_url = $v_http.'//'.$rancher_domain_name;
+
+# sonarqube_url
+$sonarqube_domain_name = get_domain_name('sonarqube');
+$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
+$sonarqube_url = $v_http.'//'.$sonarqube_domain_name;
+
 # Deploy DevOps API (Python Flask) on kubernetes cluster
 $yaml_path = "$Bin/../devops-api/";
 $yaml_file = $yaml_path.'devopsapi-deployment.yaml';
@@ -156,13 +175,13 @@ $template =~ s/{{image_pull_policy}}/$image_pull_policy/g;
 $template =~ s/{{db_passwd}}/$db_passwd/g;
 $template =~ s/{{db_ip}}/$db_ip/g;
 $template =~ s/{{jwt_secret_key}}/$jwt_secret_key/g;
-$template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
+$template =~ s/{{redmine_url}}/$redmine_url/g;
 $template =~ s/{{redmine_admin_passwd}}/$redmine_admin_passwd/g;
 $template =~ s/{{redmine_api_key}}/$redmine_api_key/g;
-$template =~ s/{{gitlab_port}}/$gitlab_port/g;
+$template =~ s/{{gitlab_url}}/$gitlab_url/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
-$template =~ s/{{rancher_ip}}/$rancher_ip/g;
+$template =~ s/{{rancher_url}}/$rancher_url/g;
 $template =~ s/{{rancher_admin_password}}/$rancher_admin_password/g;
 $template =~ s/{{harbor_ip}}/$harbor_ip/g;
 $template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
@@ -175,7 +194,7 @@ $template =~ s/{{checkmarx_username}}/$checkmarx_username/g;
 $template =~ s/{{checkmarx_password}}/$checkmarx_password/g;
 $template =~ s/{{checkmarx_secret}}/$checkmarx_secret/g;
 $template =~ s/{{webinspect_base_url}}/$webinspect_base_url/g;
-$template =~ s/{{sonarqube_domain_name}}/$sonarqube_domain_name/g;
+$template =~ s/{{sonarqube_url}}/$sonarqube_url/g;
 $template =~ s/{{sonarqube_admin_token}}/$sonarqube_admin_token/g;
 $template =~ s/{{admin_init_login}}/$admin_init_login/g;
 $template =~ s/{{admin_init_email}}/$admin_init_email/g;
@@ -211,6 +230,19 @@ print FH $template;
 close(FH);
 
 if ($iiidevops_domain_name_tls ne '') {
+	# Check & import cert files
+	$cert_path = "$nfs_dir/deploy-config/devops-cert/";
+	$cer_file = "$cert_path/fullchain.pem";
+	if (!-e $cer_file) {
+		log_print("The cert file [$cer_file] does not exist!\n");
+		exit;
+	}
+	$key_file = "$cert_path/privkey.pem";
+	if (!-e $key_file) {
+		log_print("The key file [$key_file] does not exist!\n");
+		exit;
+	}
+	system("$Bin/../bin/import-secret-tls.pl $iiidevops_domain_name_tls $cer_file $key_file");
 	if (!check_secert_tls($iiidevops_domain_name_tls)) {
 		log_print("The Secert TLS [$iiidevops_domain_name_tls] does not exist in K8s!\n");
 		exit;		
