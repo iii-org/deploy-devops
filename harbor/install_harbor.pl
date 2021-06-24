@@ -249,6 +249,21 @@ sub manual_secret_tls {
 		log_print("The Harbor domain name is not defined!\n");
 		exit;
 	}
+	
+	# Check & import cert files
+	$cert_path = "$nfs_dir/deploy-config/";
+	$cert_path = (-e $cert_path.'harbor-cert/')?$cert_path.'harbor-cert/':$cert_path.'devops-cert/';
+	$cer_file = "$cert_path/fullchain.pem";
+	if (!-e $cer_file) {
+		log_print("The cert file [$cer_file] does not exist!\n");
+		exit;
+	}
+	$key_file = "$cert_path/privkey.pem";
+	if (!-e $key_file) {
+		log_print("The key file [$key_file] does not exist!\n");
+		exit;
+	}
+	system("$Bin/../bin/import-secret-tls.pl $harbor_domain_name_tls $cer_file $key_file");
 	if (!check_secert_tls($harbor_domain_name_tls)) {
 		log_print("The Secert TLS [$harbor_domain_name_tls] does not exist in K8s!\n");
 		exit;		
