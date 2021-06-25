@@ -66,11 +66,21 @@ if (-e $p_config_ans) {
 	$env_template =~ s/{{ask_admin_init_login}}/$hash_conf{'ADMIN_INIT_LOGIN'}/g;
 	$env_template =~ s/{{ask_admin_init_email}}/$hash_conf{'ADMIN_INIT_EMAIL'}/g;
 	$env_template =~ s/{{ask_admin_init_password}}/$hash_conf{'GITLAB_ROOT_PWD'}/g;
+	$env_template =~ s/{{ask_rancher_domain_name_tls}}//g ;
+	$env_template =~ s/{{ask_gitlab_domain_name_tls}}//g ;
+	$env_template =~ s/{{ask_redmine_domain_name_tls}}//g ;
+	$env_template =~ s/{{ask_harbor_domain_name_tls}}//g ;
+	$env_template =~ s/{{ask_sonarqube_domain_name_tls}}//g ;
+	$env_template =~ s/{{ask_ingress_domain_name_tls}}//g ;
+	$env_template =~ s/{{ask_iiidevops_domain_name_tls}}//g ;
 	$env_template =~ s/{{ask_checkmarx_origin}}//g;
 	$env_template =~ s/{{ask_checkmarx_username}}//g;
 	$env_template =~ s/{{ask_checkmarx_password}}//g;
 	$env_template =~ s/{{ask_checkmarx_secret}}//g;	
 	$env_template =~ s/{{ask_webinspect_base_url}}//g;
+	$env_template =~ s/{{ask_webinspect_type}}//g ;
+	$env_template =~ s/{{ask_webinspect_username}}//g ;
+	$env_template =~ s/{{ask_webinspect_password}}//g ;
 	$env_template =~ s/{{ask_auto_password}}/$hash_conf{'AUTO_PWD'}/g;
 	$env_template =~ s/{{ask_random_key}}/$hash_conf{'RANDOM_KEY'}/g;
 	
