@@ -291,8 +291,8 @@ sub call_sonarqube_api {
 	$sonarqube_admin_token = ($sonarqube_admin_token eq '')?'YWRtaW46YWRtaW4=':$sonarqube_admin_token;
 	
 	$v_domain_name = get_domain_name('sonarqube');
-	$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
-	$v_curl = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
+	$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
+	$v_curl = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
 
 	#$v_cmd = "$v_curl -u $sonarqube_admin_token: --request GET '$v_http://$v_domain_name/api/authentication/validate'";
 	$v_cmd = "$v_curl -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
