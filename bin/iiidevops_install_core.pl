@@ -150,6 +150,11 @@ $gitlab_domain_name = get_domain_name('gitlab');
 $v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
 $gitlab_url = $v_http.'://'.$gitlab_domain_name;
 
+# harbor_internal_base_url
+# harbor_internal_basr_url will use http after TLS upgrade 
+$v_http = ($harbor_domain_name_tls ne '')?'http':'https';
+$harbor_internal_base_url = $v_http.'://harbor-harbor-core/api/v2.0';
+
 # sonarqube_url
 $sonarqube_domain_name = get_domain_name('sonarqube');
 $v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
@@ -178,7 +183,7 @@ $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
 $template =~ s/{{rancher_ip}}/$rancher_ip/g;
 $template =~ s/{{rancher_admin_password}}/$rancher_admin_password/g;
-$template =~ s/{{harbor_ip}}/$harbor_ip/g;
+$template =~ s/{{harbor_internal_base_url}}/$harbor_internal_base_url/g;
 $template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
 $template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
 $template =~ s/{{k8sctl_domain_name}}/$k8sctl_domain_name/g;
