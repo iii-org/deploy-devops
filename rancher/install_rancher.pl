@@ -135,12 +135,20 @@ sub manual_secret_tls {
 		log_print("The cert file [$cer_file] does not exist!\n");
 		exit;
 	}
+	if (!check_cert_file($cer_file, $rancher_domain_name)) {
+		log_print("The cert file [$cer_file] is invalid!\n");
+		exit;
+	}
 	$key_file = "$cert_path/privkey.pem";
 	if (!-e $key_file) {
 		log_print("The key file [$key_file] does not exist!\n");
 		exit;
 	}
-
+	if (!check_key_file($key_file, $cer_file)) {
+		log_print("The key file [$key_file] is invalid!\n");
+		exit;
+	}
+	
 	# Add helm chart rancher repo - https://releases.rancher.com/server-charts/stable
 	$cmd = "helm repo add rancher-stable https://releases.rancher.com/server-charts/stable";
 	$cmd_msg = `$cmd 2>&1`;

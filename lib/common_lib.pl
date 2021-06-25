@@ -211,6 +211,42 @@ sub get_domain_name {
 	return($v_domain_name);
 }
 
+# Check cert file
+sub check_cert_file {
+	my ($p_cert_file, $p_dns) = @_;
+	my ($v_cmd, $v_cmd_msg, $v_ret, $v_chk_key);
+	
+	# Get DNS info
+	$v_cmd = "openssl x509 -in $p_cert_file -ext subjectAltName -noout";
+	$v_cmd_msg = `$v_cmd 2>&1`;
+	#X509v3 Subject Alternative Name:
+	#    DNS:dev2.iiidevops.org, DNS:gitlab-dev2.iiidevops.org, DNS:harbor-dev2.iiidevops.org, DNS:rancher-dev2.iiidevops.org
+	$v_chk_key = (length($p_dns)>0)?"DNS:$p_dns":'DNS:';
+	$v_ret = (index($v_cmd_msg, $v_chk_key)>0);
+	
+	return($v_ret);
+}
+
+# Ref - https://support.comodo.com/index.php?/Knowledgebase/Article/View/684/17/how-do-i-verify-that-a-private-key-matches-a-certificate-openssl
+# Check cert key file
+sub check_key_file {
+	my ($p_key_file, $p_cert_file) = @_;
+	my ($v_cmd, $v_cmd_msg, $v_ret, $v_key_md5, $v_cert_md5);
+
+	$v_cmd = "openssl rsa -check -noout -in $p_key_file";
+	$v_cmd_msg = `$v_cmd 2>&1`;
+	#RSA key ok
+	$v_ret = (index($v_cmd_msg, 'RSA key ok')>=0);
+
+	if (length($p_cert_file)>0 && $v_ret) {
+		$v_key_md5 = `openssl rsa -modulus -noout -in $p_key_file | openssl md5`;
+		$v_cert_md5 = `openssl x509 -modulus -noout -in $p_cert_file | openssl md5`;
+		$v_ret = ($v_key_md5 eq $v_cert_md5);
+	}
+	
+	return($v_ret);
+}
+
 # Check secret tls
 sub check_secert_tls {
 	my ($p_secert_tls, $p_namespace) = @_;
