@@ -143,17 +143,17 @@ $image_pull_policy = ($iiidevops_ver eq '1')?'IfNotPresent':'Always';
 # redmine_url
 $redmine_domain_name = get_domain_name('redmine');
 $v_http = ($redmine_domain_name_tls ne '')?'https':'http';
-$redmine_url = $v_http.'//'.$redmine_domain_name;
+$redmine_url = $v_http.'://'.$redmine_domain_name;
 
 # gitlab_url
 $gitlab_domain_name = get_domain_name('gitlab');
 $v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
-$gitlab_url = $v_http.'//'.$gitlab_domain_name;
+$gitlab_url = $v_http.'://'.$gitlab_domain_name;
 
 # sonarqube_url
 $sonarqube_domain_name = get_domain_name('sonarqube');
 $v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
-$sonarqube_url = $v_http.'//'.$sonarqube_domain_name;
+$sonarqube_url = $v_http.'://'.$sonarqube_domain_name;
 
 # Deploy DevOps API (Python Flask) on kubernetes cluster
 $yaml_path = "$Bin/../devops-api/";
