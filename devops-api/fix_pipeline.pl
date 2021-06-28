@@ -18,7 +18,7 @@ if ($gitlab_domain_name_tls eq '' || $gitlab_domain_name eq '') {
 }
 
 if (lc($ARGV[0]) ne 'force') {
-	print("WARNING!!! You can only run the script after re-hooking the Rancher pipeline using GitLab. And you MUST input the argument 'Force' to execute the script. After the script is executed, the pipeline history data of all projects will be deleted!!!");
+	print("\nWARNING!!!\n You can only run the script after re-hooking the Rancher pipeline using GitLab. And you MUST input the argument 'Force' to execute the script. After the script is executed, the pipeline history data of all projects will be deleted!!!\n\n");
 	exit;
 }
 
@@ -35,6 +35,7 @@ exit;
 #curl --location -g --request GET 'http://10.20.0.85:31850/maintenance/update_rc_pj_pipe_id?force=true' \
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
 sub fix_pipeline_api {
+	local($cmd, $hash_msg, $message, $ret);
 
 	if ($api_key eq '') {
 		get_api_key_api();
@@ -43,6 +44,7 @@ sub fix_pipeline_api {
 	$cmd = "curl -s --location -g --request GET '$iiidevops_api/maintenance/update_rc_pj_pipe_id?force=true' --header 'Authorization: Bearer $api_key'";
 	$hash_msg = decode_json(`$cmd`);
 	$message = $hash_msg->{'message'};
+	$ret=1;
 	if ($message ne 'success') {
 		print("Fix pipeline Error : $message \n");
 		$ret=-1;
@@ -54,6 +56,7 @@ sub fix_pipeline_api {
 # curl --location -g --request PUT 'http://10.20.0.85:31850/maintenance/update_pj_http_url' \
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
 sub fix_gitlab_url {
+	local($cmd, $hash_msg, $message, $ret);
 
 	if ($api_key eq '') {
 		get_api_key_api();
@@ -62,6 +65,7 @@ sub fix_gitlab_url {
 	$cmd = "curl -s --location -g --request PUT '$iiidevops_api/maintenance/update_pj_http_url' --header 'Authorization: Bearer $api_key'";
 	$hash_msg = decode_json(`$cmd`);
 	$message = $hash_msg->{'message'};
+	$ret=1;
 	if ($message ne 'success') {
 		print("Fix GitLab URL Error : $message \n");
 		$ret=-1;
@@ -74,9 +78,11 @@ sub fix_gitlab_url {
 #--header 'Content-Type: application/json' \
 #--data-raw '{
 # "username": "super",
-# "password": "IIIdevops123!"
+# "password": "MyPassword"
 #}'
 sub get_api_key_api {
+	local($cmd, $hash_msg, $message);
+
 	$cmd = <<END;
 curl -s --location --request POST '$iiidevops_api/user/login' --header 'Content-Type: application/json' --data-raw '{
  "username": "$admin_init_login",
