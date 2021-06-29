@@ -48,6 +48,7 @@ if ($ingress_domain_name_tls ne '') {
 }
 
 # III DevOps
-if ($ingress_domain_name_tls ne '') {
+# If the installation has not been completed, the length of $gitlab_private_token should not be 20, so skip this step.
+if ($ingress_domain_name_tls ne '' && length($gitlab_private_token)==20) {
 	system("$Bin/iiidevops_install_core.pl");
 }
