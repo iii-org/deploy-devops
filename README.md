@@ -29,7 +29,7 @@
 > > sudo passwd rkeuser
 > > su - rkeuser
 > > 
-> > wget https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl;
+> > wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl;
 > > perl ./iiidevops_install.pl
 > > ```
 >
