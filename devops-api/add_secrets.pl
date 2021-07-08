@@ -66,17 +66,6 @@ else {
 	print("$name : already exists, Skip!\n");
 }
 
-# gitlab
-$name = 'gitlab';
-$key_value{'git-host'} = $gitlab_ip.':32080';
-if (index($secrets_name_list, '['.$name.']')<0) {
-	$ret_msg = add_secrets($name, %key_value);
-	print("$name : $ret_msg\n");
-}
-else {
-	print("$name : already exists, Skip!\n");
-}
-
 # rancher
 $name = 'rancher';
 $rancher_hostname=($deploy_mode eq 'IP')?$rancher_ip.':31443':$rancher_domain_name;

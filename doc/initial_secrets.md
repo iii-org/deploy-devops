@@ -18,9 +18,6 @@ Define installation template - https://github.com/iii-org/deploy-devops/tree/mas
 - wi-username (If you use WIE)
 - wi-password (If you use WIE)
 
-## gitlab
-- git-host
-
 ## sonarqube
 - sonar-url
 
