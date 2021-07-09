@@ -14,6 +14,7 @@ require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
+$is_offline = defined($ARGV[0])?lc($ARGV[0]):''; # 'offline' : run sync-prj-templ-offline.pl
 require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
@@ -322,8 +323,13 @@ print("\n");
 system("$Bin/../devops-api/add_secrets.pl");
 
 # Sync Project templates to GitLab
-$sync_key = decode_base64(substr($sync_templ_key,10,63));
-system("$Bin/../bin/sync-prj-templ.pl $sync_key");
+if ($is_offline eq 'offline') {
+	system("$Bin/../bin/sync-prj-templ-offline.pl");
+}
+else {
+	$sync_key = decode_base64(substr($sync_templ_key,10,63));
+	system("$Bin/../bin/sync-prj-templ.pl $sync_key");
+}
 
 log_print("----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
