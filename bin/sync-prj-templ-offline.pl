@@ -14,6 +14,7 @@ if (!-e $p_config) {
 }
 require($p_config);
 
+$is_init = defined($ARGV[0])?lc($ARGV[0]):''; # 'templates-init' : run sync-prj-templ-offline.pl
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 require("$Bin/../lib/common_lib.pl");
@@ -36,9 +37,26 @@ $group_list = '';
 $github_group_id = '';
 $local_group_id = '';
 foreach $group_hash (@ {$hash_msg}) {
-	$group_list .= '['.$group_hash->{'name'}.']';
+	$prg_name = $group_hash->{'name'};
+	if ($is_init eq 'templates-init'){
+		if ($group_hash->{'name'} ne $github_org) {
+			$group_list .= '['.$group_hash->{'name'}.']';
+		}
+	} 
+	else {
+		$group_list .= '['.$group_hash->{'name'}.']';
+	}
 	if ($group_hash->{'name'} eq $github_org) {
-		$github_group_id = $group_hash->{'id'};
+        if ($is_init eq 'templates-init') {
+            $ret = delete_gitlab_group($group_hash->{'id'});
+            if ($ret<0) {
+                log_print("Delete GitLab group [$github_org] Error!\n---\n$cmd_msg\n---\n");
+                exit;
+            }
+            log_print("Delete GitLab group [$github_org] OK!\n\n");
+        }else {
+            $github_group_id = $group_hash->{'id'};
+        }
 	}
 	if ($group_hash->{'name'} eq $local_group) {
                 $local_group_id = $group_hash->{'id'};
@@ -60,7 +78,7 @@ if (index($group_list, "[$github_org]")<0) {
 		exit;
 	}
 	log_print("Add GitLab group [$github_org] OK!\n\n");
-        $github_group_id = $ret;
+    $github_group_id = $ret;
 
 }
 else {
@@ -75,7 +93,6 @@ if (index($group_list, "[$local_group]")<0) {
 		exit;
 	}
 	log_print("Add GitLab group [$local_group] OK!\n\n");
-	print($ret);
 	$local_group_id = $ret;
 }
 else {
@@ -126,11 +143,6 @@ foreach $project_hash (@ {$hash_gitlab_project}) {
 	}
 }
 
-
-print('group_id_list');
-print("\n$github_org id : $github_group_id\n");
-print("\n$local_group id : $local_group_id\n");
-
 system("git config --global user.name \"Administrator\"");
 system("git config --global user.password \"$gitlab_root_passwd\"");
 system("git config --global credential.helper store");
@@ -170,13 +182,28 @@ sub create_gitlab_group {
 
 	return($hash_msg->{'id'});
 }
+sub delete_gitlab_group {
+	my ($p_gitlab_groupid) = @_;
+	my ($cmd, $cmd_msg, $ret, %hash_msg);
+	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X DELETE  https://gitlab-demo.iiidevops.org/api/v4/groups/12
+	$cmd = "$v_cmd -s -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE  $v_http://$gitlab_domain_name/api/v4/groups/$p_gitlab_groupid";
+    $cmd_msg = `$cmd`;
+    if (index($cmd_msg, "Accepted")>0){
+		$hash_msg = decode_json($cmd_msg);
+		$ret = $hash_msg->{'id'};
+	}else{
+		log_print("---\n$cmd_msg\n---\n");
+		return(-1);
+	}
+	sleep(5);
+	return($p_gitlab_groupid);
+}
 sub create_gitlab_group_project {
 	my ($project_name, $namespace_id) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
 	#$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"name=$project_name&namespace_id=$namespace_id\" $v_http://$gitlab_domain_name/api/v4/projects/";
 	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$project_name\",\"namespace_id\": \"$namespace_id\"}' $v_http://$gitlab_domain_name/api/v4/projects/";
-	print("cmd : $cmd\n");
 	$cmd_msg = `$cmd`;
 	$ret = '';
 	if (index($cmd_msg, $project_name)>0){
