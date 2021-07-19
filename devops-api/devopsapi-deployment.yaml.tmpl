@@ -91,6 +91,8 @@ spec:
           value: "{{admin_init_email}}"
         - name: ADMIN_INIT_PASSWORD
           value: "{{admin_init_password}}"
+        - name: VERSION_CENTER_BASE_URL
+          value: "https://version-center.iiidevops.org"
         volumeMounts:
         - name: kube-config
           mountPath: /root/.kube
