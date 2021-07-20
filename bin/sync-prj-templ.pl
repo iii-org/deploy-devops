@@ -147,6 +147,7 @@ log_print("Gitlab group [$github_org] : $project_num project(s)\n\n");
 # Sync GitHub org -> GitLab group
 log_print("Sync GitHub org [$github_org] -> GitLab group [$github_org]..\n");
 $idx=0;
+$isUpdate=0;
 foreach $repo_hash (@ {$hash_github_repo}) {
 	$idx++;
 	$repo_id = $repo_hash->{'id'};
@@ -159,12 +160,20 @@ foreach $repo_hash (@ {$hash_github_repo}) {
 		if ($repo_max_time gt $hash_prj_created_at{$repo_name}) {
 			update_github($hash_prj_id{$repo_name}, $repo_id, $repo_name, $github_org);
 			log_print("	update [$repo_name] OK!\n");
+			$isUpdate=1;
 		}
 	}
 	else {
 		import_github($repo_id, $repo_name, $github_org);
 		log_print("	import [$repo_name] OK!\n");
 	}
+}
+
+# Refresh III DevOps tmpl cache
+if ($isUpdate>0) {
+	log_print("\nRefresh III DevOps tmpl cache..\n");
+	refresh_tmpl_cache();
+	log_print("OK!\n");
 }
 
 exit;
@@ -224,6 +233,21 @@ sub import_github {
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		exit;
+	}
+	
+	return;
+}
+
+sub refresh_tmpl_cache {
+	my ($cmd, $cmd_msg, $key_word);
+	
+	#curl --location --request GET 'http://10.20.0.77:31850/template_list_for_cronjob?force_update=1'
+	$cmd = "curl -s --request GET 'http://$iiidevops_ip:31850/template_list_for_cronjob?force_update=1'";
+	$cmd_msg = `$cmd`;
+	$key_word = '"message": "success"';
+	if (index($cmd_msg, $key_word)<0) {
+		log_print("refresh III DevOps template cache Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
 		exit;
 	}
 	
