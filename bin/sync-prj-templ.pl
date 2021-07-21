@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # sync project template script
 #
-# Usage: sync-prj-templ.pl [gitubuser:github_token] [github_org (iiidevops-templates)] 
+# Usage: sync-prj-templ.pl [github_id:github_token] [github_org (iiidevops-templates)] [force-sync]
 #
 use FindBin qw($Bin);
 use JSON::MaybeXS qw(encode_json decode_json);
@@ -15,7 +15,7 @@ if (!-e $p_config) {
 require($p_config);
 
 if (!defined($ARGV[0])) {
-	print("Usage: $prgname [gitubuser:github_token] [github_org]\n");
+	print("Usage: $prgname [github_id:github_token] [github_org] [force-sync]\n");
 	exit;
 }
 
@@ -34,6 +34,7 @@ log_print(`TZ='Asia/Taipei' date`);
 
 $github_org = (defined($ARGV[1]))?$ARGV[1]:'iiidevops-templates';
 $local_group = 'local-templates';
+$force_sync = (defined($ARGV[2]) && lc($ARGV[2]) eq 'force-sync');
 
 # Get GitHub org $github_org (iiidevops-templates) repo list
 # curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
@@ -157,7 +158,7 @@ foreach $repo_hash (@ {$hash_github_repo}) {
 	log_print("[$idx].	name:".$repo_name." ($repo_max_time)\n");
 	if (index($prj_name_list, "[$repo_name]")>=0) {
 		log_print("	GitLab-> id:".$hash_prj_id{$repo_name}." path:".$hash_prj_path{$repo_name}." created_at:".$hash_prj_created_at{$repo_name}."\n");
-		if ($repo_max_time gt $hash_prj_created_at{$repo_name}) {
+		if ($force_sync || ($repo_max_time gt $hash_prj_created_at{$repo_name})) {
 			update_github($hash_prj_id{$repo_name}, $repo_id, $repo_name, $github_org);
 			log_print("	update [$repo_name] OK!\n");
 			$isUpdate=1;
