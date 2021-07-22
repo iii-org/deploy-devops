@@ -100,6 +100,7 @@ else {
 }
 
 chdir "$Bin/github";
+print("chdir $Bin/github");
 $tmpl_list = `ls *.tar.gz`;
 
 $repo_num=0;
@@ -157,7 +158,7 @@ foreach $tmpl_name (split(".tar.gz\n", $tmpl_list)) {
 	log_print("Add GitLab group [$github_org] project [$tmpl_name] OK!\n\n");
 	$tar_msg = `tar zxvf $Bin/github/$tmpl_name.tar.gz`;
 	chdir "$Bin/github/$tmpl_name";
-	$git_msg = `git remote rename origin old-origin;git remote add origin https://gitlab-iso2.iiidevops.org/iiidevops-templates/$tmpl_name.git;git push -u origin --all;git push -u origin --tags`;
+	$git_msg = `git remote rename origin old-origin;git remote add origin $v_http://$gitlab_domain_name/$github_org/$tmpl_name.git;git push -u origin --all;git push -u origin --tags`;
 	chdir "$Bin/github";
 	$rm_tar_msg = `rm -rf $Bin/github/$tmpl_name*`;
 	log_print("\n**ADD**:$tmpl_name OK!\n");

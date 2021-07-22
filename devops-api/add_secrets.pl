@@ -11,7 +11,9 @@ if (!-e $p_config) {
 	exit;
 }
 require($p_config);
+require("$Bin/../lib/common_lib.pl");
 
+$is_offline = defined($ARGV[0])?lc($ARGV[0]):''; # 'offline' : run catalog url to gitlab
 $secrets_path = "$Bin/secrets/";
 $api_key = '';
 
@@ -136,18 +138,78 @@ print("\nAdd Apps Catalogs\n-----\n");
 $hash_catalogs = {};
 $catalogs_num = get_catalogs_api();
 $catalogs_name_list = '';
+$helm_catalog_url = '';
 foreach $item (@{ $hash_catalogs->{'data'} }) {
         $catalogs_name_list .= "[$item->{'name'}]";
 }
 
+if ($is_offline eq 'offline') {
+	$gitlab_domain_name = get_domain_name('gitlab');
+	$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+	$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
+
+	$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects";
+	print("cmd $cmd");
+	print("Get GitLab project list..\n");
+	$cmd_msg = `$cmd`;
+	if (index($cmd_msg, '"message"')>0) {
+		log_print("Get GitLab projects Error!\n---\n$cmd_msg\n---\n");
+		exit;
+	}
+
+	$hash_gitlab_project = decode_json($cmd_msg);
+	$prj_name_list = '';
+	$helm_catalog = 'devops-charts-pack-and-index';
+	foreach $project_hash (@ {$hash_gitlab_project}) {
+		$prj_name_list .= '['.$project_hash->{'name'}.']';
+		if ($project_hash->{'name'} eq $helm_catalog) {
+			$helm_catalog_url = $project_hash->{'web_url'};
+		}
+	}
+
+	if (index($prj_name_list, '['.$helm_catalog.']')<0) {
+		#Create Gitlab Helm Catalog Project 
+		my $p_tar = "$Bin/$helm_catalog.tar.gz";
+		if (!-e $p_tar) {
+			print("The file [$p_tar] does not exist!\n");
+			exit; 
+		}
+
+		$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"devops-charts-pack-and-index\",\"visibility\":\"public\"}' $v_http://$gitlab_domain_name/api/v4/projects";
+		$cmd_msg = `$cmd`;
+		$ret = '';
+		if (index($cmd_msg, "devops-charts-pack-and-index")>0){
+			$hash_msg = decode_json($cmd_msg);
+			$ret = $hash_msg->{'name'};
+			$helm_catalog_url = $hash_msg->{'web_url'};
+			$git_url = $hash_msg->{'http_url_to_repo'};
+			print("Create $ret Success\n");
+			# push Helm Catalog Project to GitLab
+			system("git config --global user.name \"Administrator\"");
+			system("git config --global user.password \"$gitlab_root_passwd\"");
+			system("git config --global credential.helper store");
+			$tar_msg = `tar zxvf $Bin/$helm_catalog.tar.gz`;
+			chdir "$Bin/$helm_catalog";
+			$git_msg = `git remote rename origin old-origin; git remote add origin $git_url; git push -u origin --all; git push -u origin --tags`;
+			chdir "$Bin";
+			$rm_tar_msg = `rm -rf $Bin/$helm_catalog`;
+			print("Add Gitlab Helm Catalog [$helm_catalog] templates");
+		}
+	}
+}
+print("helm_catalog_url : $helm_catalog_url");
 # iii-dev-charts3
 $name = 'iii-dev-charts3';
 #$key_value{'branch'} = 'main';
 #$key_value{'helmVersion'} = '2.0';
 #%key_value = {};
-if ($iiidevops_ver eq 'develop') {
+if ($is_offline eq 'offline') {
+	$key_value{'url'} = $helm_catalog_url;
+}
+elsif ($iiidevops_ver eq 'develop') {
 	$key_value{'url'} = 'https://raw.githubusercontent.com/iii-org/devops-charts-pack-and-index/develop/';
-}else {
+}
+else {
 	$key_value{'url'} = 'https://raw.githubusercontent.com/iii-org/devops-charts-pack-and-index/main/';
 }
 if (index($catalogs_name_list, '['.$name.']')<0) {

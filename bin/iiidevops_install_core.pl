@@ -14,7 +14,7 @@ require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
-$is_offline = defined($ARGV[0])?lc($ARGV[0]):''; # 'offline' : run sync-prj-templ-offline.pl
+$is_offline = defined($ARGV[0])?lc($ARGV[0]):''; # 'offline' : run sync-prj-templ-offline.pl && add_secrets.pl offline
 require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
@@ -319,14 +319,13 @@ while($isChk) {
 }
 print("\n");
 
-# Add secrets for Rancher all projects
-system("$Bin/../devops-api/add_secrets.pl");
-
-# Sync Project templates to GitLab
+# Sync Project templates to GitLab && Add secrets for Rancher all projects
 if ($is_offline eq 'offline') {
+	system("$Bin/../devops-api/add_secrets.pl offline");
 	system("$Bin/../bin/sync-prj-templ-offline.pl");
 }
 else {
+	system("$Bin/../devops-api/add_secrets.pl");
 	$sync_key = decode_base64(substr($sync_templ_key,10,63));
 	system("$Bin/../bin/sync-prj-templ.pl $sync_key");
 }
