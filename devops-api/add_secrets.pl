@@ -149,7 +149,6 @@ if ($is_offline eq 'offline') {
 	$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 
 	$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects";
-	print("cmd $cmd");
 	print("Get GitLab project list..\n");
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, '"message"')>0) {
@@ -188,6 +187,7 @@ if ($is_offline eq 'offline') {
 			system("git config --global user.name \"Administrator\"");
 			system("git config --global user.password \"$gitlab_root_passwd\"");
 			system("git config --global credential.helper store");
+			chdir "$Bin";
 			$tar_msg = `tar zxvf $Bin/$helm_catalog.tar.gz`;
 			chdir "$Bin/$helm_catalog";
 			$git_msg = `git remote rename origin old-origin; git remote add origin $git_url; git push -u origin --all; git push -u origin --tags`;
