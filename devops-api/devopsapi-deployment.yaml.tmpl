@@ -93,6 +93,8 @@ spec:
           value: "{{admin_init_password}}"
         - name: VERSION_CENTER_BASE_URL
           value: "https://version-center.iiidevops.org"
+        - name: DEPLOYMENT_NAME
+          value: "{{deployment_name}}"
         volumeMounts:
         - name: kube-config
           mountPath: /root/.kube

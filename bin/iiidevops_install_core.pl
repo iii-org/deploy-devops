@@ -161,6 +161,11 @@ $sonarqube_domain_name = get_domain_name('sonarqube');
 $v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
 $sonarqube_url = $v_http.'://'.$sonarqube_domain_name;
 
+# deployment_name
+$t_hostname = `hostname`;
+$t_hostname =~ s/\n|\r//g;
+$deployment_name = ($iiidevops_domain_name ne '')?$iiidevops_domain_name:$t_hostname;
+
 # Deploy DevOps API (Python Flask) on kubernetes cluster
 $yaml_path = "$Bin/../devops-api/";
 $yaml_file = $yaml_path.'devopsapi-deployment.yaml';
@@ -200,6 +205,7 @@ $template =~ s/{{sonarqube_admin_token}}/$sonarqube_admin_token/g;
 $template =~ s/{{admin_init_login}}/$admin_init_login/g;
 $template =~ s/{{admin_init_email}}/$admin_init_email/g;
 $template =~ s/{{admin_init_password}}/$admin_init_password/g;
+$template =~ s/{{deployment_name}}/$deployment_name/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
 $template =~ s/{{nfs_dir}}/$nfs_dir/g;
 #log_print("-----\n$template\n-----\n\n");
