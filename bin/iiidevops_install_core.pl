@@ -139,7 +139,7 @@ print("OK!\n");
 $iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
 
 # imagePullPolicy
-$image_pull_policy = ($iiidevops_ver eq '1')?'IfNotPresent':'Always';
+$image_pull_policy = ($iiidevops_ver eq 'develop')?'Always':'IfNotPresent';
 
 # redmine_url
 $redmine_domain_name = get_domain_name('redmine');
