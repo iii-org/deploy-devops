@@ -13,9 +13,16 @@ require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
+require("$Bin/../lib/iiidevops_lib.pl");
 require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
+
+$iiidevops_ver = get_iiidevops_ver();
+if ($iiidevops_ver eq '') {
+	print("The III DevOps version is too old, Please upgrade first!\n");
+	exit;
+}
 
 # GitLab
 if ($gitlab_domain_name_tls ne '') {
