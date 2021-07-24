@@ -250,6 +250,13 @@ sub manual_secret_tls {
 		exit;
 	}
 	
+	# Get harbor database info.
+	$harbor_db_key = `kubectl get secrets/harbor-harbor-database --template={{.data.POSTGRES_PASSWORD}} | base64 -d`;
+	if ($harbor_db_key ne $harbor_admin_password && $harbor_db_key ne $harbor_db_password) {
+		log_print("Get Harbor database info. failed!\n");
+		exit;
+	}
+	
 	# Check & import cert files
 	$cert_path = "$nfs_dir/deploy-config/";
 	$cert_path = (-e $cert_path.'harbor-cert/')?$cert_path.'harbor-cert/':$cert_path.'devops-cert/';
@@ -283,7 +290,7 @@ sub manual_secret_tls {
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{harbor_admin_password}}/$harbor_admin_password/g;
-	$template =~ s/{{harbor_db_password}}/$harbor_db_password/g;
+	$template =~ s/{{harbor_db_password}}/$harbor_db_key/g;
 	$template =~ s/{{harbor_domain_name}}/$harbor_domain_name/g;
 	$template =~ s/{{harbor_domain_name_tls}}/$harbor_domain_name_tls/g;
 	#log_print("-----\n$template\n-----\n\n");
