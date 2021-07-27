@@ -64,7 +64,7 @@ if ($iiidevops_ver ne 'develop') {
 					sleep(5);
 				}
 			}else{
-				$helm_catalog_url = $project_hash->{'web_url'};
+				$helm_catalog_url = $project_hash->{'web_url'}."/raw/main";
 			}
 		}
 		if($is_update ne 'gitlab_update') {
@@ -81,7 +81,7 @@ if ($iiidevops_ver ne 'develop') {
 		if (index($cmd_msg, $helm_catalog)>0){
 			$hash_msg = decode_json($cmd_msg);
 			$ret = $hash_msg->{'name'};
-			$helm_catalog_url = $hash_msg->{'web_url'};
+			$helm_catalog_url = $hash_msg->{'web_url'}."/raw/main";
 			$git_url = $hash_msg->{'http_url_to_repo'};
 			print("Create $ret Success\n");
 			# push Helm Catalog Project to GitLab
