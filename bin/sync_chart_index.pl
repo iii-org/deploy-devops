@@ -31,82 +31,80 @@ foreach $item (@{ $hash_catalogs->{'data'} }) {
         $catalogs_name_list .= "[$item->{'name'}]";
 }
 
-if ($iiidevops_ver ne 'develop') {
+my $p_tar = "$Bin/$helm_catalog.tar.gz";
+if (!-e $p_tar) {
+	print("The file [$p_tar] does not exist!\n");
+	exit; 
+}
 
-	my $p_tar = "$Bin/$helm_catalog.tar.gz";
-	if (!-e $p_tar) {
-		print("The file [$p_tar] does not exist!\n");
-		exit; 
-	}
+$gitlab_domain_name = get_domain_name('gitlab');
+$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 
-	$gitlab_domain_name = get_domain_name('gitlab');
-	$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
-	$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
+$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects";
+print("Get GitLab project list..\n");
+$cmd_msg = `$cmd`;
+if (index($cmd_msg, '"message"')>0) {
+	log_print("Get GitLab projects Error!\n---\n$cmd_msg\n---\n");
+	exit;
+}
 
-	$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects";
-	print("Get GitLab project list..\n");
-	$cmd_msg = `$cmd`;
-	if (index($cmd_msg, '"message"')>0) {
-		log_print("Get GitLab projects Error!\n---\n$cmd_msg\n---\n");
-		exit;
-	}
-
-	$hash_gitlab_project = decode_json($cmd_msg);
-	$prj_name_list = '';
-	foreach $project_hash (@ {$hash_gitlab_project}) {
-		if ($project_hash->{'name'} eq $helm_catalog) {
-			if($is_update eq 'gitlab_update') {
-				$prj_id = $project_hash->{'id'};
-				$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE $v_http://$gitlab_domain_name/api/v4/projects/$prj_id";
-				$cmd_msg = `$cmd`;
-				if (index($cmd_msg, "Accepted")>0){
-					print("Delete Project_id: $prj_id Success\n");
-					sleep(5);
-				}
-			}else{
-				$helm_catalog_url = $project_hash->{'web_url'}."/raw/main";
+$hash_gitlab_project = decode_json($cmd_msg);
+$prj_name_list = '';
+foreach $project_hash (@ {$hash_gitlab_project}) {
+	if ($project_hash->{'name'} eq $helm_catalog) {
+		if($is_update eq 'gitlab_update') {
+			$prj_id = $project_hash->{'id'};
+			$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE $v_http://$gitlab_domain_name/api/v4/projects/$prj_id";
+			$cmd_msg = `$cmd`;
+			if (index($cmd_msg, "Accepted")>0){
+				print("Delete Project_id: $prj_id Success\n");
+				sleep(5);
 			}
-		}
-		if($is_update ne 'gitlab_update') {
-			$prj_name_list .= '['.$project_hash->{'name'}.']';
+		}else{
+			$helm_catalog_url = $project_hash->{'web_url'};
 		}
 	}
+	if($is_update ne 'gitlab_update') {
+		$prj_name_list .= '['.$project_hash->{'name'}.']';
+	}
+}
 
-	if (index($prj_name_list, '['.$helm_catalog.']')<0) {
-		#Create Gitlab Helm Catalog Project 
+if (index($prj_name_list, '['.$helm_catalog.']')<0) {
+	#Create Gitlab Helm Catalog Project 
 
-		$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"devops-charts-pack-and-index\",\"visibility\":\"public\"}' $v_http://$gitlab_domain_name/api/v4/projects";
-		$cmd_msg = `$cmd`;
-		$ret = '';
-		if (index($cmd_msg, $helm_catalog)>0){
-			$hash_msg = decode_json($cmd_msg);
-			$ret = $hash_msg->{'name'};
-			$helm_catalog_url = $hash_msg->{'web_url'}."/raw/main";
-			$git_url = $hash_msg->{'http_url_to_repo'};
-			print("Create $ret Success\n");
-			# push Helm Catalog Project to GitLab
-			system("echo $v_http://\"root\":\"$gitlab_root_passwd\"\@$gitlab_domain_name > ~/.git-credentials");
-			system("git config --global credential.$v_http://$gitlab_domain_name.username root");
-			system("git config --global credential.$v_http://$gitlab_domain_name.password $gitlab_root_passwd");
-			system("git config --global credential.helper store");
-			chdir "$Bin";
-			$tar_msg = `tar zxvf $Bin/$helm_catalog.tar.gz`;
-			chdir "$Bin/$helm_catalog";
-			$git_msg = `git remote rename origin old-origin; git remote add origin $git_url; git push -u origin --all; git push -u origin --tags`;
-			chdir "$Bin";
-			$rm_tar_msg = `rm -rf $Bin/$helm_catalog`;
-			print("Add Gitlab Helm Catalog [$helm_catalog] templates\n");
-		}
+	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"devops-charts-pack-and-index\",\"visibility\":\"public\"}' $v_http://$gitlab_domain_name/api/v4/projects";
+	$cmd_msg = `$cmd`;
+	$ret = '';
+	if (index($cmd_msg, $helm_catalog)>0){
+		$hash_msg = decode_json($cmd_msg);
+		$ret = $hash_msg->{'name'};
+		$helm_catalog_url = $hash_msg->{'web_url'};
+		$git_url = $hash_msg->{'http_url_to_repo'};
+		print("Create $ret Success\n");
+		# push Helm Catalog Project to GitLab
+		system("echo $v_http://\"root\":\"$gitlab_root_passwd\"\@$gitlab_domain_name > ~/.git-credentials");
+		system("git config --global credential.$v_http://$gitlab_domain_name.username root");
+		system("git config --global credential.$v_http://$gitlab_domain_name.password $gitlab_root_passwd");
+		system("git config --global credential.helper store");
+		chdir "$Bin";
+		$tar_msg = `tar zxvf $Bin/$helm_catalog.tar.gz`;
+		chdir "$Bin/$helm_catalog";
+		$git_msg = `git remote rename origin old-origin; git remote add origin $git_url; git push -u origin --all; git push -u origin --tags`;
+		chdir "$Bin";
+		$rm_tar_msg = `rm -rf $Bin/$helm_catalog`;
+		print("Add Gitlab Helm Catalog [$helm_catalog] templates\n");
 	}
 }
 
 # iii-dev-charts3
 $name = 'iii-dev-charts3';
 if ($iiidevops_ver eq 'develop') {
-	$key_value{'url'} = 'https://raw.githubusercontent.com/iii-org/devops-charts-pack-and-index/develop/';
+	$key_value{'url'} = $helm_catalog_url."/raw/develop";
+	$key_value{'branch'} = "develop";
 }
 else {
-	$key_value{'url'} = $helm_catalog_url;
+	$key_value{'url'} = $helm_catalog_url."/raw/main";
 }
 
 if (index($catalogs_name_list, '['.$name.']')<0) {
