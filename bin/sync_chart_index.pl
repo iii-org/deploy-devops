@@ -87,7 +87,7 @@ if ($iiidevops_ver ne 'develop') {
 			# push Helm Catalog Project to GitLab
 			system("echo $v_http://\"root\":\"$gitlab_root_passwd\"\@$gitlab_domain_name > ~/.git-credentials");
 			system("git config --global credential.$v_http://$gitlab_domain_name.username root");
-			system("git config --global credential.$v_http://$gitlab_domain_name.password Iii123456789!");
+			system("git config --global credential.$v_http://$gitlab_domain_name.password $gitlab_root_passwd");
 			system("git config --global credential.helper store");
 			chdir "$Bin";
 			$tar_msg = `tar zxvf $Bin/$helm_catalog.tar.gz`;

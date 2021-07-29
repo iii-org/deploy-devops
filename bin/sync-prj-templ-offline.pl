@@ -146,7 +146,7 @@ foreach $project_hash (@ {$hash_gitlab_project}) {
 
 system("echo $v_http://\"root\":\"$gitlab_root_passwd\"\@$gitlab_domain_name > ~/.git-credentials");
 system("git config --global credential.$v_http://$gitlab_domain_name.username root");
-system("git config --global credential.$v_http://$gitlab_domain_name.password Iii123456789!");
+system("git config --global credential.$v_http://$gitlab_domain_name.password $gitlab_root_passwd");
 system("git config --global credential.helper store");
 
 foreach $tmpl_name (split(".tar.gz\n", $tmpl_list)) {
