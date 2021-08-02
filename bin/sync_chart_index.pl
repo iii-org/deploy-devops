@@ -172,13 +172,29 @@ else {
 
 if (index($catalogs_name_list, '['.$name.']')<0) {
 	$ret_msg = add_catalogs($name, %key_value);
-	print("$name : $ret_msg\n");
+	log_print("$name : $ret_msg\n");
 }
 else {
 	if($is_update eq 'gitlab_update') {
 		$ret_msg = update_catalogs_api($name, %key_value);
-		print("Update catalog [$name : $ret_msg]\n");
-		refresh_catalogs_api();
+		$cmd_msg = `kubectl rollout restart deployment rancher -n cattle-system`;
+		log_print("Update catalog");
+		# check deploy status
+		$isChk=1;
+		while($isChk) {
+			sleep($isChk);
+			$isChk = 0;
+			foreach $line (split(/\n/, `kubectl get deployment -n cattle-system | grep rancher`)) {
+				$line =~ s/( )+/ /g;
+				($l_name, $l_ready, $l_update, $l_available, $l_age) = split(/ /, $line);
+				($l_ready_pod, $l_replica_pod) = split("/", $l_ready);
+				if ($l_replica_pod ne $l_update || $l_replica_pod ne $l_available) {
+					log_print("...");
+					$isChk = 3;
+				} 
+			}
+		}
+		log_print("\nUpdate catalog [$name] OK]\n");
 	}
 	else {
 		print("$name : already exists, Skip!\n");
