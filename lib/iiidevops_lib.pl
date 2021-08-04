@@ -60,6 +60,7 @@ sub set_nexus_deploy_version {
 #curl --location -g --request GET 'http://10.20.0.85:31850/system_git_commit_id' \
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
 sub get_iiidevops_ver {
+	my ($p_type) = @_;
 	my ($v_cmd, $v_hash_msg, $v_message, $v_ret);
 	if ($g_api_key eq '') {
 		get_api_key_api();
@@ -76,7 +77,11 @@ sub get_iiidevops_ver {
 		# Before V1.6.0 the git_tag value is '' 
 		$v_ret = $v_hash_msg->{'data'}->{'git_tag'};
 	}
-
+	
+	if ($p_type eq 'raw') {
+		return($v_hash_msg);
+	}
+	
 	return($v_ret);
 }
 
