@@ -16,6 +16,7 @@ $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 $is_offline = defined($ARGV[0])?lc($ARGV[0]):''; # 'offline' : run sync-prj-templ-offline.pl && add_secrets.pl offline
 require("$Bin/../lib/common_lib.pl");
+require("$Bin/../lib/iiidevops_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
@@ -324,6 +325,25 @@ while($isChk) {
 	sleep($isChk);
 }
 print("\n");
+
+# Check & Set deploy version
+$t_now_ver = get_nexus_info('deploy_version');
+$t_set_ver = ($iiidevops_ver eq 'develop')?'develop':'V'.$iiidevops_ver;
+if ($t_now_ver eq '') {
+	$t_ret_ver=set_nexus_deploy_version($t_set_ver);
+	if ($t_ret_ver eq $t_set_ver) {
+		print("Set deploy version to [$t_set_ver] OK!\n");
+	}
+	else {
+		print("Failed to set deploy version : [$t_ret_ver]!!!\n");
+	}
+}
+elsif ($t_now_ver ne $t_set_ver) {
+	print("Warning! deploy version conflict: now:[$t_now_ver] set:[$t_set_ver]!!!\n");
+}
+else {
+	print("deploy version : [$t_now_ver], Skip setting!\n");
+}
 
 # Add secrets for Rancher all projects
 system("$Bin/../devops-api/add_secrets.pl");
