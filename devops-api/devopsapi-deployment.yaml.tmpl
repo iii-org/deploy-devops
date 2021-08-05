@@ -95,6 +95,8 @@ spec:
           value: "https://version-center.iiidevops.org"
         - name: DEPLOYMENT_NAME
           value: "{{deployment_name}}"
+        - name: DEPLOYER_NODE_IP
+          value: "{{first_ip}}"
         volumeMounts:
         - name: kube-config
           mountPath: /root/.kube
