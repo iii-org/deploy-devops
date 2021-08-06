@@ -349,14 +349,13 @@ else {
 # Add secrets for Rancher all projects
 system("$Bin/../devops-api/add_secrets.pl");
 
-# Add Catalog
-system("$Bin/../bin/sync_chart_index.pl");
-
-# Sync Project templates to GitLab
+# Sync Project templates to GitLab && Add Catalog
 if ($is_offline eq 'offline') {
+	system("$Bin/../bin/sync_chart_index.pl gitlab_offline");
 	system("$Bin/../bin/sync-prj-templ-offline.pl");
 }
 else {
+	system("$Bin/../bin/sync_chart_index.pl");
 	$sync_key = decode_base64(substr($sync_templ_key,10,63));
 	system("$Bin/../bin/sync-prj-templ.pl $sync_key");
 }

@@ -2,6 +2,7 @@
 # Add Secrets & Registry & Catalogs for all Rancher Projects
 #
 use FindBin qw($Bin);
+use MIME::Base64;
 use JSON::MaybeXS qw(encode_json decode_json);
 $|=1; # force flush output
 
@@ -13,7 +14,7 @@ if (!-e $p_config) {
 require($p_config);
 require("$Bin/../lib/common_lib.pl");
 
-$is_update = defined($ARGV[0])?lc($ARGV[0]):''; # 'gitlab_update' : run catalog url to gitlab
+$is_update = defined($ARGV[0])?lc($ARGV[0]):''; # 'gitlab_update' or 'gitlab_offline' 'gitlab_offline_update' : run catalog url to gitlab
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 $secrets_path = "$Bin/../devops-api/secrets/";
@@ -47,21 +48,15 @@ $hash_msg = decode_json($cmd_msg);
 $group_list = '';
 $helm_catalog_group_id = '';
 foreach $group_hash (@ {$hash_msg}) {
-	if ($is_init eq 'gitlab_update'){
-		if ($group_hash->{'name'} ne $github_org) {
-			$group_list .= '['.$group_hash->{'name'}.']';
-		}
-	} 
-	else {
-		$group_list .= '['.$group_hash->{'name'}.']';
-	}
 	if ($group_hash->{'name'} eq $helm_catalog_group) {
-		if ($is_update eq 'gitlab_update') {
-			$ret = $helm_catalog_group_id = $group_hash->{'id'};
+		if ($is_update eq 'gitlab_update' || $is_update eq 'gitlab_offline_update') {
+			$helm_catalog_group_id = $group_hash->{'id'};
+			$ret = delete_gitlab_group($helm_catalog_group_id);
 			if ($ret<0) {
                 log_print("Delete GitLab group [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
                 exit;
             }
+
 			log_print("Delete GitLab group [$helm_catalog_group] OK!\n\n");
 		}else {
 			$group_list .= '['.$group_hash->{'name'}.']';
@@ -69,18 +64,16 @@ foreach $group_hash (@ {$hash_msg}) {
 	}
 }
 if ($group_list eq '') {
-	log_print("---\n$cmd\n---\n$cmd_msg\n---\n");
+	log_print("group_list :[]\n");
 }
 else {
 	log_print("group_list : $group_list\n");
 }
-
 # Create $helm_catalog_group group
 if (index($group_list, "[$helm_catalog_group]")<0) {
 	$ret = create_gitlab_group($helm_catalog_group);
 	if ($ret<0) {
 		log_print("Add GitLab group [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
-		print("group_id= $ret[id]");
 		exit;
 	}
 	log_print("Add GitLab group [$helm_catalog_group] OK!\n\n");
@@ -120,43 +113,75 @@ foreach $project_hash (@ {$hash_gitlab_project}) {
 	$prj_name_list .= '['.$project_hash->{'name'}.']';
 }
 if ($prj_name_list eq '') {
-	log_print("---\n$cmd\n---\n$cmd_msg\n---\n");
+	log_print("prj_name_list :[]\n");
 }
 else {
 	log_print("prj_name_list : $prj_name_list\n");
 }
 
+$github_user_token = decode_base64(substr($sync_templ_key,10,63));
+($cmd_msg, $github_token) = split(':', $github_user_token);
+if (length($github_token)!=40) {
+	print("github_token:[$github_token] is worng!\n");
+	exit;
+}
+
+# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
+$arg_str = ($github_user_token ne '')?"-u $github_user_token ":'';
+$cmd = "curl -s $arg_str -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
+log_print("Get GitHub repo [devops-charts-pack-and-index] data..\n");
+$cmd_msg = `$cmd`;
+if (index($cmd_msg, 'node_id')<0) {
+	log_print("Get GitHub org [devops-charts-pack-and-index] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+	exit;
+}
+$hash_github_repo = decode_json($cmd_msg);
+$github_prj_name = $hash_github_repo->{'name'};
+$github_prj_id = $hash_github_repo->{'id'};
+
 if (index($prj_name_list, "[$helm_catalog]")<0) {
-	$ret = create_gitlab_group_project($helm_catalog,$helm_catalog_group_id);
-	$helm_catalog_url = $project_hash->{'web_url'};
-	if ($ret<0) {
-		log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] Error!\n---\n$cmd_msg\n---\n");
-		exit;
+	if ($is_update eq 'gitlab_offline' || $is_update eq 'gitlab_offline_update') {
+		$ret = create_gitlab_group_project($helm_catalog,$helm_catalog_group_id);
+		if ($ret<0) {
+			log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] Error!\n---\n$cmd_msg\n---\n");
+			exit;
+		}
+		log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] OK!\n\n");
+		if (index($ret, $helm_catalog)>0){
+			$hash_msg = decode_json($ret);
+			$prj_name = $hash_msg->{'name'};
+			$helm_catalog_url = $hash_msg->{'web_url'};
+			$git_url = $hash_msg->{'http_url_to_repo'};
+			log_print("Create $prj_name Success\n");
+			# push Helm Catalog Project to GitLab
+			system("echo $v_http://\"root\":\"$gitlab_root_passwd\"\@$gitlab_domain_name > ~/.git-credentials");
+			system("git config --global credential.$v_http://$gitlab_domain_name.username root");
+			system("git config --global credential.$v_http://$gitlab_domain_name.password $gitlab_root_passwd");
+			system("git config --global credential.helper store");
+			chdir "$Bin";
+			$tar_msg = `tar zxvf $Bin/$helm_catalog.tar.gz`;
+			chdir "$Bin/$helm_catalog";
+			$git_msg = `git remote rename origin old-origin; git remote add origin $git_url; git push -u origin --all; git push -u origin --tags`;
+			chdir "$Bin";
+			$rm_tar_msg = `rm -rf $Bin/$helm_catalog`;
+			log_print("Add Gitlab Helm Catalog [$helm_catalog] templates OK\n");
+		}
 	}
-	log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] OK!\n\n");
-	if (index($ret, $helm_catalog)>0){
-		$hash_msg = decode_json($ret);
-		$prj_name = $hash_msg->{'name'};
-		$helm_catalog_url = $hash_msg->{'web_url'};
-		$git_url = $hash_msg->{'http_url_to_repo'};
-		print("\nhelm_catalog_group_id: $helm_catalog_group_id \nhash_msg: $hash_msg \nprj_name: $prj_name \nhelm_catalog_url:$helm_catalog_url \ngit_url:$git_url\n");
-		print("Create $prj_name Success\n");
-		# push Helm Catalog Project to GitLab
-		system("echo $v_http://\"root\":\"$gitlab_root_passwd\"\@$gitlab_domain_name > ~/.git-credentials");
-		system("git config --global credential.$v_http://$gitlab_domain_name.username root");
-		system("git config --global credential.$v_http://$gitlab_domain_name.password $gitlab_root_passwd");
-		system("git config --global credential.helper store");
-		chdir "$Bin";
-		$tar_msg = `tar zxvf $Bin/$helm_catalog.tar.gz`;
-		chdir "$Bin/$helm_catalog";
-		$git_msg = `git remote rename origin old-origin; git remote add origin $git_url; git push -u origin --all; git push -u origin --tags`;
-		chdir "$Bin";
-		$rm_tar_msg = `rm -rf $Bin/$helm_catalog`;
-		print("Add Gitlab Helm Catalog [$helm_catalog] templates\n");
+	else {
+		$ret = import_github($github_prj_id, $github_prj_name, $helm_catalog_group_id);
+		if ($ret<0) {
+			log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] Error!\n---\n$cmd_msg\n---\n");
+			exit;
+		}
+		else {
+			log_print("Add Gitlab Helm Catalog [$helm_catalog] templates OK\n");
+			$hash_msg = decode_json($ret);
+			$helm_catalog_url = $hash_msg->{'web_url'};
+		}
 	}
 }
 else {
-	log_print("GitLab project [$helm_catalog_group] exists!\n\n");
+	log_print("GitLab group[$helm_catalog_group] project[$helm_catalog] exists!\n\n");
 }
 
 # iii-dev-charts3
@@ -175,7 +200,7 @@ if (index($catalogs_name_list, '['.$name.']')<0) {
 	log_print("$name : $ret_msg\n");
 }
 else {
-	if($is_update eq 'gitlab_update') {
+	if($is_update eq 'gitlab_update' || $is_update eq 'gitlab_offline_update') {
 		$ret_msg = update_catalogs_api($name, %key_value);
 		$cmd_msg = `kubectl rollout restart deployment rancher -n cattle-system`;
 		log_print("Update catalog");
@@ -389,7 +414,6 @@ sub create_gitlab_group {
 	if (index($cmd_msg, $p_gitlab_groupname)>0){
 		$hash_msg = decode_json($cmd_msg);
 		$ret = $hash_msg->{'name'};
-		print("[$ret]\n");
 	}
 	if ($ret eq '' || $ret ne $p_gitlab_groupname){
 		log_print("---\n$cmd_msg\n---\n");
@@ -449,6 +473,29 @@ sub delete_gitlab {
 	sleep(5);
 
 	return;
+}
+
+sub import_github {
+	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
+	my ($cmd, $cmd_msg, $arg_user);
+
+	$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=iiidevops-catalog  \" $v_http://$gitlab_domain_name/api/v4/import/github";
+	$cmd_msg = `$cmd`;
+	if (index($cmd_msg, $p_new_name)<0) {
+		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		exit;
+	}
+
+	$hash_gitlab_repo = decode_json($cmd_msg);
+	$repo_id = $hash_gitlab_repo->{'id'};
+	$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
+	$cmd_msg = `$cmd`;
+	if (index($cmd_msg, $p_new_name)<0) {
+		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		exit;
+	}
+
+	return($cmd_msg);
 }
 
 sub log_print {
