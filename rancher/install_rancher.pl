@@ -56,12 +56,10 @@ while($isChk && $count<$wait_sec) {
 # Rancher 2.4.15
 $rancher_hostname=($deploy_mode eq 'IP')?$rancher_ip:$rancher_domain_name;
 $cmd = <<END;
-helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 kubectl create namespace cattle-system
 kubectl apply --validate=false -f $Bin/cert-manager.crds.yaml
 kubectl apply -f $Bin/rancher-service.yaml
-helm install rancher rancher-stable/rancher --namespace cattle-system --version 2.4.15 --set hostname=$rancher_hostname
-
+helm install rancher --namespace cattle-system  --set hostname=$rancher_hostname $Bin/rancher-2.4.15.tgz
 END
 
 log_print("-----\n$cmd\n");

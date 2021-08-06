@@ -159,7 +159,8 @@ END
 	close(FH);
 
 	log_print("Deploy Harbor service..\n");
-	$cmd = "helm install harbor --version 1.5.2 harbor/harbor -f $yaml_file";
+	$cmd = "helm install harbor -f $yaml_file $Bin/harbor-1.5.2.tgz" ;
+	##$cmd = "helm install harbor --version 1.5.2 harbor/harbor -f $yaml_file";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
 

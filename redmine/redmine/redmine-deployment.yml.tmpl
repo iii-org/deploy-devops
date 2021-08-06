@@ -15,7 +15,8 @@ spec:
       initContainers:
       # 修正configmap所需的讀寫權限
       - name: fix-permission-for-configfile
-        image: busybox
+        image: busybox:1.33.1
+        imagePullPolicy: IfNotPresent
         command: ['sh', '-c', 'cat /tmp/configuration.yml && cp /tmp/configuration.yml /config-tmp-dir/configuration.yml && chmod -R 777 /config-tmp-dir']
         # 同時掛載兩個空間(一個有redmine要得檔案, 另外一個有可自由讀寫的空間)
         volumeMounts:
