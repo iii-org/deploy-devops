@@ -15,11 +15,16 @@ $prgname = substr($0, rindex($0,"/")+1);
 require("$Bin/../lib/iiidevops_lib.pl");
 require("$Bin/../lib/common_lib.pl");
 
-$json_ver = 20210804001;
 # iiidevops
 $deploy_ver = get_nexus_info('deploy_version');
 $deploy_uuid = get_nexus_info('deployment_uuid');
 $iiidevops_ver = get_iiidevops_ver('raw');
+
+# k8s
+$k8s_node_json = `kubectl get node -o json`;
+$k8s_pod_json = `kubectl get pod -o json`;
+$k8s_namespace_json = `kubectl get namespace -o json`;
+
 # os
 $hostname = `hostname`;
 $hostname =~ s/\n|\r//g;
@@ -36,8 +41,7 @@ foreach $line (split(/\n/, $meminfo)) {
 	$meminfo_json .= "\t\t\t\"$key\" : \"$value\"";
 }
 
-# k8s
-
+$json_ver = 20210806001;
 $json_data = <<END;
 {
 	"json_ver" : $json_ver,
@@ -46,14 +50,20 @@ $json_data = <<END;
 		"deployment_uuid" : "$deploy_uuid",
 		"api_version" : $iiidevops_ver
 	},
+	"k8s" : {
+		"node" : 
+$k8s_node_json ,
+		"pod" : 
+$k8s_pod_json ,
+		"namespace" : 
+$k8s_namespace_json
+	},
 	"os" : {
 		"hostname" : "$hostname",
 		"issue" : "$os_issue",
 		"meminfo" : {
 $meminfo_json
 		}
-	},
-	"k8s" : {
 	}
 }
 END
