@@ -119,25 +119,26 @@ else {
 	log_print("prj_name_list : $prj_name_list\n");
 }
 
-$github_user_token = decode_base64(substr($sync_templ_key,10,63));
-($cmd_msg, $github_token) = split(':', $github_user_token);
-if (length($github_token)!=40) {
-	print("github_token:[$github_token] is worng!\n");
-	exit;
+if ($is_update ne 'gitlab_offline' && $is_update ne 'gitlab_offline_update') {
+	$github_user_token = decode_base64(substr($sync_templ_key,10,63));
+	($cmd_msg, $github_token) = split(':', $github_user_token);
+	if (length($github_token)!=40) {
+		print("github_token:[$github_token] is worng!\n");
+		exit;
+	}
+	# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
+	$arg_str = ($github_user_token ne '')?"-u $github_user_token ":'';
+	$cmd = "curl -s $arg_str -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
+	log_print("Get GitHub repo [devops-charts-pack-and-index] data..\n");
+	$cmd_msg = `$cmd`;
+	if (index($cmd_msg, 'node_id')<0) {
+		log_print("Get GitHub org [devops-charts-pack-and-index] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		exit;
+	}
+	$hash_github_repo = decode_json($cmd_msg);
+	$github_prj_name = $hash_github_repo->{'name'};
+	$github_prj_id = $hash_github_repo->{'id'};
 }
-
-# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
-$arg_str = ($github_user_token ne '')?"-u $github_user_token ":'';
-$cmd = "curl -s $arg_str -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
-log_print("Get GitHub repo [devops-charts-pack-and-index] data..\n");
-$cmd_msg = `$cmd`;
-if (index($cmd_msg, 'node_id')<0) {
-	log_print("Get GitHub org [devops-charts-pack-and-index] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-	exit;
-}
-$hash_github_repo = decode_json($cmd_msg);
-$github_prj_name = $hash_github_repo->{'name'};
-$github_prj_id = $hash_github_repo->{'id'};
 
 if (index($prj_name_list, "[$helm_catalog]")<0) {
 	if ($is_update eq 'gitlab_offline' || $is_update eq 'gitlab_offline_update') {
