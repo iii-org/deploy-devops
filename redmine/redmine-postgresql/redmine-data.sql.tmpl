@@ -213,7 +213,7 @@ INSERT INTO "trackers" ("id", "name", "is_in_chlog", "position", "is_in_roadmap"
 	(6, 'Change Request', 'false', 6, 'true', 0, 1, ''),	
 	(7, 'Risk', 'false', 7, 'true', 0, 1, ''),	
 	(8, 'Test Plan', 'false', 8, 'true', 0, 1, ''),
-	(9, 'Fail management', 'false', 9, 'true', 0, 1, '');
+	(9, 'Fail Management', 'false', 9, 'true', 0, 1, '');
 Select setval( pg_get_serial_sequence('trackers', 'id'), (Select Max(id) From trackers), TRUE);
 
 INSERT INTO "workflows" ("id", "tracker_id", "old_status_id", "new_status_id", "role_id", "assignee", "author", "type", "field_name", "rule") VALUES
