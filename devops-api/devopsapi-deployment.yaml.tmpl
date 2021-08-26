@@ -19,6 +19,8 @@ spec:
         ports:
         - containerPort: 10009
         env:
+        - name: DEPLOY_CERTIFICATE_ROOT_PATH
+          value: "/root/.kube"
         - name: SQLALCHEMY_DATABASE_URI
           value: "postgresql://postgres:{{db_passwd}}@devopsdb-service:5432/devopsdb"
         - name: SQLALCHEMY_TRACK_MODIFICATIONS
