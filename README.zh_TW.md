@@ -250,3 +250,9 @@
 >   
 >   ```
 
+# 更新系統
+> * 需要使用 **rekuser** 使用者來進行系統更新流程 
+> > ```bash
+> > wget -O upgrade-iiidevops.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/upgrade-iiidevops.pl;
+> > perl ./upgrade-iiidevops.pl
+> > ```

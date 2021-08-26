@@ -21,7 +21,7 @@ if ($cmd_msg ne 'rkeuser') {
 # chdir "~/deploy-devops/bin/patch";
 $tmpl_list = `ls ~/deploy-devops/bin/patch/*.pl`;
 $patch_num = 0;
-$cmd = '';
+$cmd = 'cd ~; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl; perl ./iiidevops_install.pl;';
 foreach $tmpl_name (split(".pl\n", $tmpl_list)) {
 	$cmd .= "perl $tmpl_name.pl;"
 }

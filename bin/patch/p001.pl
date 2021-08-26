@@ -12,8 +12,6 @@ if ($cmd_msg ne 'rkeuser') {
 
 $cmd =<<END;
 cd ~
-wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl; 
-perl ./iiidevops_install.pl;
 sudo mkdir -p /iiidevopsNFS/redmine-files;
 sudo chmod 777 /iiidevopsNFS/redmine-files;
 ./deploy-devops/redmine/install_redmine.pl force
