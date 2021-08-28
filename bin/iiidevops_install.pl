@@ -110,11 +110,11 @@ $cmd = <<END;
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -;
 sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable\";
 sudo apt-get update -y;
-sudo apt-get install docker-ce=5:19.03.14~3-0~ubuntu-focal docker-ce-cli=5:19.03.14~3-0~ubuntu-focal containerd.io -y;
+sudo apt-get install docker-ce=5:19.03.* docker-ce-cli=5:19.03.* containerd.io -y;
 END
 #check docker version
-#Docker version 19.03.14, build 5eb3275d40
-$chk_str = '19.03.14';
+#Docker version 19.03.*
+$chk_str = '19.03.';
 $cmd_msg = `docker -v 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install docker..\n");
@@ -126,14 +126,14 @@ else {
 
 # Install kubectl
 $cmd = <<END;
-curl -LO https://dl.k8s.io/release/v1.18.17/bin/linux/amd64/kubectl;
+curl -LO https://dl.k8s.io/release/v1.18.20/bin/linux/amd64/kubectl;
 sudo chmod a+x kubectl;
 sudo mv ./kubectl /usr/local/bin/;
 mkdir -p ~/.kube/;
 END
 #check kubectl version
-#Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.14", GitCommit:"89182bdd065fbcaffefec691908a739d161efc03", GitTreeState:"clean", BuildDate:"2020-12-22T14:49:29Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
-$chk_str = 'v1.18';
+#Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.20", GitCommit:"1f3e19b7beb1cc0110255668c4238ed63dadb7ad", GitTreeState:"clean", BuildDate:"2021-06-16T12:58:51Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
+$chk_str = 'v1.18.20';
 $cmd_msg = `kubectl version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl..\n");
@@ -165,13 +165,13 @@ else {
 
 # Install rke
 $cmd = <<END;
-wget -O rke https://github.com/rancher/rke/releases/download/v1.2.7/rke_linux-amd64
+wget -O rke https://github.com/rancher/rke/releases/download/v1.1.19/rke_linux-amd64
 sudo mv rke /usr/local/bin/rke
 sudo chmod +x /usr/local/bin/rke
 END
 #check rke version
-#rke version v1.2.7
-$chk_str = 'v1.2.7';
+#rke version v1.1.19
+$chk_str = 'v1.1.19';
 $cmd_msg = `rke --version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install rke..\n");
@@ -186,8 +186,8 @@ else {
 log_print("\n-----Validation results-----\n");
 
 #check docker version
-#Docker version 19.03.14, build 5eb3275d40
-$chk_str = '19.03.14';
+#Docker version 19.03.*
+$chk_str = '19.03.';
 $cmd = "docker -v";
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
@@ -204,8 +204,8 @@ if ($cmd_msg ne ''){
 }
 
 #check kubectl version
-#Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.14", GitCommit:"89182bdd065fbcaffefec691908a739d161efc03", GitTreeState:"clean", BuildDate:"2020-12-22T14:49:29Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
-$chk_str = 'v1.18';
+#Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.20", GitCommit:"1f3e19b7beb1cc0110255668c4238ed63dadb7ad", GitTreeState:"clean", BuildDate:"2021-06-16T12:58:51Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
+$chk_str = 'v1.18.20';
 $cmd = "kubectl version";
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
@@ -228,8 +228,8 @@ else {
 }
 
 #check rke version
-#rke version v1.2.7
-$chk_str = 'v1.2.7';
+#rke version v1.1.19
+$chk_str = 'v1.1.19';
 $cmd = "rke --version";
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
