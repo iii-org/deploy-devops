@@ -68,7 +68,7 @@ exit;
 sub install_harbor {
 # Deploy Harbor on kubernetes cluster
 
-	# Add helm chart harbor repo - https://artifacthub.io/packages/helm/harbor/harbor/1.5.6
+	# Add helm chart harbor repo - https://artifacthub.io/packages/helm/harbor/harbor/1.5.5
 	$cmd = "helm repo add harbor https://helm.goharbor.io";
 	$cmd_msg = `$cmd 2>&1`;
 	log_print("-----\n$cmd_msg-----\n");	
@@ -159,8 +159,8 @@ END
 	close(FH);
 
 	log_print("Deploy Harbor service..\n");
-	$cmd = "helm install harbor -f $yaml_file $Bin/harbor-1.5.6.tgz" ;
-	##$cmd = "helm install harbor --version 1.5.6 harbor/harbor -f $yaml_file";
+	$cmd = "helm install harbor -f $yaml_file $Bin/harbor-1.5.5.tgz" ;
+	##$cmd = "helm install harbor --version 1.5.5 harbor/harbor -f $yaml_file";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
 
@@ -277,7 +277,7 @@ sub manual_secret_tls {
 		exit;		
 	}
 
-	# Add helm chart harbor repo - https://artifacthub.io/packages/helm/harbor/harbor/1.5.6
+	# Add helm chart harbor repo - https://artifacthub.io/packages/helm/harbor/harbor/1.5.5
 	$cmd = "helm repo add harbor https://helm.goharbor.io";
 	$cmd_msg = `$cmd 2>&1`;
 	log_print("-----\n$cmd_msg-----\n");	
@@ -300,7 +300,7 @@ sub manual_secret_tls {
 	close(FH);
 	
 	log_print("Upgrade Harbor service..\n");
-	$cmd = "helm upgrade harbor --version=1.5.6 harbor/harbor -f $yaml_file --timeout=3600s --wait";
+	$cmd = "helm upgrade harbor --version=1.5.5 harbor/harbor -f $yaml_file --timeout=3600s --wait";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
 
