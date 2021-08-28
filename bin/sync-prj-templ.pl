@@ -173,6 +173,7 @@ foreach $repo_hash (@ {$hash_github_repo}) {
 # Refresh III DevOps tmpl cache
 if ($isUpdate>0) {
 	log_print("\nRefresh III DevOps tmpl cache..\n");
+	sleep(10); # wait 10 secs for gitlab importing
 	refresh_tmpl_cache();
 	log_print("OK!\n");
 }
