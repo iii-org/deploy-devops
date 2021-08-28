@@ -53,13 +53,13 @@ while($isChk && $count<$wait_sec) {
 	sleep($isChk);
 }
 
-# Rancher 2.4.15
+# Rancher 2.4.17
 $rancher_hostname=($deploy_mode eq 'IP')?$rancher_ip:$rancher_domain_name;
 $cmd = <<END;
 kubectl create namespace cattle-system
 kubectl apply --validate=false -f $Bin/cert-manager.crds.yaml
 kubectl apply -f $Bin/rancher-service.yaml
-helm install rancher --namespace cattle-system  --set hostname=$rancher_hostname $Bin/rancher-2.4.15.tgz
+helm install rancher --namespace cattle-system  --set hostname=$rancher_hostname $Bin/rancher-2.4.17.tgz
 END
 
 log_print("-----\n$cmd\n");
