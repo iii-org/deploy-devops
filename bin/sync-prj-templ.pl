@@ -173,7 +173,7 @@ foreach $repo_hash (@ {$hash_github_repo}) {
 # Refresh III DevOps tmpl cache
 if ($isUpdate>0) {
 	log_print("\nRefresh III DevOps tmpl cache..\n");
-	sleep(10); # wait 10 secs for gitlab importing
+	#sleep(10); # wait 10 secs for gitlab importing
 	refresh_tmpl_cache();
 	log_print("OK!\n");
 }
@@ -228,7 +228,7 @@ sub delete_gitlab {
 
 sub import_github {
 	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
-	my ($cmd, $cmd_msg, $arg_user);
+	my ($cmd, $cmd_msg, $arg_user, $hash_msg, $id, $import_status);
 
 	# curl --request POST --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" --data "personal_access_token=de8b68c3ee3eccdf7d4d69c6260bff66482283a9&repo_id=336984846&new_name=django-postgresql-todo&target_namespace=iiidevops-templates" https://gitlab-demo.iiidevops.org/api/v4/import/github
 	$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace\" $v_http://$gitlab_domain_name/api/v4/import/github";
@@ -237,7 +237,28 @@ sub import_github {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
 		exit;
 	}
-	
+	# Ref - https://docs.gitlab.com/ee/api/import.html
+	$hash_msg = decode_json($cmd_msg);
+	$id = $hash_msg->{'id'};
+	# Ref - https://docs.gitlab.com/ee/api/project_import_export.html
+	# curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/1/import"
+	$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$id/import";
+	$import_status = '';
+	while ($import_status ne 'failed' && $import_status ne 'finished') {
+		$cmd_msg = `$cmd`;
+		if (index($cmd_msg, $p_new_name)<0) {
+			$import_status = 'failed';
+		}
+		else {
+			$hash_msg = decode_json($cmd_msg);
+			$import_status = $hash_msg->{'import_status'};			
+			sleep(1);
+		}
+	}
+	if ($import_status eq 'failed') {
+		log_print("Import failed! [$cmd_msg]\n");
+		exit;
+	}
 	return;
 }
 
