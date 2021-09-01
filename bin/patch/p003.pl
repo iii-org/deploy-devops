@@ -29,7 +29,7 @@ $sql_cmd = "psql -d 'postgresql://postgres:$redmine_db_passwd\@$redmine_ip:32749
 
 $cmd =<<END;
 cd ~
-./deploy-devops/bin/generate_env.pl iiidevops_ver 1.7.1 -y;
+./deploy-devops/bin/generate_env.pl iiidevops_ver 1.8.0 -y;
 ./deploy-devops/bin/iiidevops_install_core.pl;
 $sql_cmd;
 ./deploy-devops/bin/sync_chart_index.pl gitlab_update
