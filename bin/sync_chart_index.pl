@@ -63,6 +63,25 @@ foreach $group_hash (@ {$hash_msg}) {
 		}
 	}
 }
+
+# Check if the GitLab project $helm_catalog  exists
+$cmd = "$v_cmd -k -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects?search=devops-charts-pack-and-index";
+$cmd_msg = `$cmd`;
+$hash_msg = decode_json($cmd_msg);
+foreach $catalogs_hash (@ {$hash_msg}) {
+	if ($catalogs_hash->{'name'} eq $helm_catalog) {
+		if ($is_update eq 'gitlab_update' || $is_update eq 'gitlab_offline_update') {
+			$helm_catalog_id = $catalogs_hash->{'id'};
+			$ret = delete_gitlab($helm_catalog_id);
+			if ($ret<0) {
+                log_print("Delete GitLab Project catalog [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
+                exit;
+            }
+			log_print("Delete GitLab Project catalog [$helm_catalog_group] OK!\n\n");
+		}
+	}
+}
+
 if ($group_list eq '') {
 	log_print("group_list :[]\n");
 }
@@ -478,7 +497,7 @@ sub delete_gitlab {
 
 sub import_github {
 	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
-	my ($cmd, $cmd_msg, $arg_user);
+	my ($cmd, $cmd_msg, $arg_user, $hash_msg, $id, $import_status);
 
 	$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=iiidevops-catalog  \" $v_http://$gitlab_domain_name/api/v4/import/github";
 	$cmd_msg = `$cmd`;
@@ -489,6 +508,27 @@ sub import_github {
 
 	$hash_gitlab_repo = decode_json($cmd_msg);
 	$repo_id = $hash_gitlab_repo->{'id'};
+	# Ref - https://docs.gitlab.com/ee/api/project_import_export.html
+	# curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/1/import"
+	$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$repo_id/import";
+	$import_status = '';
+	while ($import_status ne 'failed' && $import_status ne 'finished') {
+		$cmd_msg = `$cmd`;
+		if (index($cmd_msg, $p_new_name)<0) {
+			$import_status = 'failed';
+		}
+		else {
+			$hash_msg = decode_json($cmd_msg);
+			$import_status = $hash_msg->{'import_status'};			
+			sleep(1);
+		}
+	}
+	if ($import_status eq 'failed') {
+		log_print("Import failed! [$cmd_msg]\n");
+		exit;
+	}
+
+	# transfer import project to target_namespace
 	$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
