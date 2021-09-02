@@ -20,6 +20,13 @@ if ($cmd_msg ne 'rkeuser') {
 	exit;
 }
 
+# check running path
+$home_path = '/home/rkeuser';
+if ($Bin ne $home_path) {
+	log_print("You must run the installation script in [$home_path]!\n");
+	exit;
+}
+
 # Check OS version
 $cmd_msg = `lsb_release -r`;
 $cmd_msg =~ s/\n|\r//g;
@@ -38,10 +45,10 @@ END
 log_print("Install OS Packages..\n");
 system($cmd);
 
-if (!-e "~/update-perl.pl") {
-	system("cd ~; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl");
+if (!-e "$home_path/update-perl.pl") {
+	system("cd $home_path; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl");
 }
-$cmd = "perl ~/update-perl.pl $ins_repo";
+$cmd = "perl $home_path/update-perl.pl $ins_repo";
 system($cmd);
 
 # check /etc/sysctl.conf vm.max_map_count=262144 for Sonarqube
@@ -112,7 +119,7 @@ $cmd = <<END;
 curl -LO https://dl.k8s.io/release/v1.18.20/bin/linux/amd64/kubectl;
 sudo chmod a+x kubectl;
 sudo mv ./kubectl /usr/local/bin/;
-mkdir -p ~/.kube/;
+mkdir -p $home_path/.kube/;
 END
 #check kubectl version
 #Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.20", GitCommit:"1f3e19b7beb1cc0110255668c4238ed63dadb7ad", GitTreeState:"clean", BuildDate:"2021-06-16T12:58:51Z", GoVersion:"go1.13.15", Compiler:"gc", Platform:"linux/amd64"}
