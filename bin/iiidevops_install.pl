@@ -38,28 +38,11 @@ END
 log_print("Install OS Packages..\n");
 system($cmd);
 
-# Install iiidevops Deploy Scripts
-$cmd = <<END;
-cd ~;
-wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip
-unzip -o $ins_repo.zip;
-rm -rf deploy-devops;
-mv deploy-devops-$ins_repo deploy-devops;
-find ~/deploy-devops -type f -name \"*.pl\" -exec chmod a+x {} \\;
-END
-log_print("Install iiidevops Deploy Scripts..\n");
+if (!-e "~/update-perl.pl") {
+	system("cd ~; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl");
+}
+$cmd = "perl ~/update-perl.pl $ins_repo";
 system($cmd);
-
-# Check iiidevops_install.pl version
-#if ($prgname eq 'iiidevops_install.pl' && -e "$Bin/deploy-devops/bin/$prgname") {
-#	($my_md5) = split(/ /, `md5sum $Bin/$prgname`);
-#	($dl_md5) = split(/ /, `md5sum $Bin/deploy-devops/bin/$prgname`);
-#	if ($my_md5 ne $dl_md5) {
-#		log_print("Got the new version of iiidevops_install.pl, execute the downloaded version..\n"); 
-#		exec("$Bin/deploy-devops/bin/$prgname local");
-#		exit;
-#	}
-#}
 
 # check /etc/sysctl.conf vm.max_map_count=262144 for Sonarqube
 $cmd_msg = `cat /etc/sysctl.conf | grep vm.max_map_count`;
