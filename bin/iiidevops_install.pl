@@ -45,6 +45,14 @@ END
 log_print("Install OS Packages..\n");
 system($cmd);
 
+# Install iiidevops Deploy Scripts
+if (!-e "$home_path/update-perl.pl") {
+	system("cd $home_path; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl");
+}
+$cmd = "perl $home_path/update-perl.pl $ins_repo";
+log_print("Install iiidevops Deploy Scripts..\n");
+system($cmd);
+
 # check /etc/sysctl.conf vm.max_map_count=262144 for Sonarqube
 $cmd_msg = `cat /etc/sysctl.conf | grep vm.max_map_count`;
 if ($cmd_msg eq '') {
@@ -222,13 +230,6 @@ if (index($cmd_msg, $chk_str)<0) {
 else {
 	log_print("Install rke $chk_str ..OK!\n");
 }
-
-# Install iiidevops Deploy Scripts
-if (!-e "$home_path/update-perl.pl") {
-	system("cd $home_path; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl");
-}
-$cmd = "perl $home_path/update-perl.pl $ins_repo";
-system($cmd);
 
 exit;
 
