@@ -45,12 +45,6 @@ END
 log_print("Install OS Packages..\n");
 system($cmd);
 
-if (!-e "$home_path/update-perl.pl") {
-	system("cd $home_path; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl");
-}
-$cmd = "perl $home_path/update-perl.pl $ins_repo";
-system($cmd);
-
 # check /etc/sysctl.conf vm.max_map_count=262144 for Sonarqube
 $cmd_msg = `cat /etc/sysctl.conf | grep vm.max_map_count`;
 if ($cmd_msg eq '') {
@@ -229,18 +223,12 @@ else {
 	log_print("Install rke $chk_str ..OK!\n");
 }
 
-# If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
-$nfs_dir = '/iiidevopsNFS';
-$p_config = "$Bin/deploy-devops/env.pl";
-if (-e "$nfs_dir/deploy-config/env.pl") {
-	$cmd_msg = `ln -s $nfs_dir/deploy-config/env.pl $p_config`; 
-	log_print("env.pl file link is automatically created ..OK!\n");
+# Install iiidevops Deploy Scripts
+if (!-e "$home_path/update-perl.pl") {
+	system("cd $home_path; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl");
 }
-if (-e "$nfs_dir/deploy-config/env.pl.ans") {
-	$cmd_msg = `ln -s $nfs_dir/deploy-config/env.pl.ans $p_config.ans`; 
-	log_print("env.pl.ans file link is automatically created ..OK!\n");
-}
-
+$cmd = "perl $home_path/update-perl.pl $ins_repo";
+system($cmd);
 
 exit;
 
