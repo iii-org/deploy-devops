@@ -27,6 +27,18 @@ if ($Bin ne $home_path) {
 	exit;
 }
 
+# Use rke version to confirm compatibility
+$rke_cmd = '/usr/local/bin/rke';
+$rke_ver = 'v1.1.19';
+if (-e $rke_cmd) {
+	$cmd = "$rke_cmd --version";
+	$cmd_msg = `$cmd 2>&1`;
+	if (index($cmd_msg, $rke_ver)<0) {
+		log_print("The installed base system version is incompatible and needs to be upgraded manually!\n$cmd_msg");
+		exit;
+	}
+}
+
 # Check OS version
 $cmd_msg = `lsb_release -r`;
 $cmd_msg =~ s/\n|\r//g;
@@ -158,12 +170,12 @@ else {
 # Install rke
 $cmd = <<END;
 wget -O rke https://github.com/rancher/rke/releases/download/v1.1.19/rke_linux-amd64
-sudo mv rke /usr/local/bin/rke
-sudo chmod +x /usr/local/bin/rke
+sudo mv rke $rke_cmd
+sudo chmod +x $rke_cmd
 END
 #check rke version
 #rke version v1.1.19
-$chk_str = 'v1.1.19';
+$chk_str = $rke_ver;
 $cmd_msg = `rke --version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install rke..\n");
