@@ -6,12 +6,13 @@ $|=1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
 $ins_repo = (!defined($ARGV[0]))?'master':$ARGV[0];
+$end_str = '==process complete==';
 
 # Check running user
 $cmd_msg = `whoami`;
 $cmd_msg =~ s/\n|\r//g;
 if ($cmd_msg ne 'rkeuser') {
-	print("You must use the 'rkeuser' account to run the installation script!\n");
+	print("You must use the 'rkeuser' account to run the installation script!\n$end_str\n");
 	exit;
 }
 
@@ -41,4 +42,5 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 	print("env.pl.ans file link is automatically created ..OK!\n");
 }
 
+print("$end_str\n");
 exit;
