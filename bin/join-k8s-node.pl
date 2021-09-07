@@ -40,14 +40,14 @@ if (length(`dpkg -l | grep "ii  iiidevops "`)==0) {
 	system($cmd);
 	$cmd_msg = `cat ./iiidevops_install.pl.log`;
 	# Check remote k8s node info
-	#Install docker 19.03.14 ..OK!
-	#Install kubectl v1.18 ..OK!
+	#Install docker 19.03. ..OK!
+	#Install kubectl v1.18.20 ..OK!
 	#Install helm ..OK!
-	#Install rke v1.2.7 ..OK!
-	$docker_check = (index($cmd_msg, "Install docker 19.03.14 ..OK!")<0)?"ERROR!":"OK!";
-	$kubectl_check = (index($cmd_msg, "Install kubectl v1.18 ..OK!")<0)?"ERROR!":"OK!";
+	#Install rke v1.1.19 ..OK!
+	$docker_check = (index($cmd_msg, "Install docker 19.03. ..OK!")<0)?"ERROR!":"OK!";
+	$kubectl_check = (index($cmd_msg, "Install kubectl v1.18.20 ..OK!")<0)?"ERROR!":"OK!";
 	$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
-	$rke_check = (index($cmd_msg, "Install rke v1.2.7 ..OK!")<0)?"ERROR!":"OK!";
+	$rke_check = (index($cmd_msg, "Install rke v1.1.19 ..OK!")<0)?"ERROR!":"OK!";
 
 	$chk_key = 'ERROR';
 	$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
