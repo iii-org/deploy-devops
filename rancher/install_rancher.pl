@@ -53,45 +53,18 @@ while($isChk && $count<$wait_sec) {
 	sleep($isChk);
 }
 
-# Rancher 2.4.17
+# Rancher 2.6.0 - https://releases.rancher.com/server-charts/latest/rancher-2.6.0.tgz
 $rancher_hostname=($deploy_mode eq 'IP')?$rancher_ip:$rancher_domain_name;
 $cmd = <<END;
 kubectl create namespace cattle-system
 kubectl apply --validate=false -f $Bin/cert-manager.crds.yaml
 kubectl apply -f $Bin/rancher-service.yaml
-helm install rancher --namespace cattle-system  --set hostname=$rancher_hostname $Bin/rancher-2.4.17.tgz
+helm install rancher --namespace cattle-system  --set hostname=$rancher_hostname $Bin/rancher-2.6.0.tgz --set bootstrapPassword=$rancher_admin_password
 END
 
 log_print("-----\n$cmd\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n\n");
-
-# Modify rancher/rancher-ingress.yaml.tmpl
-#$yaml_path = "$Bin/../rancher/";
-#$yaml_file = $yaml_path.'rancher-ingress.yaml';
-#if (uc($deploy_mode) ne 'IP') {
-#	$tmpl_file = $yaml_file.'.tmpl';
-#	if (!-e $tmpl_file) {
-#		log_print("The template file [$tmpl_file] does not exist!\n");
-#		exit;
-#	}
-#	$template = `cat $tmpl_file`;
-#	$template =~ s/{{rancher_domain_name}}/$rancher_domain_name/g;
-#	#log_print("-----\n$template\n-----\n\n");
-#	open(FH, '>', $yaml_file) or die $!;
-#	print FH $template;
-#	close(FH);
-#	$cmd = "kubectl apply -f $yaml_file";
-#	$cmd_msg = `$cmd`;
-#	log_print("-----\n$cmd_msg\n\n");
-#}
-#else {
-#	$cmd = "rm -f $yaml_file";
-#	$cmd_msg = `$cmd 2>&1`;
-#	if ($cmd_msg ne '') {
-#		log_print("$cmd Error!\n$cmd_msg-----\n");
-#	}
-#}
 
 # Display Wait 2-5 min. message
 log_print("It takes 2 to 5 minutes to deploy Rancher service. Please wait.. \n");
@@ -153,10 +126,10 @@ sub manual_secret_tls {
 	log_print("-----\n$cmd_msg-----\n");	
 
 	log_print("Upgrade Rancher service..\n");
-	$cmd = "helm upgrade rancher --version=2.4.15 rancher-stable/rancher --namespace cattle-system --set hostname=$rancher_domain_name --set ingress.tls.source=secret --timeout=3600s --wait";
+	$cmd = "helm upgrade rancher --version=2.6.0 rancher-stable/rancher --namespace cattle-system --set hostname=$rancher_domain_name --set ingress.tls.source=secret --timeout=3600s --wait";
 	system($cmd);
 	#~/deploy-devops/bin/import-secret-tls.pl tls-rancher-ingress rancher.devops.iiidevops.org/fullchain1.pem rancher.devops.iiidevops.org/privkey1.pem cattle-system
-	$cmd = "kubectl -n cattle-system patch deploy/cattle-cluster-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"cluster-register\", \"image\": \"rancher/rancher-agent:v2.4.15\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
+	$cmd = "kubectl -n cattle-system patch deploy/cattle-cluster-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"cluster-register\", \"image\": \"rancher/rancher-agent:v2.6.0\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
 	system($cmd);
 	$cmd = "kubectl -n cattle-system patch daemonset/cattle-node-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"agent\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
 	system($cmd);
