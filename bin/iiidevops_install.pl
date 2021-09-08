@@ -12,11 +12,11 @@ $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-# Rancher 2.4.x support version
+# Rancher 2.6.x support version
 $os_ver = '20.04';
-$rke_ver = 'v1.1.19';
-$docker_ver = '19.03.';
-$kubectl_ver = 'v1.18.20';
+$rke_ver = 'v1.3.0';
+$docker_ver = '20.10.';
+$kubectl_ver = 'v1.20.10';
 
 # Check running user
 $cmd_msg = `whoami`;
