@@ -14,6 +14,12 @@ if (!defined($ARGV[0]) || !defined($ARGV[1])) {
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+# Rancher 2.4.x support version
+$os_ver = '20.04';
+$rke_ver = 'v1.1.19';
+$docker_ver = '19.03.';
+$kubectl_ver = 'v1.18.20';
+
 # Check runtime user
 $cmd = "whoami";
 $cmd_msg = `$cmd 2>&1`;
@@ -39,15 +45,10 @@ if (length(`dpkg -l | grep "ii  iiidevops "`)==0) {
 
 	system($cmd);
 	$cmd_msg = `cat ./iiidevops_install.pl.log`;
-	# Check remote k8s node info
-	#Install docker 19.03. ..OK!
-	#Install kubectl v1.18.20 ..OK!
-	#Install helm ..OK!
-	#Install rke v1.1.19 ..OK!
-	$docker_check = (index($cmd_msg, "Install docker 19.03. ..OK!")<0)?"ERROR!":"OK!";
-	$kubectl_check = (index($cmd_msg, "Install kubectl v1.18.20 ..OK!")<0)?"ERROR!":"OK!";
+	$docker_check = (index($cmd_msg, "Install docker $docker_ver ..OK!")<0)?"ERROR!":"OK!";
+	$kubectl_check = (index($cmd_msg, "Install kubectl $kubectl_ver ..OK!")<0)?"ERROR!":"OK!";
 	$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
-	$rke_check = (index($cmd_msg, "Install rke v1.1.19 ..OK!")<0)?"ERROR!":"OK!";
+	$rke_check = (index($cmd_msg, "Install rke $rke_ver ..OK!")<0)?"ERROR!":"OK!";
 
 	$chk_key = 'ERROR';
 	$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
