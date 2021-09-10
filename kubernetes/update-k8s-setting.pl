@@ -21,6 +21,7 @@ if (!defined($ARGV[0]) || !defined($ARGV[1])) {
 	exit;
 }
 $logfile = "$Bin/$prgname.log";
+require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
@@ -28,6 +29,13 @@ $cmd = $ARGV[0];
 $node_ip  = $ARGV[1];
 $node_role = (defined($ARGV[2]))?$ARGV[2]:'worker';
 $yml_file = "$nfs_dir/deploy-config/cluster.yml";
+
+$rke_ver = get_system_ver('rke');
+$cluser_tmpl = $hash_rke_cluster_yml{$rke_ver};
+if (!$cluser_tmpl) {
+	log_print("Unable to find a template that matches this rke version : [$rke_ver]!\n");
+	exit;
+}
 
 if ($cmd eq 'Initial') {
 	gen_cluster_yml($node_ip);
@@ -159,6 +167,7 @@ sub write_cluster_yml {
 	my ($p_node_list, $p_tls) = @_;
 	my ($cluster_yml_tmpl, $ingress_yml_tmpl, $cluster_yml);
 
+	
 	$cluster_yml_tmpl = `cat $Bin/cluster_yml.tmpl`;
 	if ($p_tls ne '') {
 		$ingress_yml_tmpl = `cat $Bin/ingress_tls_yml.tmpl`;

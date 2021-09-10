@@ -2,6 +2,12 @@
 # common lib
 #
 
+# Glbal variable
+%hash_rke_cluster_yml = (
+	'v1.2.7'=>'cluster_0_yml.tmpl', 
+	'v1.1.19'=>'cluster_1_yml.tmpl',
+	);
+
 # Check service status.
 # service : kubernetes, rancher, gitlab, redmine, harbor, sonarqube, iiidevops
 sub get_service_status {
@@ -301,6 +307,33 @@ sub call_sonarqube_api {
 	return($v_msg);
 }
 
+# Get System Version
+#rke : v1.2.7 , v1.1.19
+sub get_system_ver {
+	my ($p_system) = @_;
+	my ($cmd, $t1,$t2,$v_ver);
+	
+	if ($p_system eq 'rke') {
+		$cmd = '/usr/local/bin/rke';
+		if (!-e $cmd) {
+			return('ERR_1');
+		}
+		$cmd_msg = `$cmd --version 2>&1`;
+		$cmd_msg =~ s/\n|\r//g; 
+		#rke version v1.2.7
+		if (index($cmd_msg, 'rke')<0) {
+			return('ERR_2');
+		}
+		($t1,$t2,$v_ver) = split(/ /, $cmd_msg);
+		$v_valid_ver = '[v1.2.7][v1.1.19]';
+		if (index($v_valid_ver, "[$v_ver]")<0) {
+			return('ERR_3');
+		}
+		return($v_ver);
+	}
+	
+	return('ERR_0');
+}
 
 # $logfile
 sub log_print {

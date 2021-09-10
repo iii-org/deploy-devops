@@ -131,21 +131,8 @@ authorization:
 ignore_docker_version: null
 kubernetes_version: ""
 private_registries: []
-ingress:
-  provider: ""
-  options: {}
-  node_selector: {}
-  extra_args: {}
-  dns_policy: ""
-  extra_envs: []
-  extra_volumes: []
-  extra_volume_mounts: []
-  update_strategy: null
-  http_port: 0
-  https_port: 0
-  network_mode: ""
-  tolerations: []
-cluster_name: ""
+%%ingress%%
+cluster_name: "iiidevops-k8s"
 cloud_provider:
   name: ""
 prefix_path: ""
