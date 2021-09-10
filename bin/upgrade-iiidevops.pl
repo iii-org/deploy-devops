@@ -17,7 +17,7 @@ if ($cmd_msg ne 'rkeuser') {
 	log_print("You must use the 'rkeuser' account to run the installation script!\n");
 	exit;
 }
-$update_prj =`cd ~; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/iiidevops_install.pl; perl ./iiidevops_install.pl;`;
+$update_prj =`cd ~; wget -O update-perl.pl https://raw.githubusercontent.com/iii-org/deploy-devops/master/bin/update-perl.pl; perl ./update-perl.pl;`;
 
 # chdir "~/deploy-devops/bin/patch";
 $tmpl_list = `ls ~/deploy-devops/bin/patch/*.pl`;
