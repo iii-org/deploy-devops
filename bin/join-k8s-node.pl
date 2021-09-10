@@ -146,7 +146,7 @@ if (!-e $env_file) {
 	exit;	
 }
 require($env_file);
-require("$Bin/deploy-devops/lib/common_lib.pl");
+require("/home/rkeuser/deploy-devops/lib/common_lib.pl");
 
 # Check nfs_clint, docker permission...
 $cmd = "showmount -e $nfs_ip;sudo -u rkeuser docker ps; sudo perl $Bin/deploy-devops/bin/add-insecure-registries.pl $harbor_ip $harbor_domain_name";
