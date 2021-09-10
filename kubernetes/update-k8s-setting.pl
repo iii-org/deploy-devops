@@ -165,10 +165,11 @@ sub gen_node_role {
 # Write full cluster.yml
 sub write_cluster_yml {
 	my ($p_node_list, $p_tls) = @_;
-	my ($cluster_yml_tmpl, $ingress_yml_tmpl, $cluster_yml);
+	my ($rke_ver, $yml_file, $cluster_yml_tmpl, $ingress_yml_tmpl, $cluster_yml);
 
-	
-	$cluster_yml_tmpl = `cat $Bin/cluster_yml.tmpl`;
+	$rke_ver = get_system_ver('rke');
+	$yml_file = $hash_rke_cluster_yml{$rke_ver};
+	$cluster_yml_tmpl = `cat $Bin/$yml_file`;
 	if ($p_tls ne '') {
 		$ingress_yml_tmpl = `cat $Bin/ingress_tls_yml.tmpl`;
 		$ingress_yml_tmpl =~ s/%%ingress_domain_name_tls%%/$p_tls/g;
