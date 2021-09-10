@@ -14,11 +14,8 @@ if (!defined($ARGV[0]) || !defined($ARGV[1])) {
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-# Rancher 2.4.x support version
-$os_ver = '20.04';
-$rke_ver = 'v1.1.19';
-$docker_ver = '19.03.';
-$kubectl_ver = 'v1.18.20';
+# Global Var
+$valid_rke_ver = '[v1.2.7][v1.1.19]';
 
 # Check runtime user
 $cmd = "whoami";
@@ -38,41 +35,6 @@ if (index($cmd_msg, $chk_key)<0) {
 	exit;
 }
 
-if (length(`dpkg -l | grep "ii  iiidevops "`)==0) {
-	# Download iiidevops_install.pl
-	$ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
-	$cmd = "rm -f ./iiidevops_install.pl.log; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo";
-
-	system($cmd);
-	$cmd_msg = `cat ./iiidevops_install.pl.log`;
-	$docker_check = (index($cmd_msg, "Install docker $docker_ver ..OK!")<0)?"ERROR!":"OK!";
-	$kubectl_check = (index($cmd_msg, "Install kubectl $kubectl_ver ..OK!")<0)?"ERROR!":"OK!";
-	$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
-	$rke_check = (index($cmd_msg, "Install rke $rke_ver ..OK!")<0)?"ERROR!":"OK!";
-
-	$chk_key = 'ERROR';
-	$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
-	if (index($cmd_msg, $chk_key)>=0) {
-		log_print("Docker    	: $docker_check\n");
-		log_print("Kubectl   	: $kubectl_check\n");
-		log_print("Helm	     	: $helm_check\n");
-		log_print("RKE	     	: $rke_check\n");
-		log_print("--------------------------\n");
-		log_print("Validation results failed!\n");
-		exit;
-	}
-	log_print("Validation results OK!\n");
-}
-
-# Check K8s Node
-$cmd = 'kubectl get node';
-$cmd_msg = `$cmd 2>&1`;
-$chk_key = $ARGV[1].' ';
-if (index($cmd_msg, $chk_key)>=0) {
-	log_print("My IP [$chk_key] is in K8s node list! Stop the process of joining the K8s cluster.\n\n$cmd_msg\n");
-	exit;
-}
-
 # Gen K8s ssh key
 $ssh_key_file = '/home/rkeuser/.ssh/id_rsa';
 if (!-e $ssh_key_file) {
@@ -89,6 +51,74 @@ else {
 	system($cmd);
 }
 
+# Get first_node rke version
+$cmd = "ssh $ARGV[0] 'rke --version'";
+$cmd_msg = `$cmd 2>&1`;
+#rke version v1.2.7
+if (index($cmd_msg, 'rke')<0) {
+	log_print("Get first node rke version Error!\n$cmd_msg");
+	exit;
+}
+$cmd_msg =~ s/\n|\r//g; 
+($t1,$t2,$rke_ver) = split(/ /, $cmd_msg);
+if (index($valid_rke_ver, "[$rke_ver]")<0) {
+	log_print("The first node $cmd_msg is incompatible! Expect : $valid_rke_ver\n");
+	exit;
+}
+
+# Setting base system version
+if ($rke_ver eq 'v1.1.19') {
+	# Rancher 2.4.x support version
+	$os_ver = '20.04';
+	$docker_ver = '19.03.';
+	$kubectl_ver = 'v1.18.20';
+}
+elsif ($rke_ver eq 'v1.2.7') {
+	# III DevOps < 1.8 using version
+	$os_ver = '20.04';
+	$docker_ver = '19.03.';
+	$kubectl_ver = 'v1.18.17';
+}
+else {
+	log_print("The first node rke version [$rke_ver] is incompatible!\n");
+	exit;
+}
+
+if (length(`dpkg -l | grep "ii  iiidevops "`)==0 || !-e '/usr/local/bin/rke') {
+	# Download iiidevops_install.pl
+	$ins_repo = (!defined($ARGV[2]))?'master':$ARGV[2];
+	$cmd = "rm -f ./iiidevops_install.pl.log; wget -O iiidevops_install.pl https://raw.githubusercontent.com/iii-org/deploy-devops/$ins_repo/bin/iiidevops_install.pl; perl ./iiidevops_install.pl $ins_repo $rke_ver";
+	system($cmd);
+	$cmd_msg = `cat ./iiidevops_install.pl.log`;
+	$docker_check = (index($cmd_msg, "Install docker $docker_ver ..OK!")<0)?"ERROR!":"OK!";
+	$kubectl_check = (index($cmd_msg, "Install kubectl $kubectl_ver ..OK!")<0)?"ERROR!":"OK!";
+	$helm_check = (index($cmd_msg, "Install helm ..OK!")<0)?"ERROR!":"OK!";
+	$rke_check = (index($cmd_msg, "Install rke $rke_ver ..OK!")<0)?"ERROR!":"OK!";
+}
+else {
+	$cmd_msg = `docker --version 2>&1`;
+	$docker_check = (index($cmd_msg, $docker_ver)<0)?"ERROR!":"OK!";
+	$cmd_msg = `kubectl version --client 2>&1`;
+	$kubectl_check = (index($cmd_msg, $kubectl_ver)<0)?"ERROR!":"OK!";
+	$cmd_msg = `helm version 2>&1`;
+	$helm_check = (index($cmd_msg, "Version:")<0)?"ERROR!":"OK!";
+	$cmd_msg = `rke --version 2>&1`;
+	$rke_check = (index($cmd_msg, $rke_ver)<0)?"ERROR!":"OK!";
+}
+
+$chk_key = 'ERROR';
+$cmd_msg = $docker_check.$kubectl_check.$helm_check.$rke_check;
+if (index($cmd_msg, $chk_key)>=0) {
+	log_print("Docker    	: $docker_check\n");
+	log_print("Kubectl   	: $kubectl_check\n");
+	log_print("Helm	     	: $helm_check\n");
+	log_print("RKE	     	: $rke_check\n");
+	log_print("--------------------------\n");
+	log_print("Validation results failed!\n");
+	exit;
+}
+log_print("Validation results OK!\n");
+
 # Get kube_conf & evn.pl
 $kube_conf = '/home/rkeuser/.kube/config';
 $cmd = "scp $ARGV[0]:$kube_conf $kube_conf";
@@ -98,6 +128,16 @@ if (!-e $kube_conf) {
 	exit;
 }
 
+# Check K8s Node
+$cmd = 'kubectl get node';
+$cmd_msg = `$cmd 2>&1`;
+$chk_key = $ARGV[1].' ';
+if (index($cmd_msg, $chk_key)>=0) {
+	log_print("My IP [$chk_key] is in K8s node list! Stop the process of joining the K8s cluster.\n\n$cmd_msg\n");
+	exit;
+}
+
+# Get env.pl
 $env_file = '/home/rkeuser/deploy-devops/env.pl';
 $cmd = "scp $ARGV[0]:$env_file $env_file";
 $cmd_msg = `$cmd 2>&1`;
@@ -157,10 +197,12 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("-----\n$cmd_msg\n\n");
 	exit;
 }
-log_print("$ARGV[1] is ready to join K8s cluster!\n");
+log_print("Wait 10 secs, $ARGV[1] is ready to join K8s cluster!\n");
+# Wait 10 secs
+sleep(10);
 
 # Exec update-k8s-cluster.pl @first_node
-system("ssh $ARGV[0] 'nohup ~/deploy-devops/bin/update-k8s-cluster.pl > /dev/null 2>&1 &'");
+system("ssh $ARGV[0] 'nohup /home/rkeuser/deploy-devops/bin/update-k8s-cluster.pl > /dev/null 2>&1 &'");
 log_print("Exec update-k8s-cluster.pl!\n");
 
 # Check K8s Node

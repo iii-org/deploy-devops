@@ -1,22 +1,42 @@
 #!/usr/bin/perl
 # Install iiidevops script
 #
-# Usage: iiidevops_install.pl
+# Usage: iiidevops_install.pl [ins_repo] [rke_ver]
 #
 use FindBin qw($Bin);
 $|=1; # force flush output
 
 $prgname = substr($0, rindex($0,"/")+1);
 $ins_repo = (!defined($ARGV[0]))?'master':$ARGV[0];
+$rke_ver = (!defined($ARGV[1]))?'v1.1.19':$ARGV[1];
 $logfile = "$Bin/$prgname.log";
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-# Rancher 2.4.x support version
-$os_ver = '20.04';
-$rke_ver = 'v1.1.19';
-$docker_ver = '19.03.';
-$kubectl_ver = 'v1.18.20';
+# Global Var
+$valid_rke_ver = '[v1.2.7][v1.1.19]';
+if (index($valid_rke_ver, "[$rke_ver]")<0) {
+	log_print("The rke version $rke_ver is incompatible! Expect : $valid_rke_ver\n");
+	exit;
+}
+
+# Setting base system version
+if ($rke_ver eq 'v1.1.19') {
+	# Rancher 2.4.x support version
+	$os_ver = '20.04';
+	$docker_ver = '19.03.';
+	$kubectl_ver = 'v1.18.20';
+}
+elsif ($rke_ver eq 'v1.2.7') {
+	# III DevOps < 1.8 using version
+	$os_ver = '20.04';
+	$docker_ver = '19.03.';
+	$kubectl_ver = 'v1.18.17';
+}
+else {
+	log_print("The rke version [$rke_ver] is incompatible!\n");
+	exit;
+}
 
 # Check running user
 $cmd_msg = `whoami`;
@@ -141,7 +161,7 @@ mkdir -p $home_path/.kube/;
 END
 #check kubectl version
 $chk_str = $kubectl_ver;
-$cmd_msg = `kubectl version 2>&1`;
+$cmd_msg = `kubectl version --client 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl..\n");
 	system($cmd);
@@ -160,7 +180,7 @@ sudo apt-get install helm
 END
 #check helm version
 #version.BuildInfo{Version:"v3.5.0", GitCommit:"32c22239423b3b4ba6706d450bd044baffdcf9e6", GitTreeState:"clean", GoVersion:"go1.15.6"}
-$chk_str = 'Version';
+$chk_str = 'Version:';
 $cmd_msg = `helm version 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install helm..\n");
@@ -210,7 +230,7 @@ if ($cmd_msg ne ''){
 
 #check kubectl version
 $chk_str = $kubectl_ver;
-$cmd = "kubectl version";
+$cmd = "kubectl version --client";
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
 	log_print("Install kubectl Failed!\n$cmd_msg");
@@ -221,7 +241,7 @@ else {
 
 #check helm version
 #version.BuildInfo{Version:"v3.5.0", GitCommit:"32c22239423b3b4ba6706d450bd044baffdcf9e6", GitTreeState:"clean", GoVersion:"go1.15.6"}
-$chk_str = 'Version';
+$chk_str = 'Version:';
 $cmd = "helm version";
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_str)<0) {
