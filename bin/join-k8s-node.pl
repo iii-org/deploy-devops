@@ -149,7 +149,7 @@ require($env_file);
 require("/home/rkeuser/deploy-devops/lib/common_lib.pl");
 
 # Check nfs_clint, docker permission...
-$cmd = "showmount -e $nfs_ip;sudo -u rkeuser docker ps; sudo perl $Bin/deploy-devops/bin/add-insecure-registries.pl $harbor_ip $harbor_domain_name";
+$cmd = "showmount -e $nfs_ip;sudo -u rkeuser docker ps; sudo perl /home/rkeuser/deploy-devops/bin/add-insecure-registries.pl $harbor_ip $harbor_domain_name";
 $cmd_msg = `$cmd 2>&1`;
 #/iiidevopsNFS *
 $nfs_check = (index($cmd_msg, "$nfs_dir *")<0)?"ERROR!":"OK!";
