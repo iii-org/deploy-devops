@@ -29,10 +29,20 @@ $sql_cmd = "psql -d 'postgresql://postgres:$redmine_db_passwd\@$redmine_ip:32749
 
 $cmd =<<END;
 cd ~
-./deploy-devops/bin/generate_env.pl iiidevops_ver 1.8.0 -y;
+./deploy-devops/bin/generate_env.pl iiidevops_ver 1.8.1 -y;
 ./deploy-devops/bin/iiidevops_install_core.pl;
 $sql_cmd;
 ./deploy-devops/bin/sync_chart_index.pl gitlab_update
+END
+
+system($cmd);
+
+# Update kubernetes cluster enable TTL 
+$cmd =<<END;
+sed -i '/kube-api/{:a;n;s/{}/\n      feature-gates: TTLAfterFinished=true/g;/extra_binds/!ba}' $nfs_dir/deploy-config/cluster.yml;
+sed -i '/kube-controller/{:a;n;s/{}/\n      feature-gates: TTLAfterFinished=true/g;/extra_binds/!ba}' $nfs_dir/deploy-config/cluster.yml;
+sed -i '/scheduler/{:a;n;s/{}/\n      feature-gates: TTLAfterFinished=true/g;/extra_binds/!ba}' $nfs_dir/deploy-config/cluster.yml;
+rke up --config $nfs_dir/deploy-config/cluster.yml
 END
 
 system($cmd);

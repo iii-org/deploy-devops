@@ -24,7 +24,8 @@ services:
     backup_config: null
   kube-api:
     image: ""
-    extra_args: {}
+    extra_args: 
+      feature-gates: TTLAfterFinished=true
     extra_binds: []
     extra_env: []
     win_extra_args: {}
@@ -40,7 +41,8 @@ services:
     event_rate_limit: null
   kube-controller:
     image: ""
-    extra_args: {}
+    extra_args: 
+      feature-gates: TTLAfterFinished=true
     extra_binds: []
     extra_env: []
     win_extra_args: {}
@@ -50,7 +52,8 @@ services:
     service_cluster_ip_range: 10.43.0.0/16
   scheduler:
     image: ""
-    extra_args: {}
+    extra_args: 
+      feature-gates: TTLAfterFinished=true
     extra_binds: []
     extra_env: []
     win_extra_args: {}
