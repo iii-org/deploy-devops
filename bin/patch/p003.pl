@@ -39,9 +39,7 @@ system($cmd);
 
 # Update kubernetes cluster enable TTL 
 $cmd =<<END;
-sed -i '/kube-api/{:a;n;s/{}/\\n      feature-gates: TTLAfterFinished=true/g;/extra_binds/!ba}' $nfs_dir/deploy-config/cluster.yml;
-sed -i '/kube-controller/{:a;n;s/{}/\\n      feature-gates: TTLAfterFinished=true/g;/extra_binds/!ba}' $nfs_dir/deploy-config/cluster.yml;
-sed -i '/scheduler/{:a;n;s/{}/\\n      feature-gates: TTLAfterFinished=true/g;/extra_binds/!ba}' $nfs_dir/deploy-config/cluster.yml;
+sed -i '/ kube-api:/{:a;n;s/ extra_args: {}/ extra_args:\\n      feature-gates: TTLAfterFinished=true/g;/ kubelet:/!ba}' $nfs_dir/deploy-config/cluster.yml;
 rke up --config $nfs_dir/deploy-config/cluster.yml
 END
 
