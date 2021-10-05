@@ -37,7 +37,7 @@ if ($deploy_ver ne 'develop' && $deploy_uuid ne $g_uuid) {
 
 # Get user namespace 
 $skip_ns = ',account,iiidevops-env-secret,cattle-global-data,cattle-global-nt,cattle-pipeline,cattle-system,cert-manager,ingress-nginx,kube-node-lease,kube-public,kube-system,default,';
-# p-776j8-pipeline -> p-*-pipeline
+# p-776j8-pipeline -> p-.*-pipeline
 $cmd_msg = `kubectl get namespace 2>&1`;
 foreach $line (split("\n", $cmd_msg)) {
 	$line =~ s/( )+/ /g;
@@ -48,8 +48,13 @@ foreach $line (split("\n", $cmd_msg)) {
 	}
 	($ns, $status, $age) = split(' ', $line);
 	if (index($skip_ns, ",$ns,")>=0) {
-		print("[$ns]..Skip\n");
+		#print("[$ns]..Skip\n");
 		next;
+	}
+	# p-776j8-pipeline
+	if ($ns =~ /p-.*-pipeline/) {
+		#print("[$ns]..Skip\n");
+		next;		
 	}
 	print("[$ns]..Process..\n");
 }
