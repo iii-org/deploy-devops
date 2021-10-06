@@ -34,27 +34,12 @@ if ($deploy_ver ne 'develop' && $deploy_uuid ne $g_uuid) {
 	print("$prgname can only be executed in develop or specified UUID environment!\n");
 	exit;
 }
-
-# Get user namespace 
-$skip_ns = ',account,iiidevops-env-secret,cattle-global-data,cattle-global-nt,cattle-pipeline,cattle-system,cert-manager,ingress-nginx,kube-node-lease,kube-public,kube-system,default,';
-# p-776j8-pipeline -> p-.*-pipeline
-$cmd_msg = `kubectl get namespace 2>&1`;
+ 
+# Delete user namespace deployment
+$skip_ns = "account |iiidevops-env-secret |cattle-global-data |cattle-global-nt |cattle-pipeline |cattle-system |cert-manager |ingress-nginx |kube-node-lease |kube-public |kube-system |default |^p-";
+$cmd_msg = `kubectl get ns | egrep -v "$skip_ns" | grep -v "NAME " | awk '{print \$1}'`;
 foreach $line (split("\n", $cmd_msg)) {
-	$line =~ s/( )+/ /g;
-	#print("[$line]..");
-	if ($line eq 'NAME STATUS AGE') {
-		#print("Skip\n");
-		next;
-	}
-	($ns, $status, $age) = split(' ', $line);
-	if (index($skip_ns, ",$ns,")>=0) {
-		#print("[$ns]..Skip\n");
-		next;
-	}
-	# p-776j8-pipeline
-	if ($ns =~ /p-.*-pipeline/) {
-		#print("[$ns]..Skip\n");
-		next;		
-	}
-	print("[$ns]..Process..\n");
+        print("Delete [$line] deployment ...\n");
+        $delete_cmd_msg = `kubectl delete deployment --all -n $line`;
+        print("$delete_cmd_msg\n");
 }
