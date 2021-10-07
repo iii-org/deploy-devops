@@ -38,6 +38,7 @@ if ($deploy_ver ne 'develop' && $deploy_uuid ne $g_uuid) {
 }
  
 # Delete user namespace deployment
+print(`date`); #show start work time
 $skip_ns = "account |iiidevops-env-secret |cattle-global-data |cattle-global-nt |cattle-pipeline |cattle-system |cert-manager |ingress-nginx |kube-node-lease |kube-public |kube-system |default |^p-";
 $cmd_msg = `kubectl get ns | egrep -v "$skip_ns" | grep -v "NAME " | awk '{print \$1}'`;
 foreach $line (split("\n", $cmd_msg)) {
