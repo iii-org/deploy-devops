@@ -30,19 +30,30 @@ $deploy_ver = get_nexus_info('deploy_version');
 $deploy_uuid = get_nexus_info('deployment_uuid');
 #print("[$deploy_ver][$deploy_uuid][$iiidevops_ver]\n");
 
-$kubeconf_str = defined($ARGV[1])?'--kubeconfig '.$ARGV[1]:'--kubeconfig /home/rkeuser/.kube/config';
-
 if ($deploy_ver ne 'develop' && $deploy_uuid ne $g_uuid) {
 	print("$prgname can only be executed in develop or specified UUID environment!\n");
 	exit;
 }
+
+$kubeconf_str = defined($ARGV[1])?'--kubeconfig '.$ARGV[1]:'--kubeconfig /home/rkeuser/.kube/config';
+print("\n----------------------------------------\n");
+print(`TZ='Asia/Taipei' date`);
+
+$cmd_kubectl = '/snap/bin/kubectl';
+if (!-e $$cmd_kubectl) {
+	$cmd_kubectl = '/usr/local/bin/kubectl';
+}
+
+if (!-e $cmd_kubectl) {
+	print("[$cmd_kubectl] is not exist!!!\n");
+	exit;
+}
  
 # Delete user namespace deployment
-print(`date`); #show start work time
 $skip_ns = "account |iiidevops-env-secret |cattle-global-data |cattle-global-nt |cattle-pipeline |cattle-system |cert-manager |ingress-nginx |kube-node-lease |kube-public |kube-system |default |^p-";
-$cmd_msg = `kubectl get ns | egrep -v "$skip_ns" | grep -v "NAME " | awk '{print \$1}'`;
+$cmd_msg = `$cmd_kubectl get ns | egrep -v "$skip_ns" | grep -v "NAME " | awk '{print \$1}'`;
 foreach $line (split("\n", $cmd_msg)) {
-        print("Delete [$line] deployment ...\n");
-        $delete_cmd_msg = `kubectl delete deployment --all -n $line`;
+        print(`TZ='Asia/Taipei' date +%Y/%m/%d-%H:%M:%S`."Delete [$line] deployment at ...\n");
+        $delete_cmd_msg = `$cmd_kubectl delete deployment --all -n $line`;
         print("$delete_cmd_msg\n");
 }
