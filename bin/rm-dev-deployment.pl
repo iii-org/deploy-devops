@@ -30,7 +30,7 @@ $deploy_ver = get_nexus_info('deploy_version');
 $deploy_uuid = get_nexus_info('deployment_uuid');
 #print("[$deploy_ver][$deploy_uuid][$iiidevops_ver]\n");
 
-$kubeconf_str = defined($ARGV[1])?'--kubeconfig '.$ARGV[1]:'/home/rkeuser/.kube/config';
+$kubeconf_str = defined($ARGV[1])?'--kubeconfig '.$ARGV[1]:'--kubeconfig /home/rkeuser/.kube/config';
 
 if ($deploy_ver ne 'develop' && $deploy_uuid ne $g_uuid) {
 	print("$prgname can only be executed in develop or specified UUID environment!\n");
