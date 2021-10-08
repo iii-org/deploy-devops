@@ -19,7 +19,7 @@ require("$Bin/../lib/common_lib.pl");
 $cmd_msg = `whoami`;
 $cmd_msg =~ s/\n|\r//g;
 if ($cmd_msg ne 'rkeuser') {
-    print("username:$cmd_msg\n")
+    print("username:$cmd_msg\n");
 	print("You must use the 'rkeuser' account to run the installation script!\n");
 	exit;
 }
@@ -39,7 +39,7 @@ if ($cronid eq 'sync_tmpl') {
 	    print("$prgname $active $runtime $argc1\n");
         system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl $argc1 >> /tmp/sync-prj-templ.log 2>&1" > /home/rkeuser/cron.txt;crontab cron.txt`);
         $cron_msg = `crontab -l`;
-        print("show crontab :\n$cron_msg\n")
+        print("show crontab :\n$cron_msg\n");
         exit;
     }
     elsif ($active eq 'off') {
