@@ -37,15 +37,20 @@ if ($cronid eq 'sync_tmpl') {
     if ($active eq 'on') {
         $argc1 = (!defined($ARGV[3]))?'':$ARGV[3];
 	    print("$prgname $active $runtime $argc1\n");
-        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl $argc1 >> /tmp/sync-prj-templ.log 2>&1" > /home/rkeuser/cron.txt;crontab cron.txt`);
+        system(`sed -i '/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab cron.txt`);
+        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl $argc1 >> /tmp/sync-prj-templ.log 2>&1" >> /home/rkeuser/cron.txt;crontab cron.txt`);
         $cron_msg = `crontab -l`;
         print("show crontab :\n$cron_msg\n");
         exit;
     }
     elsif ($active eq 'off') {
         print("$prgname $active \n");
+        system(`sed -i '/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab cron.txt`);
+        $cron_msg = `crontab -l`;
+        print("show crontab :\n$cron_msg\n");
+        exit;
     }
-    else{
+    else {
         print("Error: $prgname active parameters error! \n");
 	    exit; 
     }
