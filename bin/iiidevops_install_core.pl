@@ -75,7 +75,7 @@ if (!is_rancher_default_name_ok()) {
 	log_print("Rancher cluster name IS NOT iiidevops-k8s! Please refer to Step 4 at https://github.com/iii-org/deploy-devops \n");
 	exit;
 }
-log_print("Rancher cluster name is already iiidevops-k8!\n");
+log_print("Rancher cluster name is already iiidevops-k8s!\n");
 
 # Check Harbor service is working
 if (!get_service_status('harbor')) {
