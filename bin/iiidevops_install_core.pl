@@ -70,13 +70,6 @@ if (!get_service_status('rancher')) {
 }
 log_print("Rancher is working well!\n");
 
-# Check Rancher Cluster Name is iiidevops-k8
-if (!is_rancher_default_name_ok()) {
-	log_print("Rancher cluster name IS NOT iiidevops-k8s! Please refer to Step 4 at https://github.com/iii-org/deploy-devops \n");
-	exit;
-}
-log_print("Rancher cluster name is already iiidevops-k8s!\n");
-
 # Check Harbor service is working
 if (!get_service_status('harbor')) {
 	log_print("Harbor is not working!\n");
@@ -352,6 +345,13 @@ elsif ($t_now_ver ne $t_set_ver) {
 else {
 	print("deploy version : [$t_now_ver], Skip setting!\n");
 }
+
+# Check Rancher Cluster Name is iiidevops-k8
+if (!is_rancher_default_name_ok()) {
+	log_print("Rancher cluster name IS NOT iiidevops-k8s! Please refer to Step 4 at https://github.com/iii-org/deploy-devops \n");
+	exit;
+}
+log_print("Rancher cluster name is already iiidevops-k8s!\n");
 
 # Add secrets for Rancher all projects
 system("$Bin/../devops-api/add_secrets.pl");
