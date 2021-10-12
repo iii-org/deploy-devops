@@ -38,7 +38,6 @@ if ($cronid eq 'sync_tmpl') {
         $argc1 = (!defined($ARGV[3]))?'':$ARGV[3];
 	    print("$prgname $active $runtime $argc1\n");
         if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync-prj-templ.pl')>0) {
-            print('test 123');
             system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
         }
         system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl $argc1 >> /tmp/sync-prj-templ.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
@@ -87,6 +86,7 @@ elsif ($cronid eq 'sync_chart') {
 }
 elsif ($cronid eq 'redeploy_core') {
     if ($active eq 'on') {
+        $argc1 = (!defined($ARGV[3]))?'/home/rkeuser/.kube/config':$ARGV[3];
 	    print("$prgname $active $runtime \n");
         if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/redeploy_core.pl')>0) {
             system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/redeploy_core.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
