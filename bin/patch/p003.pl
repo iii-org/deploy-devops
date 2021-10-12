@@ -32,7 +32,11 @@ if ($iiidevops_ver_msg->{'data'}->{'has_update'}) {
         $update_msg = `curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request PATCH '$iiidevops_api/devops_version/update'`;
         print($update_msg);
 }
-$iiidevops_ver = substr($iiidevops_ver_msg->{'data'}->{'latest_version'}->{'version_name'},1);
+$iiidevops_ver = $iiidevops_ver_msg->{'data'}->{'latest_version'}->{'version_name'};
+
+if($iiidevops_ver ne 'develop'){
+	$iiidevops_ver = substr($iiidevops_ver,1);
+}
 
 # Update Redmine trackers data
 $sql = "update trackers set name = 'Fail Management' WHERE id=9";
