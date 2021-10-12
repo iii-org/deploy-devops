@@ -163,6 +163,9 @@ END
 	##$cmd = "helm install harbor --version 1.5.5 harbor/harbor -f $yaml_file";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
+	if ($harbor_domain_name ne '') {
+		$cmd_service = `kubectl apply -f $yaml_path/harbor-service.yaml`;
+	}
 
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to deploy Harbor service. Please wait.. \n");

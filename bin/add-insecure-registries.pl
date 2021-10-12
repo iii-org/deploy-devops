@@ -38,7 +38,7 @@ if (-e $docker_daemon_json) {
 }
 
 # New file
-$insecure_registries = "\"$harbor_ip:32443\"";
+$insecure_registries = "\"localhost:32443\", \"$harbor_ip:32443\"";
 if ($harbor_domain_name ne '') {
 	$insecure_registries .= ", \"$harbor_domain_name\"";
 }
