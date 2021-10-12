@@ -156,4 +156,19 @@ END
 	return;
 }
 
+#curl --location --request GET http://localhost:31850/monitoring/rancher/default_name
+#{"default_cluster_name": true}
+# Check Rancher Cluster Name is iiidevops-k8s
+sub is_rancher_default_name_ok {
+	my ($v_cmd_msg, $v_hash_msg, $v_message);
+
+	$v_cmd_msg = `curl -s --location --request GET http://localhost:31850/monitoring/rancher/default_name`;
+	if ($v_cmd_msg ne '') {
+		$v_hash_msg = decode_json($v_cmd_msg);
+		$v_message = $v_hash_msg->{'default_cluster_name'};
+	}
+	return($v_message eq 'true');
+}
+
+
 1;
