@@ -29,7 +29,7 @@ $active = (!defined($ARGV[1]))?'no_active':$ARGV[1];
 $runtime = (!defined($ARGV[2]))?'no_time':$ARGV[2];
 
 if ($cronid eq 'no_cronid' || $active eq 'no_active') {
-	print("Error: $prgname Incomplete parameters [cronid:$cronid active:$active runtime:$runtime] \n");
+	print("Error: $prgname Incomplete parameters [CronID:$cronid Active:$active Runtime:$runtime] \n");
 	exit;
 }
 
@@ -37,21 +37,104 @@ if ($cronid eq 'sync_tmpl') {
     if ($active eq 'on') {
         $argc1 = (!defined($ARGV[3]))?'':$ARGV[3];
 	    print("$prgname $active $runtime $argc1\n");
-        system(`sed -i '/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab cron.txt`);
-        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl $argc1 >> /tmp/sync-prj-templ.log 2>&1" >> /home/rkeuser/cron.txt;crontab cron.txt`);
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync-prj-templ.pl')>0) {
+            print('test 123');
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
+        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl $argc1 >> /tmp/sync-prj-templ.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
         $cron_msg = `crontab -l`;
         print("show crontab :\n$cron_msg\n");
         exit;
     }
     elsif ($active eq 'off') {
         print("$prgname $active \n");
-        system(`sed -i '/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab cron.txt`);
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync-prj-templ.pl')>0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
         $cron_msg = `crontab -l`;
         print("show crontab :\n$cron_msg\n");
         exit;
     }
     else {
-        print("Error: $prgname active parameters error! \n");
+        print("Error: $prgname Active parameters error! \n");
 	    exit; 
     }
+}
+elsif ($cronid eq 'sync_chart') {
+    if ($active eq 'on') {
+	    print("$prgname $active $runtime \n");
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync_chart_index.pl')>0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync_chart_index.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
+        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync_chart_index.pl gitlab_update >> /tmp/sync-chart-index.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        $cron_msg = `crontab -l`;
+        print("show crontab :\n$cron_msg\n");
+        exit;
+    }
+    elsif ($active eq 'off') {
+        print("$prgname $active \n");
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync_chart_index.pl')>0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync_chart_index.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
+        $cron_msg = `crontab -l`;
+        print("show crontab :\n$cron_msg\n");
+        exit;
+    }
+    else {
+        print("Error: $prgname Active parameters error! \n");
+	    exit; 
+    }
+}
+elsif ($cronid eq 'redeploy_core') {
+    if ($active eq 'on') {
+	    print("$prgname $active $runtime \n");
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/redeploy_core.pl')>0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/redeploy_core.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
+        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/redeploy_core.pl $argc1 >> /tmp/iiidevops_update.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        $cron_msg = `crontab -l`;
+        print("show crontab :\n$cron_msg\n");
+        exit;
+    }
+    elsif ($active eq 'off') {
+        print("$prgname $active \n");
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/redeploy_core.pl')>0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/redeploy_core.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
+        $cron_msg = `crontab -l`;
+        print("show crontab :\n$cron_msg\n");
+        exit;
+    }
+    else {
+        print("Error: $prgname Active parameters error! \n");
+	    exit; 
+    }
+}
+elsif ($cronid eq 'rm_dev_deployment') {
+    if ($active eq 'on') {
+        print("$prgname $active $runtime \n");
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/rm-dev-deployment.pl')>0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/rm-dev-deployment.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
+        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/rm-dev-deployment.pl >> /tmp/iiidevops_update.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        $cron_msg = `crontab -l`;
+        print("show crontab :\n$cron_msg\n");
+        exit;
+    }
+    elsif ($active eq 'off') {
+        print("$prgname $active \n");
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/rm-dev-deployment.pl')>0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/rm-dev-deployment.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        }
+        $cron_msg = `crontab -l`;
+        print("show crontab :\n$cron_msg\n");
+        exit;
+    }
+    else {
+        print("Error: $prgname Active parameters error! \n");
+	    exit; 
+    }
+}
+else {
+    print("Error: $prgname CronID not found")
 }
