@@ -12,6 +12,7 @@ if (!-e $p_config) {
 require($p_config);
 
 $prgname = substr($0, rindex($0,"/")+1);
+$g_mode = defined($ARGV[0])?lc($ARGV[0]):'display'; # log or display (Default)
 $g_now = `TZ='Asia/Taipei' date +"%Y-%m-%d %H:%M:%S"`;
 $g_now =~ s/\n|\r//g;
 
@@ -24,12 +25,14 @@ if ($cmd_msg ne 'root') {
 }
 
 # check log file
-$logfile = $nfs_dir.'/deploy-config/storage_info.log';
-$header = "datetime,total,used,available,use%,redmine_file,redmine_db,gitlab,harbor_pvc\n";
-if (!-e $logfile) {
-	open(FH, '>', $logfile) or die $!;
-	print FH $header;
-	close(FH);
+if ($g_mode eq 'log') {
+	$logfile = $nfs_dir.'/deploy-config/storage_info.log';
+	$header = "datetime,total,used,available,use%,redmine_file,redmine_db,gitlab,harbor_pvc\n";
+	if (!-e $logfile) {
+		open(FH, '>', $logfile) or die $!;
+		print FH $header;
+		close(FH);
+	}
 }
 
 # Total Storage Info
@@ -59,9 +62,13 @@ $cmd_msg = `$cmd 2>&1`;
 ($harbor_pvc) = split(/\t/, $cmd_msg);
 
 $line = "$g_now,$total,$used,$available,$use_percent,$redmine_file,$redmine_db,$gitlab,$harbor_pvc\n";
-print($line);
+if ($g_mode eq 'log') {
+	open(FH, '>>', $logfile) or die $!;
+	print FH $line;
+	close(FH);
+}
+else {
+	print($line);
+}
 
-open(FH, '>>', $logfile) or die $!;
-print FH $line;
-close(FH);
 exit;
