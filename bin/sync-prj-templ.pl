@@ -52,9 +52,9 @@ elsif ($validate_token_msg->{'message'} ne '') {
     print("validate token fail : "+$validate_token_msg->{'message'}+"\n");
     $error_msg = encode_json($validate_token_msg->{'error'});
     $sed_error = `curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $api_token" --request POST '$iiidevops_api/alert_message' --data-raw '$error_msg'`;
+	exit;
 }
 else {
-    
     print("api error : "+$validate_token_msg->{'msg'});
 }
 
