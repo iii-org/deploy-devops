@@ -36,6 +36,28 @@ $github_org = (defined($ARGV[1]))?$ARGV[1]:'iiidevops-templates';
 $local_group = 'local-templates';
 $force_sync = (defined($ARGV[2]) && lc($ARGV[2]) eq 'force-sync');
 
+# Get API login token
+$login_cmd = "curl -s -H \"Content-Type: application/json\" --request POST '$iiidevops_api/user/login' --data-raw '{\"username\": \"$admin_init_login\",\"password\": \"$admin_init_password\"}'";
+#$api_token = "";
+$api_token = decode_json(`$login_cmd`)->{'data'}->{'token'};
+
+# check github user token
+$token_check_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/monitoring/github/validate_token'";
+#print("token_check_cmd:$token_check_cmd\n");
+$validate_token_msg = decode_json(`$token_check_cmd`);
+if(index($validate_token_msg->{'message'},'success')>0) {
+    print('validate token success\n');
+}
+elsif ($validate_token_msg->{'message'} ne '') {
+    print("validate token fail : "+$validate_token_msg->{'message'}+"\n");
+    $error_msg = encode_json($validate_token_msg->{'error'});
+    $sed_error = `curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $api_token" --request POST '$iiidevops_api/alert_message' --data-raw '$error_msg'`;
+}
+else {
+    
+    print("api error : "+$validate_token_msg->{'msg'});
+}
+
 # Get GitHub org $github_org (iiidevops-templates) repo list
 # curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
 $arg_str = ($github_user_token ne '')?"-u $github_user_token ":'';
