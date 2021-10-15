@@ -38,24 +38,26 @@ $force_sync = (defined($ARGV[2]) && lc($ARGV[2]) eq 'force-sync');
 
 # Get API login token
 $login_cmd = "curl -s -H \"Content-Type: application/json\" --request POST '$iiidevops_api/user/login' --data-raw '{\"username\": \"$admin_init_login\",\"password\": \"$admin_init_password\"}'";
-#$api_token = "";
 $api_token = decode_json(`$login_cmd`)->{'data'}->{'token'};
+$sed_alert_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/alert_message'";
 
 # check github user token
 $token_check_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/monitoring/github/validate_token'";
-#print("token_check_cmd:$token_check_cmd\n");
+
 $validate_token_msg = decode_json(`$token_check_cmd`);
 if(index($validate_token_msg->{'message'},'success')>0) {
     print('validate token success\n');
 }
 elsif ($validate_token_msg->{'message'} ne '') {
-    print("validate token fail : "+$validate_token_msg->{'message'}+"\n");
+	print("validate token fail : $validate_token_msg->{'message'}\n");
     $error_msg = encode_json($validate_token_msg->{'error'});
-    $sed_error = `curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $api_token" --request POST '$iiidevops_api/alert_message' --data-raw '$error_msg'`;
+	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+    $sed_alert = `$sed_cmd`;
 	exit;
 }
 else {
     print("api error : "+$validate_token_msg->{'msg'});
+	exit;
 }
 
 # Get GitHub org $github_org (iiidevops-templates) repo list
@@ -66,6 +68,9 @@ log_print("Get GitHub org $github_org repo list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, 'node_id')<0) {
 	log_print("Get GitHub org [$github_org] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+    $sed_alert = `$sed_cmd`;
 	exit;
 }
 $hash_github_repo = decode_json($cmd_msg);
@@ -107,6 +112,9 @@ if (index($group_list, "[$github_org]")<0) {
 	$ret = create_gitlab_group($github_org);
 	if ($ret<0) {
 		log_print("Add GitLab group [$github_org] Error!\n---\n$cmd_msg\n---\n");
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+		$sed_alert = `$sed_cmd`;
 		exit;
 	}
 	log_print("Add GitLab group [$github_org] OK!\n\n");
@@ -120,6 +128,9 @@ if (index($group_list, "[$local_group]")<0) {
 	$ret = create_gitlab_group($local_group);
 	if ($ret<0) {
 		log_print("Add GitLab group [$local_group] Error!\n---\n$cmd_msg\n---\n");
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+		$sed_alert = `$sed_cmd`;
 		exit;
 	}
 	log_print("Add GitLab group [$local_group] OK!\n\n");
@@ -139,6 +150,9 @@ log_print("Get GitLab group $github_org project list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, '"message"')>0) {
 	log_print("Get GitLab group [$github_org] projects Error!\n---\n$cmd_msg\n---\n");
+	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+	$sed_alert = `$sed_cmd`;
 	exit;
 }
 
@@ -241,6 +255,9 @@ sub delete_gitlab {
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, 'Accepted')<0) {
 		log_print("delete_gitlab [$p_gitlab_id] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+		$sed_alert = `$sed_cmd`;
 		exit;
 	}
 	sleep(5);
@@ -257,6 +274,9 @@ sub import_github {
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+		$sed_alert = `$sed_cmd`;
 		exit;
 	}
 	# Ref - https://docs.gitlab.com/ee/api/import.html
@@ -293,6 +313,9 @@ sub refresh_tmpl_cache {
 	$key_word = '"message": "success"';
 	if (index($cmd_msg, $key_word)<0) {
 		log_print("refresh III DevOps template cache Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
+		$sed_alert = `$sed_cmd`;
 		exit;
 	}
 	
