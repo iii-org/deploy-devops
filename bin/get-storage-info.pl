@@ -36,7 +36,7 @@ if ($g_mode eq 'log') {
 }
 
 # Total Storage Info
-$cmd = "sudo df | grep $nfs_dir | head -1";
+$cmd = "df $nfs_dir | tail -1";
 $cmd_msg = `$cmd 2>&1`;
 $cmd_msg =~ s/( )+/ /g;
 ($t1, $total, $used, $available, $use_percent) = split(/ /, $cmd_msg);
