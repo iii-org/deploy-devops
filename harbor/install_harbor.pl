@@ -3,6 +3,7 @@
 #
 use FindBin qw($Bin);
 use MIME::Base64;
+use POSIX qw(strftime);
 $|=1; # force flush output
 
 my $p_config = "$Bin/../env.pl";
@@ -166,6 +167,11 @@ END
 	if ($harbor_domain_name ne '') {
 		$cmd_service = `kubectl apply -f $yaml_path/harbor-service.yaml`;
 	}
+	
+	# export harbor helm install values yaml
+	$datestring = strftime "%Y%m%d%H%M", localtime;
+	$cmd_msg = `helm get values harbor > $nfs_dir/deploy-config/harbor-install-$datestring.yaml`;
+	log_print("output harbor yaml : $nfs_dir/deploy-config/harbor-install-$datestring.yaml");
 
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to deploy Harbor service. Please wait.. \n");
@@ -306,6 +312,11 @@ sub manual_secret_tls {
 	$cmd = "helm upgrade harbor --version=1.5.5 harbor/harbor -f $yaml_file --timeout=3600s --wait";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
+	
+	# export harbor helm install values yaml
+	$datestring = strftime "%Y%m%d%H%M", localtime;
+	$cmd_msg = `helm get values harbor > $nfs_dir/deploy-config/harbor-install-$datestring.yaml`;
+	log_print("output harbor yaml : $nfs_dir/deploy-config/harbor-install-$datestring.yaml");
 
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to upgrade Harbor service. Please wait.. \n");
