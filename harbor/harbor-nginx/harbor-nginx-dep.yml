@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: harbor
+    component: nginx
+  name: harbor-harbor-nginx
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: harbor
+      component: nginx
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: harbor
+        component: nginx
+    spec:
+      containers:
+      - image: goharbor/nginx-photon:v2.1.2
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8443
+            scheme: HTTPS
+          initialDelaySeconds: 300
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: nginx
+        ports:
+        - containerPort: 8080
+          name: 8080tcp2
+          protocol: TCP
+        - containerPort: 8443
+          name: 8443tcp2
+          protocol: TCP
+        - containerPort: 4443
+          name: 4443tcp2
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 8443
+            scheme: HTTPS
+          initialDelaySeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        volumeMounts:
+        - mountPath: /etc/nginx/nginx.conf
+          name: config
+          subPath: nginx.conf
+        - mountPath: /etc/nginx/cert
+          name: certificate
+      volumes:
+      - configMap:
+          name: harbor-harbor-nginx
+        name: config
+      - name: certificate
+        secret:
+          secretName: harbor-harbor-ingress

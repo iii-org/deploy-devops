@@ -165,7 +165,7 @@ END
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
 	if ($harbor_domain_name ne '') {
-		$cmd_service = `kubectl apply -f $yaml_path/harbor-service.yaml`;
+		$cmd_service = `kubectl apply -f $yaml_path/harbor-nginx/`;
 	}
 	
 	# export harbor helm install values yaml
