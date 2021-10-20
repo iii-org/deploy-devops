@@ -51,6 +51,11 @@ END
 
 system($cmd);
 
+# Update docker daemon.json and restart docker
+if (`grep "localhost:32443" /etc/docker/daemon.json` eq '') {
+    system("sudo sed -i 's/\"insecure-registries\"\:\[/\"insecure-registries\"\:\[\"localhost:32443\",\ /g' /etc/docker/daemon.json; sudo service docker restart");
+}
+
 # Update kubernetes cluster enable TTL 
 $cmd =<<END;
 sed -i '/ kube-api:/{:a;n;s/ extra_args: {}/ extra_args:\\n      feature-gates: TTLAfterFinished=true/g;/ kubelet:/!ba}' $nfs_dir/deploy-config/cluster.yml;
