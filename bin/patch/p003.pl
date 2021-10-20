@@ -51,6 +51,11 @@ END
 
 system($cmd);
 
+# Harbor DNS mode Add NodePort
+if ($harbor_domain_name ne '') {
+	$cmd_service = `kubectl apply -f $Bin/../../harbor/harbor-nginx/`;
+}
+
 # Update docker daemon.json and restart docker
 if (`grep "localhost:32443" /etc/docker/daemon.json` eq '') {
     system("sudo sed -i 's/\"insecure-registries\"\:\[/\"insecure-registries\"\:\[\"localhost:32443\",\ /g' /etc/docker/daemon.json; sudo service docker restart");
