@@ -35,6 +35,8 @@ spec:
           value: {{redmine_db_passwd}}
         - name: REDMINE_DB_DATABASE
           value: redmine
+        - name: REDMINE_SECRET_KEY_BASE
+          value: {{redmine_db_passwd}}
         volumeMounts:
         - name: redmine-config-tmp-dir
           mountPath: /usr/src/redmine/config/configuration.yml
