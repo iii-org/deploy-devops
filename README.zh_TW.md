@@ -171,7 +171,7 @@
 > * 請先申請個人在 github 上的 Token (scopes 只需要 public_repo 即可) - https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 >
 > * 請使用管理者帳號登入進行設定 - http://10.20.0.71:30775/#/system-settings/system-arguments 
-![devops ui set sync templ](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui-set-sync-templ.pngi.png?raw=true)
+![devops ui set sync templ](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui-set-sync-templ.png?raw=true)
 
 ## v1.10 以前的版本設定
 > * 請使用以下設定進行同步或更新系統版本至最新版本
