@@ -21,7 +21,7 @@ if (!defined($ARGV[0])) {
 		exit;
 	}
 	else {
-		$github_user_token = (defined($ARGV[1]))?$ARGV[1]:$sync_templ_key;
+		$github_user_token = (defined($ARGV[0]))?$ARGV[0]:$sync_templ_key;
 	}
 }
 
@@ -40,30 +40,6 @@ log_print(`TZ='Asia/Taipei' date`);
 $github_org = (defined($ARGV[1]))?$ARGV[1]:'iiidevops-templates';
 $local_group = 'local-templates';
 $force_sync = (defined($ARGV[2]) && lc($ARGV[2]) eq 'force-sync');
-
-# Get API login token
-$login_cmd = "curl -s -H \"Content-Type: application/json\" --request POST '$iiidevops_api/user/login' --data-raw '{\"username\": \"$admin_init_login\",\"password\": \"$admin_init_password\"}'";
-$api_token = decode_json(`$login_cmd`)->{'data'}->{'token'};
-$sed_alert_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/alert_message'";
-
-# check github user token
-$token_check_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/monitoring/github/validate_token'";
-
-$validate_token_msg = decode_json(`$token_check_cmd`);
-if(index($validate_token_msg->{'message'},'success')>=0) {
-    print('validate token success\n');
-}
-elsif ($validate_token_msg->{'message'} ne '') {
-	print("validate token fail : $validate_token_msg->{'message'}\n");
-    $error_msg = encode_json($validate_token_msg->{'error'});
-	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-    $sed_alert = `$sed_cmd`;
-	exit;
-}
-else {
-    print("api error : "+$validate_token_msg->{'msg'});
-	exit;
-}
 
 # Get GitHub org $github_org (iiidevops-templates) repo list
 # curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos

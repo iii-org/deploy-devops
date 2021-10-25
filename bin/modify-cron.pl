@@ -37,43 +37,18 @@ if ($cronid eq 'sync_tmpl') {
     if ($active eq 'on') {
         $argc1 = (!defined($ARGV[3]))?'':$ARGV[3];
 	    print("$prgname $active $runtime $argc1\n");
-        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync-prj-templ.pl')>=0) {
-            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync-github-templ.pl')>=0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync-github-templ.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
         }
-        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-prj-templ.pl $argc1 >> /tmp/sync-prj-templ.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync-github-templ.pl $argc1 >> /tmp/sync-github-templ.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
         $cron_msg = `crontab -l`;
         print("show crontab :\n$cron_msg\n");
         exit;
     }
     elsif ($active eq 'off') {
         print("$prgname $active \n");
-        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync-prj-templ.pl')>=0) {
-            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync-prj-templ.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
-        }
-        $cron_msg = `crontab -l`;
-        print("show crontab :\n$cron_msg\n");
-        exit;
-    }
-    else {
-        print("Error: $prgname Active parameters error! \n");
-	    exit; 
-    }
-}
-elsif ($cronid eq 'sync_chart') {
-    if ($active eq 'on') {
-	    print("$prgname $active $runtime \n");
-        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync_chart_index.pl')>=0) {
-            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync_chart_index.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
-        }
-        system(`echo "$runtime /home/rkeuser/deploy-devops/bin/sync_chart_index.pl gitlab_update >> /tmp/sync-chart-index.log 2>&1" >> /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
-        $cron_msg = `crontab -l`;
-        print("show crontab :\n$cron_msg\n");
-        exit;
-    }
-    elsif ($active eq 'off') {
-        print("$prgname $active \n");
-        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync_chart_index.pl')>=0) {
-            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync_chart_index.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
+        if (index(`cat /home/rkeuser/cron.txt`, '/home/rkeuser/deploy-devops/bin/sync-github-templ.pl')>=0) {
+            system(`sed -i '/\\/home\\/rkeuser\\/deploy-devops\\/bin\\/sync-github-templ.pl/d' /home/rkeuser/cron.txt; crontab /home/rkeuser/cron.txt`);
         }
         $cron_msg = `crontab -l`;
         print("show crontab :\n$cron_msg\n");
