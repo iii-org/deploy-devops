@@ -15,11 +15,16 @@ if (!-e $p_config) {
 require($p_config);
 
 if (!defined($ARGV[0])) {
-	print("Usage: $prgname [github_id:github_token] [github_org] [force-sync]\n");
-	exit;
+	if ( $sync_templ_key eq '' ) {
+		print("Usage: $prgname [github_id:github_token] [github_org] [force-sync]\n");
+		print("OR Setting ~/deploy-devops/bin/generate_env.pl sync_templ_key [github_id:github_token]");
+		exit;
+	}
+	else {
+		$github_user_token = (defined($ARGV[1]))?$ARGV[1]:$sync_templ_key;
+	}
 }
 
-$github_user_token = $ARGV[0];
 ($cmd_msg, $github_token) = split(':', $github_user_token);
 if (length($github_token)!=40) {
 	print("github_token:[$github_token] is worng!\n");

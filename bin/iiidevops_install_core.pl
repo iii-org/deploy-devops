@@ -362,9 +362,13 @@ if ($is_offline eq 'offline') {
 	system("$Bin/../bin/sync-prj-templ-offline.pl");
 }
 else {
-	system("$Bin/../bin/sync_chart_index.pl");
-	$sync_key = decode_base64(substr($sync_templ_key,10,63));
-	system("$Bin/../bin/sync-prj-templ.pl $sync_key");
+	if ($sync_templ_key ne '') {
+		system("$Bin/../bin/sync_chart_index.pl");
+		system("$Bin/../bin/sync-prj-templ.pl $sync_templ_key");
+	}
+	else {
+		log_print("Sync III DevOps Templates no GitHub key ! Please refer to Step 8 at https://github.com/iii-org/deploy-devops");
+	}
 }
 
 log_print("----------------------------------------\n");

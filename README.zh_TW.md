@@ -167,10 +167,14 @@
 > 使用 Step 2.(~/deploy-devops/env.pl) 所設定的 **$admin_init_login** 管理者帳號與 **$admin_init_password** 密碼進行系統登入
 
 # Step 8. 設定自動更新專案範本
-
 > * III DevOps 維護熱門軟體開發使用框架與資料庫專案範本 - https://github.com/iiidevops-templates
 > * 請先申請個人在 github 上的 Token (scopes 只需要 public_repo 即可) - https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 >
+> * 請使用管理者帳號登入進行設定 - http://10.20.0.71:30775/#/system-settings/system-arguments 
+![devops ui set sync templ](https://github.com/iii-org/deploy-devops/blob/master/png/devops-ui-set-sync-templ.pngi.png?raw=true)
+
+## v1.10 以前的版本設定
+> * 請使用以下設定進行同步或更新系統版本至最新版本
 > * 在 VM1 建立 cron.txt 內設定上班時間每 10 分鐘進行檢查同步範本
 >
 >   ```bash

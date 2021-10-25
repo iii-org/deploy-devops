@@ -728,6 +728,47 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'random_key') {
 	}
 }
 
+# 10c. setting GitHub Sync Token
+#\$sync_templ_key = '{{ask_sync_templ_key}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'sync_templ_key') {
+	if (!defined($ARGV[1])) {
+		$ask_sync_templ_key = (defined($ask_sync_templ_key) && $ask_sync_templ_key ne '{{ask_sync_templ_key}}' && $ask_sync_templ_key ne '' && lc($ask_sync_templ_key) ne 'skip')?$ask_sync_templ_key:'';
+		if ($ask_sync_templ_key ne '') {
+			$question = "Q10c. Do you want to change GitHub Token?(y/N)";
+			$answer = "A10c. Skip Set GitHub Token!";
+			$Y_N = prompt_for_input($question);
+			$isAsk = (lc($Y_N) eq 'y');	
+		}
+		else {
+			$isAsk=1;
+		}
+		while ($isAsk) {
+			$question = "Q10c. Please enter the GitHub Token:(If your dosen't have GitHub Token, please enter 'SKIP')";
+			$ask_sync_templ_key = prompt_for_input($question);
+			$isAsk = ($ask_sync_templ_key eq '');
+			if ($isAsk) {
+				print("A10c. The Token is empty, please re-enter!\n");
+			}
+			else {
+				$answer = "A10c. Set GitHub Token OK!";
+			}
+		}
+	}
+	else {
+		$ask_sync_templ_key = $ARGV[1];
+		$answer = "A10c. Set GitHub Token OK!";
+	}
+	print ("$answer\n\n");
+	if ($ask_sync_templ_key ne '') {
+		if (-e $p_config_ans) {
+			$tmp=$ask_sync_templ_key;
+			require($p_config_ans);
+			$ask_sync_templ_key=$tmp;
+		}
+		write_ans();
+	}
+}
+
 #------------------------------
 # checkmarx setting(Option)
 #------------------------------
@@ -759,6 +800,7 @@ else {
 if ($isAsk) {
 	require($Bin.'/generate_env_webinspect.pl');
 }
+
 
 
 #------------------------------
@@ -828,6 +870,7 @@ sub convert {
 	$env_template =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/g;
 	$env_template =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/g;
 	$env_template =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/g;
+	$env_template =~ s/{{ask_sync_templ_key}}/$ask_sync_templ_key/g;
 	
 	open(FH, '>', $p_config) or die $!;
 	print FH $env_template;

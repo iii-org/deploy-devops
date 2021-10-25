@@ -156,7 +156,7 @@ else {
 }
 
 if ($is_update ne 'gitlab_offline' && $is_update ne 'gitlab_offline_update') {
-	$github_user_token = decode_base64(substr($sync_templ_key,10,63));
+	$github_user_token = $sync_templ_key;
 	($cmd_msg, $github_token) = split(':', $github_user_token);
 	if (length($github_token)!=40) {
 		print("github_token:[$github_token] is worng!\n");
