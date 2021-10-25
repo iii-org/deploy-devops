@@ -131,7 +131,7 @@ if (!-e $p_tar) {
 $cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/$helm_catalog_group/projects?per_page=100";
 log_print("Get GitLab group $helm_catalog_group project list..\n");
 $cmd_msg = `$cmd`;
-if (index($cmd_msg, '"message"')>0) {
+if (index($cmd_msg, '"message"')>=0) {
 	log_print("Get GitLab group [$helm_catalog_group] projects Error!\n---\n$cmd_msg\n---\n");
 	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
 	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
@@ -190,7 +190,7 @@ if (index($prj_name_list, "[$helm_catalog]")<0) {
 			exit;
 		}
 		log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] OK!\n\n");
-		if (index($ret, $helm_catalog)>0){
+		if (index($ret, $helm_catalog)>=0){
 			$hash_msg = decode_json($ret);
 			$prj_name = $hash_msg->{'name'};
 			$helm_catalog_url = $hash_msg->{'web_url'};
@@ -457,7 +457,7 @@ sub create_gitlab_group {
 	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\",\"visibility\":\"public\"}' $v_http://$gitlab_domain_name/api/v4/groups/";
 	$cmd_msg = `$cmd`;
 	$ret = '';
-	if (index($cmd_msg, $p_gitlab_groupname)>0){
+	if (index($cmd_msg, $p_gitlab_groupname)>=0){
 		$hash_msg = decode_json($cmd_msg);
 		$ret = $hash_msg->{'name'};
 	}
@@ -475,7 +475,7 @@ sub delete_gitlab_group {
 	
 	$cmd = "$v_cmd -s -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE  $v_http://$gitlab_domain_name/api/v4/groups/$p_gitlab_groupid";
     $cmd_msg = `$cmd`;
-    if (index($cmd_msg, "Accepted")>0){
+    if (index($cmd_msg, "Accepted")>=0){
 		$hash_msg = decode_json($cmd_msg);
 		$ret = $hash_msg->{'id'};
 	}else{
@@ -493,7 +493,7 @@ sub create_gitlab_group_project {
 	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$project_name\",\"namespace_id\": \"$namespace_id\",\"visibility\":\"public\"}' $v_http://$gitlab_domain_name/api/v4/projects/";
 	$cmd_msg = `$cmd`;
 	$ret = '';
-	if (index($cmd_msg, $project_name)>0){
+	if (index($cmd_msg, $project_name)>=0){
 		$hash_msg = decode_json($cmd_msg);
 		$ret = $hash_msg->{'name'};
 		print("[$ret]\n");

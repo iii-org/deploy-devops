@@ -45,7 +45,7 @@ $sed_alert_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorizati
 $token_check_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/monitoring/github/validate_token'";
 
 $validate_token_msg = decode_json(`$token_check_cmd`);
-if(index($validate_token_msg->{'message'},'success')>0) {
+if(index($validate_token_msg->{'message'},'success')>=0) {
     print('validate token success\n');
 }
 elsif ($validate_token_msg->{'message'} ne '') {
@@ -148,7 +148,7 @@ else {
 $cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/$github_org/projects?per_page=100";
 log_print("Get GitLab group $github_org project list..\n");
 $cmd_msg = `$cmd`;
-if (index($cmd_msg, '"message"')>0) {
+if (index($cmd_msg, '"message"')>=0) {
 	log_print("Get GitLab group [$github_org] projects Error!\n---\n$cmd_msg\n---\n");
 	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
 	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
@@ -223,7 +223,7 @@ sub create_gitlab_group {
 	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}' $v_http://$gitlab_domain_name/api/v4/groups/";	
 	$cmd_msg = `$cmd`;
 	$ret = '';
-	if (index($cmd_msg, $p_gitlab_groupname)>0){
+	if (index($cmd_msg, $p_gitlab_groupname)>=0){
 		$hash_msg = decode_json($cmd_msg);
 		$ret = $hash_msg->{'name'};
 		print("[$ret]\n");
