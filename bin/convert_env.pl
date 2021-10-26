@@ -83,6 +83,7 @@ if (-e $p_config_ans) {
 	$env_template =~ s/{{ask_webinspect_password}}//g ;
 	$env_template =~ s/{{ask_auto_password}}/$hash_conf{'AUTO_PWD'}/g;
 	$env_template =~ s/{{ask_random_key}}/$hash_conf{'RANDOM_KEY'}/g;
+	$env_template =~ s/{{ask_sync_templ_key}}//g ;
 	
 	open(FH, '>', $p_config_ans) or die $!;
 	print FH $env_template;
