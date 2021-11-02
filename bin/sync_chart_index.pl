@@ -37,7 +37,7 @@ $helm_catalog_group = 'iiidevops-catalog';
 $helm_catalog = 'devops-charts-pack-and-index';
 $helm_catalog_url = '';
 foreach $item (@{ $hash_catalogs->{'data'} }) {
-        $catalogs_name_list .= "[$item->{'name'}]";
+	$catalogs_name_list .= "[$item->{'name'}]";
 }
 
 $gitlab_domain_name = get_domain_name('gitlab');
@@ -55,15 +55,44 @@ $helm_catalog_group_id = '';
 foreach $group_hash (@ {$hash_msg}) {
 	if ($group_hash->{'name'} eq $helm_catalog_group) {
 		if ($is_update eq 'gitlab_update' || $is_update eq 'gitlab_offline_update') {
+			if ($is_update eq 'gitlab_update') {
+				$github_user_token = $sync_templ_key;
+				if (index($github_user_token, ":")<=0) {
+					print("github_token:[$github_user_token] is worng!\n");
+					exit;
+				} else {
+					$token_ck_cmd = "curl -s -u $github_user_token https://api.github.com/user";
+					$token_msg = `$token_ck_cmd`;
+					if(index($token_msg,"node_id")<0) {
+						print("github_token:[$github_user_token] is worng!\n");
+						exit;
+					} else {
+						$g_github_repo_cmd = "curl -s -u $github_user_token -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
+						$repo_hash = decode_json($g_github_repo_cmd);
+						$repo_max_time = ($repo_hash->{'created_at'} gt $repo_hash->{'updated_at'})?$repo_hash->{'created_at'}:$repo_hash->{'updated_at'};
+						$repo_max_time = ($repo_hash gt $token_msg->{'pushed_at'})?$repo_max_time:$repo_hash->{'pushed_at'};
+						
+						# Check if the GitLab group $helm_catalog_group (iiidevops-templates) exists
+						# curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/
+						$cmd = "$v_cmd -k -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects?search=devops-charts-pack-and-index";
+						$cmd_msg = `$cmd`;
+						$gitlab_prj_created_at = decode_json($cmd_msg)->[0]->{'created_at'};
+						if ($repo_max_time le $gitlab_prj_created_at) {
+							print("GitLab repo [$helm_catalog] ($repo_max_time) is latest\n");
+							exit;
+						}
+					}
+				}
+			}
 			$helm_catalog_group_id = $group_hash->{'id'};
 			$ret = delete_gitlab_group($helm_catalog_group_id);
 			if ($ret<0) {
-                log_print("Delete GitLab group [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
+				log_print("Delete GitLab group [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
 				$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
 				$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 				$sed_alert = `$sed_cmd`;
-                exit;
-            }
+				exit;
+			}
 
 			log_print("Delete GitLab group [$helm_catalog_group] OK!\n\n");
 		}else {
@@ -82,12 +111,12 @@ foreach $catalogs_hash (@ {$hash_msg}) {
 			$helm_catalog_id = $catalogs_hash->{'id'};
 			$ret = delete_gitlab($helm_catalog_id);
 			if ($ret<0) {
-                log_print("Delete GitLab Project catalog [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
+				log_print("Delete GitLab Project catalog [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
 				$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
 				$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 				$sed_alert = `$sed_cmd`;
-                exit;
-            }
+				exit;
+			}
 			log_print("Delete GitLab Project catalog [$helm_catalog_group] OK!\n\n");
 		}
 	}
@@ -110,7 +139,7 @@ if (index($group_list, "[$helm_catalog_group]")<0) {
 exit;
 	}
 	log_print("Add GitLab group [$helm_catalog_group] OK!\n\n");
-    $helm_catalog_group_id = $ret;
+	$helm_catalog_group_id = $ret;
 }
 else {
 	log_print("GitLab group [$helm_catalog_group] exists!\n\n");
@@ -143,7 +172,7 @@ $hash_gitlab_project = decode_json($cmd_msg);
 $prj_name_list = '';
 foreach $project_hash (@ {$hash_gitlab_project}) {
 	if ($project_hash->{'name'} eq $helm_catalog) {
-        $helm_catalog_group_id = $project_hash->{'id'};
+		$helm_catalog_group_id = $project_hash->{'id'};
 		$helm_catalog_url = $project_hash->{'web_url'};
 	}
 	$prj_name_list .= '['.$project_hash->{'name'}.']';
@@ -157,10 +186,16 @@ else {
 
 if ($is_update ne 'gitlab_offline' && $is_update ne 'gitlab_offline_update') {
 	$github_user_token = $sync_templ_key;
-	($cmd_msg, $github_token) = split(':', $github_user_token);
-	if (length($github_token)!=40) {
-		print("github_token:[$github_token] is worng!\n");
+	if (index($github_user_token, ":")<=0) {
+		print("github_token:[$github_user_token] is worng!\n");
 		exit;
+	} else {
+		$token_ck_cmd = "curl -s -u $github_user_token https://api.github.com/user";
+		$token_msg = `$token_ck_cmd`;
+		if(index($token_msg,"node_id")<0) {
+			print("github_token:[$github_user_token] is worng!\n");
+			exit;
+		}
 	}
 	# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
 	$arg_str = ($github_user_token ne '')?"-u $github_user_token ":'';
@@ -528,6 +563,7 @@ sub import_github {
 	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
 	my ($cmd, $cmd_msg, $arg_user, $hash_msg, $id, $import_status);
 
+	$github_token = substr($github_user_token, rindex($github_user_token,":")+1);
 	$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=iiidevops-catalog  \" $v_http://$gitlab_domain_name/api/v4/import/github";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
@@ -577,12 +613,12 @@ sub import_github {
 sub log_print {
 	my ($p_msg) = @_;
 
-    print "$p_msg";
+	print "$p_msg";
 	open(FH, '>>', $logfile) or die $!;
 	print FH $p_msg;
 	close(FH);
 
-    return;
+	return;
 }
 
 1;
