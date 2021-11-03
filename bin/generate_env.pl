@@ -932,6 +932,7 @@ sub write_ans {
 	$ans_file =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/;
 	$ans_file =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;
 	$ans_file =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;
+	$ans_file =~ s/{{ask_sync_templ_key}}/$ask_sync_templ_key/;
 	
 	open(FH, '>', $p_config_ans) or die $!;
 	print FH $ans_file;
