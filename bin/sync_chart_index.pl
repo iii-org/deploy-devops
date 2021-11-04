@@ -68,7 +68,7 @@ foreach $group_hash (@ {$hash_msg}) {
 						exit;
 					} else {
 						$g_github_repo_cmd = "curl -s -u $github_user_token -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
-						$repo_hash = decode_json($g_github_repo_cmd);
+						$repo_hash = decode_json(`$g_github_repo_cmd`);
 						$repo_max_time = ($repo_hash->{'created_at'} gt $repo_hash->{'updated_at'})?$repo_hash->{'created_at'}:$repo_hash->{'updated_at'};
 						$repo_max_time = ($repo_hash gt $token_msg->{'pushed_at'})?$repo_max_time:$repo_hash->{'pushed_at'};
 						
