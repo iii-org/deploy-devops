@@ -167,6 +167,10 @@
 > 使用 Step 2.(~/deploy-devops/env.pl) 所設定的 **$admin_init_login** 管理者帳號與 **$admin_init_password** 密碼進行系統登入
 
 # Step 8. 設定自動更新專案範本
+> * 需要使用 **rekuser** 來進行更新deploy-devops為最新版
+> > ```bash
+> > perl ~/deploy-devops/bin/update-perl.pl
+> > ```
 > * III DevOps 維護熱門軟體開發使用框架與資料庫專案範本 - https://github.com/iiidevops-templates
 > * 請先申請個人在 github 上的 Token (scopes 只需要 public_repo 即可) - https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 >
