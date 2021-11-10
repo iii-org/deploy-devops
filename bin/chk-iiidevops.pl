@@ -63,10 +63,10 @@ else {
 
 # Check Rancher service is working
 log_print("4. Check Rancher status..");
-$cmd = "nc -z -v $rancher_ip 3443";
+$cmd = "nc -z -v $rancher_ip 31443";
 $chk_key = 'succeeded!';
 $cmd_msg = `$cmd 2>&1`;
-# Connection to 10.20.0.71 3443 port [tcp/*] succeeded!
+# Connection to 10.20.0.71 31443 port [tcp/*] succeeded!
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("not working!\n");
 }
