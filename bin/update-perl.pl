@@ -43,10 +43,7 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 }
 
 # Run patch
-# p004.pl
-if (!-e "$nfs_dir/project-data") {
-	system("~/deploy-devops/bin/patch/p004.pl");
-}
+system("~/deploy-devops/bin/patch/p000.pl");
 
 print("$end_str\n");
 exit;
