@@ -24,6 +24,11 @@ if (!defined($nfs_dir) || $nfs_dir eq '') {
 	exit;
 }
 
+if (-e "$nfs_dir/project-data") {
+	print("OK! The NFS directory [project-data] has been defined!\n");
+	exit;
+}
+
 $cmd =<<END;
 cd ~
 sudo mkdir -p $nfs_dir/project-data;
