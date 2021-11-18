@@ -42,5 +42,11 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 	print("env.pl.ans file link is automatically created ..OK!\n");
 }
 
+# Run patch
+# p004.pl
+if (!-e "$nfs_dir/project-data") {
+	system("~/deploy-devops/bin/patch/p004.pl");
+}
+
 print("$end_str\n");
 exit;
