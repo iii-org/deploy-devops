@@ -156,6 +156,9 @@ else {
 		($deploy_version, $api_tag, $ui_tag) = get_version_center_info('https://version-center.iiidevops.org', $uuid);
 		if (index($deploy_version, 'Err')==0) {
 			print("Failed to get info from version center : [$deploy_version]!!!\n");
+			# FIXME - There will be problems when the image tag of API and UI are different
+			$t_now_ver =~ s/V//;
+			$iiidevops_ver = ($deploy_version eq 'develop')?'develop':$t_now_ver;			
 		}
 		else {
 			# FIXME - There will be problems when the image tag of API and UI are different

@@ -14,10 +14,15 @@ sub get_version_center_info {
 	# Login in version center
 	if ($p_vc_url eq '' || $p_uuid eq '') {
 		print("Version Center URL [$p_vc_url] or UUID [$p_uuid] Error!\n");
-		return(('Err1', '', ''));
+		return(('Err0', '', ''));
 	}
 	$v_cmd = "curl -s --location -g --request POST '$p_vc_url/login?uuid=$p_uuid'";
 	$v_cmd_msg = `$v_cmd`;
+	if ($v_cmd_msg eq '') {
+		print("Call Version Center API Error![$v_cmd]\n");
+		return(('Err1', '', ''));
+	}
+	
 	$v_hash_msg = decode_json($v_cmd_msg);
 	$v_message = $v_hash_msg->{'message'};
 	if ($v_message ne 'success') {
