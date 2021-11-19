@@ -3,6 +3,49 @@
 #
 use JSON::MaybeXS qw(encode_json decode_json);
 
+# Get Version Center deployment_uuid setting information
+#curl --location --request POST '$p_vc_url/login?uuid=$p_uuid'
+#curl --location --request GET '$p_vc_url/current_version' --header 'Authorization: Bearer eyJ0kZXZvcHMuaWNoaWF5aS5jb20ifQ.jsTn6DOu7JP5Iqg-8lUhjYsDySi0aexGjm6DiusvN0M'
+#
+sub get_version_center_info {
+	my ($p_vc_url, $p_uuid) = @_;
+	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret, $v_auth, $v_deploy_version, $v_api_tag, $v_ui_tag);
+	
+	# Login in version center
+	if ($p_vc_url eq '' || $p_uuid eq '') {
+		print("Version Center URL [$p_vc_url] or UUID [$p_uuid] Error!\n");
+		return(('Err1', '', ''));
+	}
+	$v_cmd = "curl -s --location -g --request POST '$p_vc_url/login?uuid=$p_uuid'";
+	$v_cmd_msg = `$v_cmd`;
+	$v_hash_msg = decode_json($v_cmd_msg);
+	$v_message = $v_hash_msg->{'message'};
+	if ($v_message ne 'success') {
+		print("Login Version Center Error : $v_cmd_msg \n");
+		return(('Err2', '', ''));
+	}
+	$v_auth = $v_hash_msg->{'data'}->{'access_token'};
+	if ($v_auth eq '') {
+		print("access_token Error!\n");
+		return(('Err3', '', ''));
+	}
+	
+	# Get setting info
+	$v_cmd = "curl -s --location -g --request GET '$p_vc_url/current_version' --header 'Authorization: Bearer $v_auth'";
+	$v_cmd_msg = `$v_cmd`;
+	$v_hash_msg = decode_json($v_cmd_msg);
+	$v_message = $v_hash_msg->{'message'};
+	if ($v_message ne 'success') {
+		print("Get setting info Error : $v_cmd_msg \n");
+		return(('Err4', '', ''));
+	}
+	$v_deploy_version = $v_hash_msg->{'data'}->{'version_name'}; # "V1.10.1"
+	$v_api_tag = $v_hash_msg->{'data'}->{'api_image_tag'}; # "1.10.1"
+	$v_ui_tag = $v_hash_msg->{'data'}->{'ui_image_tag'}; # "1.10.1"
+
+	return(($v_deploy_version, $v_api_tag, $v_ui_tag));
+}
+
 # Get nexus info
 # api_version | deploy_version |           deployment_uuid            
 #-------------+----------------+--------------------------------------

@@ -136,6 +136,34 @@ while($isChk) {
 }
 print("OK!\n");
 
+# Check & Set deploy version
+$t_now_ver = get_nexus_info('deploy_version');
+$t_set_ver = ($iiidevops_ver eq 'develop')?'develop':'V'.$iiidevops_ver;
+if ($t_now_ver eq '') {
+	$t_ret_ver=set_nexus_deploy_version($t_set_ver);
+	if ($t_ret_ver eq $t_set_ver) {
+		print("Set deploy version to [$t_set_ver] OK!\n");
+	}
+	else {
+		print("Failed to set deploy version : [$t_ret_ver]!!!\n");
+		exit;
+	}
+}
+else {
+	# Get from version center
+	$uuid = get_nexus_info('deployment_uuid');
+	if (length($uuid)==36) {
+		($deploy_version, $api_tag, $ui_tag) = get_version_center_info('https://version-center.iiidevops.org', $uuid);
+		if (index($deploy_version, 'Err')==0) {
+			print("Failed to get info from version center : [$deploy_version]!!!\n");
+		}
+		else {
+			# FIXME - There will be problems when the image tag of API and UI are different
+			$iiidevops_ver = ($deploy_version eq 'develop')?'develop':$api_tag;
+		}
+	}
+}
+
 # iiidevops_ver
 $iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
 
@@ -326,25 +354,6 @@ while($isChk) {
 	sleep($isChk);
 }
 print("\n");
-
-# Check & Set deploy version
-$t_now_ver = get_nexus_info('deploy_version');
-$t_set_ver = ($iiidevops_ver eq 'develop')?'develop':'V'.$iiidevops_ver;
-if ($t_now_ver eq '') {
-	$t_ret_ver=set_nexus_deploy_version($t_set_ver);
-	if ($t_ret_ver eq $t_set_ver) {
-		print("Set deploy version to [$t_set_ver] OK!\n");
-	}
-	else {
-		print("Failed to set deploy version : [$t_ret_ver]!!!\n");
-	}
-}
-elsif ($t_now_ver ne $t_set_ver) {
-	print("Warning! deploy version conflict: now:[$t_now_ver] set:[$t_set_ver]!!!\n");
-}
-else {
-	print("deploy version : [$t_now_ver], Skip setting!\n");
-}
 
 # Check Rancher Cluster Name is iiidevops-k8
 if (!is_rancher_default_name_ok()) {
