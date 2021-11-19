@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 # 18:09 2021/11/18
 # Provide project default NFS path Patch:
+# [V]Auto
+# [ ]Manual
 use FindBin qw($Bin);
 $|=1; # force flush output
 
@@ -31,8 +33,8 @@ if (-e "$nfs_dir/project-data") {
 
 $cmd =<<END;
 cd ~
-sudo mkdir -p $nfs_dir/project-data;
-sudo chmod 777 $nfs_dir/project-data;
+mkdir -p $nfs_dir/project-data;
+chmod 777 $nfs_dir/project-data;
 ./deploy-devops/bin/iiidevops_install_core.pl
 END
 

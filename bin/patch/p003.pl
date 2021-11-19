@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 # update to latest version ISO Patch:
+# [ ]Auto
+# [V]Manual
 use FindBin qw($Bin);
 use JSON::MaybeXS qw(encode_json decode_json);
 $|=1; # force flush output
