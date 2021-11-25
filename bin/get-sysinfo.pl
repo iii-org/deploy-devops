@@ -21,9 +21,14 @@ $deploy_uuid = get_nexus_info('deployment_uuid');
 $iiidevops_ver = get_iiidevops_ver('raw');
 
 # k8s
-$k8s_node_json = `kubectl get node -o json`;
-$k8s_pod_json = `kubectl get pod -o json`;
-$k8s_namespace_json = `kubectl get namespace -o json`;
+$cmd_kubectl = '/snap/bin/kubectl';
+if (!-e $cmd_kubectl) {
+	$cmd_kubectl = '/usr/local/bin/kubectl';
+}
+$kubeconf_str = "--kubeconfig $nfs_dir/kube-config/config";
+$k8s_node_json = `$cmd_kubectl $kubeconf_str get node -o json`;
+$k8s_pod_json = `$cmd_kubectl $kubeconf_str get pod -o json`;
+$k8s_namespace_json = `$cmd_kubectl $kubeconf_str get namespace -o json`;
 
 # os
 $hostname = `hostname`;
