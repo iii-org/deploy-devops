@@ -8,7 +8,7 @@ print("\n----------------------------------------\n");
 print(`TZ='Asia/Taipei' date`);
 
 $cmd_kubectl = '/snap/bin/kubectl';
-if (!-e $$cmd_kubectl) {
+if (!-e $cmd_kubectl) {
 	$cmd_kubectl = '/usr/local/bin/kubectl';
 }
 
