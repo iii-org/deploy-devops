@@ -205,18 +205,23 @@ END
 }
 
 #curl --location --request GET http://localhost:31850/monitoring/rancher/default_name
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
 #{"default_cluster_name": true}
 # Check Rancher Cluster Name is iiidevops-k8s
 sub is_rancher_default_name_ok {
-	my ($v_cmd_msg, $v_hash_msg, $v_message);
+	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message);
 
-	$v_cmd_msg = `curl -s --location --request GET http://localhost:31850/monitoring/rancher/default_name`;
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	$v_cmd = "curl -s --location --request GET 'http://localhost:31850/monitoring/rancher/default_name' --header 'Authorization: Bearer $g_api_key'";
+	$v_cmd_msg = `$v_cmd`;
 	if ($v_cmd_msg ne '') {
 		$v_hash_msg = decode_json($v_cmd_msg);
 		$v_message = $v_hash_msg->{'default_cluster_name'};
 	}
 	return($v_message eq 'true');
 }
-
 
 1;
