@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# 18:09 2021/11/18
+# 11:02 2021/12/6
 # Provide project default NFS path Patch:
 # [V]Auto
 # [ ]Manual
@@ -26,8 +26,8 @@ if (!defined($nfs_dir) || $nfs_dir eq '') {
 	exit;
 }
 
-if (-e "$nfs_dir/project-data") {
-	print("OK! The NFS directory [project-data] has been defined!\n");
+if (-e "$nfs_dir/project-data" && -e "$nfs_dir/plugins-data") {
+	print("OK! The NFS directory [project-data] and [plugins-data] have been defined!\n");
 	exit;
 }
 
@@ -35,6 +35,8 @@ $cmd =<<END;
 cd ~
 mkdir -p $nfs_dir/project-data;
 chmod 777 $nfs_dir/project-data;
+mkdir -p $nfs_dir/plugins-data;
+chmod 777 $nfs_dir/plugins-data;
 ./deploy-devops/bin/iiidevops_install_core.pl
 END
 

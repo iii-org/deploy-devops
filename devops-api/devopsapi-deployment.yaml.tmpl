@@ -108,6 +108,8 @@ spec:
           mountPath: /usr/src/app/logs
         - name: project-data
           mountPath: /usr/src/app/project-data
+        - name: plugins-data
+          mountPath: /usr/src/app/plugins-data
       volumes:
       - name: kube-config
         nfs:
@@ -125,3 +127,7 @@ spec:
         nfs:
           server: {{nfs_ip}}
           path: /{{nfs_dir}}/project-data
+      - name: plugins-data
+        nfs:
+          server: {{nfs_ip}}
+          path: /{{nfs_dir}}/plugins-data
