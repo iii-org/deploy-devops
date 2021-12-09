@@ -198,6 +198,15 @@ $t_hostname = `hostname`;
 $t_hostname =~ s/\n|\r//g;
 $deployment_name = ($iiidevops_domain_name ne '')?$iiidevops_domain_name:$t_hostname;
 
+# check & create NFS dir
+$cmd =<<END;
+mkdir -p $nfs_dir/project-data;
+chmod 777 $nfs_dir/project-data;
+mkdir -p $nfs_dir/plugins-data;
+chmod 777 $nfs_dir/plugins-data;
+END
+system($cmd);
+
 # Deploy DevOps API (Python Flask) on kubernetes cluster
 $yaml_path = "$Bin/../devops-api/";
 $yaml_file = $yaml_path.'devopsapi-deployment.yaml';
