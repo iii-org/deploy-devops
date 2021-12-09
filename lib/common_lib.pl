@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 # common lib
 #
+use JSON::MaybeXS qw(encode_json decode_json);
 
 # Glbal variable
 %hash_rke_cluster_yml = (
@@ -309,9 +310,12 @@ sub call_sonarqube_api {
 
 # Get System Version
 #rke : v1.2.7 , v1.1.19
+#docker : 19.03.x
+#kubectl : { "client" : "v1.18.20",  "server" : "v1.18.17" }
+#
 sub get_system_ver {
 	my ($p_system) = @_;
-	my ($cmd, $t1,$t2,$v_ver);
+	my ($cmd, $hash_msg, $t1,$t2,$v_ver);
 	
 	if ($p_system eq 'rke') {
 		$cmd = '/usr/local/bin/rke';
@@ -331,7 +335,46 @@ sub get_system_ver {
 		}
 		return($v_ver);
 	}
-	
+	elsif ($p_system eq 'docker') {
+		$cmd = '/usr/bin/docker';
+		if (!-e $cmd) {
+			return('ERR_1');
+		}
+		$cmd_msg = `$cmd -v 2>&1`;
+		$cmd_msg =~ s/\n|\r//g; 
+		#Docker version 19.03.14, build 5eb3275d40
+		if (index($cmd_msg, 'Docker version')<0) {
+			return('ERR_2');
+		}
+		($t1,$t2,$v_ver) = split(/ /, $cmd_msg);
+		$v_ver =~ s/,//g;
+		return($v_ver);
+	}
+	elsif ($p_system eq 'kubectl') {
+		$cmd = '/usr/local/bin/kubectl';
+		if (!-e $cmd) {
+			$cmd = '/snap/bin/kubectl';
+			if (!-e $cmd) {
+				return('ERR_1');
+			}
+		}
+		$cmd_msg = `$cmd version -o json 2>&1`;
+		#{
+		#  "clientVersion": {
+		#    "gitVersion": "v1.18.20",
+		#  },
+		#  "serverVersion": {
+		#    "gitVersion": "v1.18.17",
+		#  }
+		#}
+		if (index($cmd_msg, 'clientVersion')<0) {
+			return('ERR_2');
+		}
+		$hash_msg = decode_json($cmd_msg);
+		$v_ver = '{ "client" : "'.$v_hash_msg->{'clientVersion'}->{'gitVersion'}.'",  "server" : "'.$v_hash_msg->{'serverVersion'}->{'gitVersion'}.'" }';
+		return($v_ver);
+	}
+
 	return('ERR_0');
 }
 

@@ -35,6 +35,13 @@ $hostname = `hostname`;
 $hostname =~ s/\n|\r//g;
 $os_issue = `cat /etc/issue.net`;
 $os_issue =~ s/\n|\r//g;
+
+$cpu_num =  `grep -c -P '^processor\\s+:' /proc/cpuinfo`;
+$cpu_model = `grep -m 1 -P '^model name\\s+:' /proc/cpuinfo`;
+$cpu_MHz = `grep -m 1 -P '^cpu MHz\\s+:' /proc/cpuinfo`;
+$cpu_bogomips = `grep -m 1 -P '^bogomips\\s+:' /proc/cpuinfo`;
+$cpu_cache = `grep -m 1 -P '^cache size\\s+:' /proc/cpuinfo`;
+
 $meminfo = `cat /proc/meminfo | grep Mem`;
 $meminfo_json = '';
 foreach $line (split(/\n/, $meminfo)) {
@@ -46,7 +53,13 @@ foreach $line (split(/\n/, $meminfo)) {
 	$meminfo_json .= "\t\t\t\"$key\" : \"$value\"";
 }
 
-$json_ver = 20210806001;
+# packages
+$rke_ver = get_system_ver('rke');
+$docker_ver = get_system_ver('docker');
+$kubectl_ver = get_system_ver('kubectl');
+
+# json
+$json_ver = 20211209001;
 $json_data = <<END;
 {
 	"json_ver" : $json_ver,
@@ -66,9 +79,21 @@ $k8s_namespace_json
 	"os" : {
 		"hostname" : "$hostname",
 		"issue" : "$os_issue",
+		"cupinfo" : {
+			"cores" : $cpu_num,
+			"model name" : "$cpu_model",
+			"cpu MHz" : $cpu_MHz,
+			"bogomips" : $cpu_bogomips,
+			"cache size" : "$cpu_cache"
+		}
 		"meminfo" : {
 $meminfo_json
 		}
+	}
+	"packages" : {
+		"rke" : "$rke_ver",
+		"docker" : "$docker_ver",
+		"kubectl" : $kubectl_ver
 	}
 }
 END
