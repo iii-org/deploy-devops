@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-#15:15 2021/6/18
-#Redmine File path Bug Patch:
+# 15:15 2021/6/18
+# Redmine File path Bug Patch:
 # [V]Auto
 # [ ]Manual
 use FindBin qw($Bin);
@@ -32,10 +32,9 @@ if (-e "$nfs_dir/redmine-files") {
 }
 
 $cmd =<<END;
-cd ~
 mkdir -p $nfs_dir/redmine-files;
 chmod 777 $nfs_dir/redmine-files;
-./deploy-devops/redmine/install_redmine.pl force
+$Bin/../../redmine/install_redmine.pl force
 END
 
 system($cmd);

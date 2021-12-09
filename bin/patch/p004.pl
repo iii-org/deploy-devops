@@ -32,12 +32,11 @@ if (-e "$nfs_dir/project-data" && -e "$nfs_dir/plugins-data") {
 }
 
 $cmd =<<END;
-cd ~
 mkdir -p $nfs_dir/project-data;
 chmod 777 $nfs_dir/project-data;
 mkdir -p $nfs_dir/plugins-data;
 chmod 777 $nfs_dir/plugins-data;
-./deploy-devops/bin/iiidevops_install_core.pl
+$Bin/../iiidevops_install_core.pl
 END
 
 system($cmd);
