@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Update iiidevops perl script
+# Update iiidevops perl script (Also Working with devops-api)
 #
 use FindBin qw($Bin);
 $|=1; # force flush output
@@ -41,9 +41,6 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 	$cmd_msg = `ln -s $nfs_dir/deploy-config/env.pl.ans $p_config.ans`; 
 	print("env.pl.ans file link is automatically created ..OK!\n");
 }
-
-# Run patch
-system("~/deploy-devops/bin/patch/p000.pl");
 
 print("$end_str\n");
 exit;
