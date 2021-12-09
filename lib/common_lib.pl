@@ -370,9 +370,7 @@ sub get_system_ver {
 		if (index($cmd_msg, 'clientVersion')<0) {
 			return('ERR_2');
 		}
-		$hash_msg = decode_json($cmd_msg);
-		$v_ver = '{ "client" : "'.$v_hash_msg->{'clientVersion'}->{'gitVersion'}.'",  "server" : "'.$v_hash_msg->{'serverVersion'}->{'gitVersion'}.'" }';
-		return($v_ver);
+		return($cmd_msg);
 	}
 
 	return('ERR_0');
@@ -386,12 +384,13 @@ sub get_cpuinfo {
 	
 	if ($p_item eq 'cores') {
 		$v_ans = `grep -c -P '^processor\\s+:' /proc/cpuinfo`;
+		$v_ans =~ s/\n|\r//g;
 		return($v_ans);
 	}
 	$cmd_msg = `grep -m 1 -P '^$p_item\\s+:' /proc/cpuinfo`;
 	$cmd_msg =~ s/\n|\r//g;
 	if ($cmd_msg ne '') {
-		($t1, $v_ans) = split(/ : /, $cmd_msg);
+		($t1, $v_ans) = split(/: /, $cmd_msg);
 		if (index($t1, $p_item)<0) {
 			return('ERR_2');
 		}

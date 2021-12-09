@@ -85,11 +85,11 @@ $k8s_namespace_json
 			"cpu MHz" : $cpu_MHz,
 			"bogomips" : $cpu_bogomips,
 			"cache size" : "$cpu_cache"
-		}
+		},
 		"meminfo" : {
 $meminfo_json
 		}
-	}
+	},
 	"packages" : {
 		"rke" : "$rke_ver",
 		"docker" : "$docker_ver",
