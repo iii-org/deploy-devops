@@ -36,11 +36,11 @@ $hostname =~ s/\n|\r//g;
 $os_issue = `cat /etc/issue.net`;
 $os_issue =~ s/\n|\r//g;
 
-$cpu_num =  `grep -c -P '^processor\\s+:' /proc/cpuinfo`;
-$cpu_model = `grep -m 1 -P '^model name\\s+:' /proc/cpuinfo`;
-$cpu_MHz = `grep -m 1 -P '^cpu MHz\\s+:' /proc/cpuinfo`;
-$cpu_bogomips = `grep -m 1 -P '^bogomips\\s+:' /proc/cpuinfo`;
-$cpu_cache = `grep -m 1 -P '^cache size\\s+:' /proc/cpuinfo`;
+$cpu_num =  get_cpuinfo('cores');
+$cpu_model = get_cpuinfo('model name');
+$cpu_MHz = get_cpuinfo('cpu MHz');
+$cpu_bogomips = get_cpuinfo('bogomips');
+$cpu_cache = get_cpuinfo('cache size');
 
 $meminfo = `cat /proc/meminfo | grep Mem`;
 $meminfo_json = '';

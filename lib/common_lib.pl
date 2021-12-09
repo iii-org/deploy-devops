@@ -378,6 +378,29 @@ sub get_system_ver {
 	return('ERR_0');
 }
 
+# Get CPU Information from /proc/cpuinfo
+#
+sub get_cpuinfo {
+	my ($p_item) = @_;
+	my ($cmd, $cmd_msg, $t1,$t2,$v_ans);
+	
+	if ($p_item eq 'cores') {
+		$v_ans = `grep -c -P '^processor\\s+:' /proc/cpuinfo`;
+		return($v_ans);
+	}
+	$cmd_msg = `grep -m 1 -P '^$p_item\\s+:' /proc/cpuinfo`;
+	$cmd_msg =~ s/\n|\r//g;
+	if ($cmd_msg ne '') {
+		($t1, $v_ans) = split(/ : /, $cmd_msg);
+		if (index($t1, $p_item)<0) {
+			return('ERR_2');
+		}
+		return($v_ans);
+	}
+
+	return('ERR_0');
+}
+
 # $logfile
 sub log_print {
 	my ($p_msg) = @_;
