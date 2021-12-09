@@ -57,6 +57,7 @@ foreach $line (split(/\n/, $meminfo)) {
 $rke_ver = get_system_ver('rke');
 $docker_ver = get_system_ver('docker');
 $kubectl_ver = get_system_ver('kubectl');
+$gitlab_ver = call_gitlab_api('GET', 'version');
 
 # json
 $json_ver = 20211209001;
@@ -93,7 +94,8 @@ $meminfo_json
 	"packages" : {
 		"rke" : "$rke_ver",
 		"docker" : "$docker_ver",
-		"kubectl" : $kubectl_ver
+		"kubectl" : $kubectl_ver,
+		"gitlab" : $gitlab_ver
 	}
 }
 END

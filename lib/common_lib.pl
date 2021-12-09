@@ -283,7 +283,7 @@ sub call_gitlab_api {
 	$v_curl = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 
 	#$v_cmd = "$v_curl --request PUT '$v_http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
-	$v_cmd = "$v_curl --request $p_method '$v_http://$v_domain_name/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	$v_cmd = "$v_curl -s --request $p_method '$v_http://$v_domain_name/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 	$v_msg = `$v_cmd 2>&1`;
 	
 	return($v_msg);
@@ -302,7 +302,7 @@ sub call_sonarqube_api {
 	$v_curl = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
 
 	#$v_cmd = "$v_curl -u $sonarqube_admin_token: --request GET '$v_http://$v_domain_name/api/authentication/validate'";
-	$v_cmd = "$v_curl -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
+	$v_cmd = "$v_curl -s -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
 	$v_msg = `$v_cmd 2>&1`;
 
 	return($v_msg);
@@ -359,6 +359,7 @@ sub get_system_ver {
 			}
 		}
 		$cmd_msg = `$cmd version -o json 2>&1`;
+		$cmd_msg =~ s/\n|\r//g; 
 		#{
 		#  "clientVersion": {
 		#    "gitVersion": "v1.18.20",
