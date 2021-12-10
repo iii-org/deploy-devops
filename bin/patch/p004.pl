@@ -26,16 +26,12 @@ if (!defined($nfs_dir) || $nfs_dir eq '') {
 	exit;
 }
 
-if (-e "$nfs_dir/project-data" && -e "$nfs_dir/plugins-data") {
-	print("OK! The NFS directory [project-data] and [plugins-data] have been defined!\n");
+if (-e "$nfs_dir/devops-data") {
+	print("OK! The NFS directory [devops-data] have been defined!\n");
 	exit;
 }
 
 $cmd =<<END;
-mkdir -p $nfs_dir/project-data;
-chmod 777 $nfs_dir/project-data;
-mkdir -p $nfs_dir/plugins-data;
-chmod 777 $nfs_dir/plugins-data;
 $Bin/../iiidevops_install_core.pl
 END
 
