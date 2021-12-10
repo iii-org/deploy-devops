@@ -42,5 +42,9 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 	print("env.pl.ans file link is automatically created ..OK!\n");
 }
 
+# Executing Patch
+print("Executing Patch Scripts..\n");
+system("$Bin/patch/p000.pl");
+
 print("$end_str\n");
 exit;
