@@ -98,7 +98,7 @@ $cmd_msg = call_sonarqube_api('GET', 'authentication/validate');
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Sonarqube admin-token is not working!\n");
 	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit;
 }
 log_print("Sonarqube is working well!\n");
 
@@ -200,10 +200,8 @@ $deployment_name = ($iiidevops_domain_name ne '')?$iiidevops_domain_name:$t_host
 
 # check & create NFS dir
 $cmd =<<END;
-mkdir -p $nfs_dir/project-data;
-chmod 777 $nfs_dir/project-data;
-mkdir -p $nfs_dir/plugins-data;
-chmod 777 $nfs_dir/plugins-data;
+mkdir -p $nfs_dir/devops-data;
+chmod 777 $nfs_dir/devops-data;
 END
 system($cmd);
 
