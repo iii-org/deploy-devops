@@ -401,6 +401,35 @@ sub get_cpuinfo {
 	return('ERR_0');
 }
 
+# Get K8s deployment info
+# $pod_num = get_k8sdeploy('Replicas', 'devopsapi');
+sub get_k8sdeploy {
+	my ($p_item, $p_deployname) = @_;
+	my ($cmd_kubectl, $cmd, $cmd_msg, $t1,$t2,$v_ans);
+
+	$cmd_kubectl = '/snap/bin/kubectl';
+	if (!-e $cmd_kubectl) {
+		$cmd_kubectl = '/usr/local/bin/kubectl';
+	}
+	if (!-e $cmd_kubectl) {
+		return('ERR_1');
+	}
+
+	if ($p_item eq 'Replicas') {
+		$cmd_msg = `$cmd_kubectl describe deploy $p_deployname | grep '$p_item:'`;
+		$cmd_msg =~ s/\n|\r//g;
+		#Replicas:               3 desired | 3 updated | 3 total | 3 available | 0 unavailable
+		$cmd_msg =~ s/( )+/ /g;
+		($t1,$v_ans,$t2) = split(/ /,$cmd_msg);
+		if ($t2 ne 'desired') {
+			return('ERR_2');
+		}
+		return($v_ans);
+	}
+	
+	return('ERR_0');
+}
+
 # $logfile
 sub log_print {
 	my ($p_msg) = @_;

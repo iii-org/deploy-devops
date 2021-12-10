@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: devopsui
 spec:
-  replicas: 1
+  replicas: {{ui_replicas}}
   selector:
     matchLabels:
       app: devopsui

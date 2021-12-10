@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: devopsapi
 spec:
-  replicas: 1
+  replicas: {{api_replicas}}
   selector:
     matchLabels:
       app: devopsapi
@@ -121,7 +121,7 @@ spec:
         nfs:
           server: {{nfs_ip}}
           path: /{{nfs_dir}}/api-logs
-      - name: project-data
+      - name: devops-data
         nfs:
           server: {{nfs_ip}}
           path: /{{nfs_dir}}/devops-data

@@ -167,6 +167,14 @@ else {
 	}
 }
 
+# api_replicas
+$v_replicas = get_k8sdeploy('Replicas', 'devopsapi');
+$api_replicas = (index($v_replicas, 'ERR')<0)?$v_replicas:1;
+
+# ui_replicas
+$v_replicas = get_k8sdeploy('Replicas', 'devopsui');
+$ui_replicas = (index($v_replicas, 'ERR')<0)?$v_replicas:1;
+
 # iiidevops_ver
 $iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
 
@@ -215,6 +223,7 @@ if (!-e $tmpl_file) {
 }
 
 $template = `cat $tmpl_file`;
+$template =~ s/{{api_replicas}}/$api_replicas/g;
 $template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
 $template =~ s/{{image_pull_policy}}/$image_pull_policy/g;
 $template =~ s/{{db_passwd}}/$db_passwd/g;
@@ -269,6 +278,7 @@ if (!-e $tmpl_file) {
 	exit;
 }
 $template = `cat $tmpl_file`;
+$template =~ s/{{ui_replicas}}/$ui_replicas/g;
 $template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
 $template =~ s/{{image_pull_policy}}/$image_pull_policy/g;
 #log_print("-----\n$template\n-----\n\n");
