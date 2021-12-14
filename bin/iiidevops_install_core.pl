@@ -20,6 +20,14 @@ require("$Bin/../lib/iiidevops_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+# Check $Bin/github/* to determine whether to use ISO installation
+if (-e "$Bin/github/") {
+	$cmd_msg = `ls $Bin/github/ | wc -l`;
+	$cmd_msg =~ s/\n|\r//g;
+	if ($cmd_msg >0 ) {
+		$is_offline = 'offline';
+	}
+}
 
 # Check kubernetes status.
 log_print("Check kubernetes status..\n");
