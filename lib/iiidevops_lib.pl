@@ -64,6 +64,7 @@ sub get_nexus_info {
 	$v_cmd_msg = `$v_cmd 2>&1`;
 	@arr_line = split(/\n/, $v_cmd_msg);
 	if (index($arr_line[0], 'deploy_version')<0) {
+		$v_cmd_msg =~ s/\n|\r//g;
 		print("Err:[$v_cmd_msg]\n");
 		return("Err1");
 	}
@@ -174,6 +175,133 @@ sub fix_gitlab_url {
 	}
 	
 	return($v_ret);
+}
+
+#curl --location --request GET 'http://10.20.0.72:31850/maintenance/registry_into_rc_all' \
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
+sub get_registry_api {
+	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	$v_cmd = <<END;
+curl -s --location --request GET '$iiidevops_api/maintenance/registry_into_rc_all' --header 'Authorization: Bearer $g_api_key'
+
+END
+	$v_cmd_msg = `$v_cmd`;
+	$v_hash_msg = decode_json($v_cmd_msg);
+	$v_message = $v_hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$g_hash_registry = $v_hash_msg;
+		$v_ret = @{ $v_hash_msg->{'data'} };
+	}
+	else {
+		print("get secrets list Error : $v_cmd_msg \n");
+		$v_ret=-1;
+	}
+	
+	return($v_ret);
+}
+
+#curl --location --request POST 'http://10.20.0.72:31850/maintenance/registry_into_rc_all' \
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE' \
+#--header 'Content-Type: application/json' \
+#--data-raw '{
+# "name": "harbor-local",
+# "url": "10.20.0.71:5443",
+# "username": "admin",
+# "password": "MyPassword!"
+#}'
+sub add_registry_api {
+	my ($p_data) = @_;
+	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$v_cmd = <<END;
+curl -s --location --request POST '$iiidevops_api/maintenance/registry_into_rc_all' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$p_data'
+
+END
+	$v_cmd_msg = `$v_cmd`;
+	$v_hash_msg = decode_json($v_cmd_msg);
+	$v_message = $v_hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$v_ret = 'OK!';
+	}
+	else {
+		print("add registry Error:\n$v_cmd_msg\n");
+		$v_ret = 'Failed!';
+	}
+	
+	return($v_ret);	
+}
+
+#curl --location --request POST 'http://10.20.0.68:31850/maintenance/secretes_into_rc_all' \
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk3NDc4NzEsIm5iZiI6MTYwOTc0Nzg3MSwianRpIjoiNDZmNTk2NjAtZDJhNy00ZWNlLTg3NmEtYTBlODg3MzE1NWI0IiwiZXhwIjoxNjEyMzM5ODcxLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.r1jdzklgHQufSCUTl2mODpsrt0Wh0ztaMwo2wYSgEas' \
+#--header 'Content-Type: application/json' \
+#--data-raw '{
+# "name": "api-origin",
+# "type": "secret",
+# "data": {
+#    "api-origin": "http://10.20.0.68:31850"
+# }
+#}'
+sub add_secrets_api {
+	my ($p_data) = @_;
+	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$v_cmd = <<END;
+curl -s --location --request POST '$iiidevops_api/maintenance/secretes_into_rc_all' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$p_data'
+
+END
+	$v_cmd_msg = `$v_cmd`;
+	$v_hash_msg = decode_json($v_cmd_msg);
+	$v_message = $v_hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$v_ret = 'OK!';
+	}
+	else {
+		print("add sectets Error:\n$v_cmd_msg\n");
+		$v_ret = 'Failed!';
+	}
+	
+	return($v_ret);
+}
+
+#curl --location --request GET 'http://10.20.0.68:31850/maintenance/secretes_into_rc_all' \
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk3NDc4NzEsIm5iZiI6MTYwOTc0Nzg3MSwianRpIjoiNDZmNTk2NjAtZDJhNy00ZWNlLTg3NmEtYTBlODg3MzE1NWI0IiwiZXhwIjoxNjEyMzM5ODcxLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.r1jdzklgHQufSCUTl2mODpsrt0Wh0ztaMwo2wYSgEas'
+sub get_secrets_api {
+	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	$v_cmd = <<END;
+curl -s --location --request GET '$iiidevops_api/maintenance/secretes_into_rc_all' --header 'Authorization: Bearer $g_api_key'
+
+END
+	$v_cmd_msg = `$v_cmd`;
+	$v_hash_msg = decode_json($v_cmd_msg);
+	$v_message = $v_hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$g_hash_secrets = $v_hash_msg;
+		$ret = @{ $v_hash_msg->{'data'} };
+	}
+	else {
+		print("get secrets list Error : $v_cmd_msg \n");
+		$ret=-1;
+	}
+	
+	return($ret);
 }
 
 #curl --location --request POST 'http://10.20.0.86:31850/user/login' \

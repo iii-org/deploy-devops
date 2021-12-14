@@ -147,7 +147,10 @@ print("OK!\n");
 # Check & Set deploy version
 $t_now_ver = get_nexus_info('deploy_version');
 $t_set_ver = ($iiidevops_ver eq 'develop')?'develop':'V'.$iiidevops_ver;
-if ($t_now_ver eq '') {
+if ($t_now_ver eq 'Err1') {
+	print("If this is the first installation, ignore this error message!\n");
+}
+elsif ($t_now_ver eq '') {
 	$t_ret_ver=set_nexus_deploy_version($t_set_ver);
 	if ($t_ret_ver eq $t_set_ver) {
 		print("Set deploy version to [$t_set_ver] OK!\n");
@@ -404,7 +407,7 @@ else {
 		system("$Bin/../bin/sync-prj-templ.pl $sync_templ_key");
 	}
 	else {
-		log_print("Sync III DevOps Templates no GitHub key ! Please refer to Step 8 at https://github.com/iii-org/deploy-devops");
+		log_print("Sync III DevOps Templates no GitHub key ! Please refer to Step 8 at https://github.com/iii-org/deploy-devops \n");
 	}
 }
 
