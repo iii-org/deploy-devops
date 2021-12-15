@@ -164,7 +164,7 @@ END
 	##$cmd = "helm install harbor --version 1.5.5 harbor/harbor -f $yaml_file";
 	$cmd_msg = `$cmd`;
 	log_print("-----\n$cmd_msg-----\n");
-	if ($harbor_domain_name ne '') {
+	if ($deploy_mode eq 'DNS') {
 		$cmd_service = `kubectl apply -f $yaml_path/harbor-nginx/`;
 	}
 	
