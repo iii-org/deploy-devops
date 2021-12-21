@@ -13,8 +13,18 @@ spec:
   - host: "{{gitlab_domain_name}}"
     http:
       paths:
-      - backend:
+      - path: "/"
+        pathType: "ImplementationSpecific"
+        backend:
           serviceName: gitlab-service
           servicePort: 80
-        path: "/"
+      - path: "/api/v3"
         pathType: "ImplementationSpecific"
+        backend:
+          serviceName: gitlab-service
+          servicePort: 30080
+      - path: "/api/v4"
+        pathType: "ImplementationSpecific"
+        backend:
+          serviceName: gitlab-service
+          servicePort: 30080
