@@ -193,14 +193,14 @@ $iiidevops_ver = ($iiidevops_ver eq '')?'1':$iiidevops_ver;
 $image_pull_policy = ($iiidevops_ver eq 'develop')?'Always':'IfNotPresent';
 
 # redmine_url
-$redmine_domain_name = get_domain_name('redmine');
+$v_redmine_domain_name = get_domain_name('redmine');
 $v_http = ($redmine_domain_name_tls ne '')?'https':'http';
-$redmine_url = $v_http.'://'.$redmine_domain_name;
+$redmine_url = $v_http.'://'.$v_redmine_domain_name;
 
 # gitlab_url
-$gitlab_domain_name = get_domain_name('gitlab');
+$v_gitlab_domain_name = get_domain_name('gitlab');
 $v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
-$gitlab_url = $v_http.'://'.$gitlab_domain_name;
+$gitlab_url = $v_http.'://'.$v_gitlab_domain_name;
 
 # harbor_internal_base_url
 # harbor_internal_basr_url will use http after TLS upgrade 
@@ -208,9 +208,9 @@ $v_http = ($harbor_domain_name_tls ne '')?'http':'https';
 $harbor_internal_base_url = $v_http.'://harbor-harbor-core/api/v2.0';
 
 # sonarqube_url
-$sonarqube_domain_name = get_domain_name('sonarqube');
+$v_sonarqube_domain_name = get_domain_name('sonarqube');
 $v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
-$sonarqube_url = $v_http.'://'.$sonarqube_domain_name;
+$sonarqube_url = $v_http.'://'.$v_sonarqube_domain_name;
 
 # deployment_name
 $t_hostname = `hostname`;
@@ -245,6 +245,7 @@ $template =~ s/{{jwt_secret_key}}/$jwt_secret_key/g;
 $template =~ s/{{redmine_url}}/$redmine_url/g;
 $template =~ s/{{redmine_admin_passwd}}/$redmine_admin_passwd/g;
 $template =~ s/{{redmine_api_key}}/$redmine_api_key/g;
+$template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;
 $template =~ s/{{gitlab_url}}/$gitlab_url/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{gitlab_private_token}}/$gitlab_private_token/g;
@@ -281,7 +282,7 @@ log_print("-----\n$cmd_msg\n-----\n\n");
 
 
 # Deploy DevOps UI (VueJS) on kubernetes cluster
-$iiidevops_domain_name = get_domain_name('iiidevops');
+$v_iiidevops_domain_name = get_domain_name('iiidevops');
 
 $yaml_path = "$Bin/../devops-ui/";
 $yaml_file = $yaml_path.'devopsui-deployment.yaml';
@@ -334,7 +335,7 @@ if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
 		exit;
 	}
 	$template = `cat $tmpl_file`;
-	$template =~ s/{{iiidevops_domain_name}}/$iiidevops_domain_name/g;
+	$template =~ s/{{iiidevops_domain_name}}/$v_iiidevops_domain_name/g;
 	$template =~ s/{{iiidevops_domain_name_tls}}/$iiidevops_domain_name_tls/g;
 	#log_print("-----\n$template\n-----\n\n");
 	open(FH, '>', $yaml_file) or die $!;
@@ -416,4 +417,4 @@ else {
 log_print("----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 log_print("\nThe deployment of III-DevOps services has been completed. Please try to connect to the following URL.\n");
-log_print("III-DevOps - $url$iiidevops_domain_name\n\n");
+log_print("III-DevOps - $url$v_iiidevops_domain_name\n\n");
