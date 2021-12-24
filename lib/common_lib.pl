@@ -278,14 +278,15 @@ sub call_gitlab_api {
 	my ($p_method, $p_api, $p_data) = @_;
 	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http);
 	
-	$v_domain_name = get_domain_name('gitlab');
+	#$v_domain_name = get_domain_name('gitlab');
 	$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
 	$v_curl = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 
 	#$v_cmd = "$v_curl --request PUT '$v_http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
-	$v_cmd = "$v_curl -s --request $p_method '$v_http://$v_domain_name/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	#$v_cmd = "$v_curl -s --request $p_method '$v_http://$v_domain_name/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	$v_cmd = "$v_curl -s --request $p_method '$v_http://localhost:32080/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 	$v_msg = `$v_cmd 2>&1`;
-	
+
 	return($v_msg);
 }
 
