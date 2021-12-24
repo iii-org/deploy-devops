@@ -89,6 +89,18 @@ $template =~ s/{{gitlab_url}}/$gitlab_url/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
 $template =~ s/{{nfs_dir}}/$nfs_dir/g;
+if ($deploy_mode eq 'DNS') {
+	$host_aliases =<<END;
+hostAliases:
+      - hostnames:
+        - "$gitlab_domain_name"
+        ip: 127.0.0.1
+END
+	$template =~ s/{{hostAliases}}/$host_aliases/g;
+}
+else {
+	$template =~ s/{{hostAliases}}//g;
+}
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
