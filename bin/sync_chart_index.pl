@@ -66,7 +66,7 @@ foreach $group_hash (@ {$hash_msg}) {
 					if(index($token_msg,"node_id")<0) {
 						print("github_token:[$github_user_token] is worng!\n");
 						exit;
-					} else {
+					} elsif ($iiidevops_ver ne 'develop') {
 						$g_github_repo_cmd = "curl -s -u $github_user_token -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
 						$repo_hash = decode_json(`$g_github_repo_cmd`);
 						$repo_max_time = ($repo_hash->{'created_at'} gt $repo_hash->{'updated_at'})?$repo_hash->{'created_at'}:$repo_hash->{'updated_at'};
@@ -81,6 +81,9 @@ foreach $group_hash (@ {$hash_msg}) {
 							print("GitLab repo [$helm_catalog] ($repo_max_time) is latest\n");
 							exit;
 						}
+					}
+					else {
+						print("Always update the GitLab repo [$helm_catalog] in the development environment!\n");
 					}
 				}
 			}
