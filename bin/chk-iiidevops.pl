@@ -51,7 +51,7 @@ else {
 # OK -> ,"username":
 # Error -> {"message":"
 log_print("3. Check GitLab TOKEN status..");
-$cmd = "curl --silent --location --request GET 'http://$gitlab_domain_name/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+$cmd = "curl --silent --location --request GET 'http://localhost:32080/api/v4/users' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
 $chk_key = ',"username":';
 $cmd_msg = `$cmd 2>&1`;
 if (index($cmd_msg, $chk_key)<0) {

@@ -46,7 +46,7 @@ $v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 
 # Check if the GitLab group $helm_catalog_group (iiidevops-templates) exists
 # curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/
-$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/";
+$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/groups/";
 log_print("Get GitLab group list..\n");
 $cmd_msg = `$cmd`;
 $hash_msg = decode_json($cmd_msg);
@@ -74,7 +74,7 @@ foreach $group_hash (@ {$hash_msg}) {
 						
 						# Check if the GitLab group $helm_catalog_group (iiidevops-templates) exists
 						# curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/
-						$cmd = "$v_cmd -k -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects?search=devops-charts-pack-and-index";
+						$cmd = "$v_cmd -k -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects?search=devops-charts-pack-and-index";
 						$cmd_msg = `$cmd`;
 						$gitlab_prj_created_at = decode_json($cmd_msg)->[0]->{'created_at'};
 						if ($repo_max_time le $gitlab_prj_created_at) {
@@ -102,7 +102,7 @@ foreach $group_hash (@ {$hash_msg}) {
 }
 
 # Check if the GitLab project $helm_catalog  exists
-$cmd = "$v_cmd -k -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects?search=devops-charts-pack-and-index";
+$cmd = "$v_cmd -k -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects?search=devops-charts-pack-and-index";
 $cmd_msg = `$cmd`;
 $hash_msg = decode_json($cmd_msg);
 foreach $catalogs_hash (@ {$hash_msg}) {
@@ -157,7 +157,7 @@ if (!-e $p_tar) {
 #	By default, this request returns 20 results at a time because the API results are paginated.
 #	https://docs.gitlab.com/ee/api/README.html#pagination
 # curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/iiidevops-templates/projects?per_page=100
-$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/$helm_catalog_group/projects?per_page=100";
+$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/groups/$helm_catalog_group/projects?per_page=100";
 log_print("Get GitLab group $helm_catalog_group project list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, '"message"')>=0) {
@@ -489,7 +489,7 @@ sub create_gitlab_group {
 	my ($p_gitlab_groupname) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	
-	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\",\"visibility\":\"public\"}' $v_http://$gitlab_domain_name/api/v4/groups/";
+	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\",\"visibility\":\"public\"}' $v_http://localhost:32080/api/v4/groups/";
 	$cmd_msg = `$cmd`;
 	$ret = '';
 	if (index($cmd_msg, $p_gitlab_groupname)>=0){
@@ -508,7 +508,7 @@ sub delete_gitlab_group {
 	my ($p_gitlab_groupid) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	
-	$cmd = "$v_cmd -s -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE  $v_http://$gitlab_domain_name/api/v4/groups/$p_gitlab_groupid";
+	$cmd = "$v_cmd -s -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE  $v_http://localhost:32080/api/v4/groups/$p_gitlab_groupid";
     $cmd_msg = `$cmd`;
     if (index($cmd_msg, "Accepted")>=0){
 		$hash_msg = decode_json($cmd_msg);
@@ -525,7 +525,7 @@ sub create_gitlab_group_project {
 	my ($project_name, $namespace_id) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	
-	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$project_name\",\"namespace_id\": \"$namespace_id\",\"visibility\":\"public\"}' $v_http://$gitlab_domain_name/api/v4/projects/";
+	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$project_name\",\"namespace_id\": \"$namespace_id\",\"visibility\":\"public\"}' $v_http://localhost:32080/api/v4/projects/";
 	$cmd_msg = `$cmd`;
 	$ret = '';
 	if (index($cmd_msg, $project_name)>=0){
@@ -545,7 +545,7 @@ sub delete_gitlab {
 	my ($p_gitlab_id) = @_;
 	my ($cmd, $cmd_msg);
 
-	$cmd = "$v_cmd -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$p_gitlab_id";
+	$cmd = "$v_cmd -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$p_gitlab_id";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, 'Accepted')<0) {
 		log_print("delete_gitlab [$p_gitlab_id] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
@@ -564,7 +564,7 @@ sub import_github {
 	my ($cmd, $cmd_msg, $arg_user, $hash_msg, $id, $import_status);
 
 	$github_token = substr($github_user_token, rindex($github_user_token,":")+1);
-	$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=iiidevops-catalog  \" $v_http://$gitlab_domain_name/api/v4/import/github";
+	$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=iiidevops-catalog  \" $v_http://localhost:32080/api/v4/import/github";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
@@ -578,7 +578,7 @@ sub import_github {
 	$repo_id = $hash_gitlab_repo->{'id'};
 	# Ref - https://docs.gitlab.com/ee/api/project_import_export.html
 	# curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/1/import"
-	$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$repo_id/import";
+	$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$repo_id/import";
 	$import_status = '';
 	while ($import_status ne 'failed' && $import_status ne 'finished') {
 		$cmd_msg = `$cmd`;
@@ -597,7 +597,7 @@ sub import_github {
 	}
 
 	# transfer import project to target_namespace
-	$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
+	$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");

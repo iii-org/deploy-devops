@@ -29,7 +29,7 @@ $gitlab_domain_name = get_domain_name('gitlab');
 $v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
 $v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 # curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/
-$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/";
+$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/groups/";
 log_print("Get GitLab group list..\n");
 $cmd_msg = `$cmd`;
 $hash_msg = decode_json($cmd_msg);
@@ -121,7 +121,7 @@ if ($repo_num==0){
 #	By default, this request returns 20 results at a time because the API results are paginated.
 #	https://docs.gitlab.com/ee/api/README.html#pagination
 # curl --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/groups/iiidevops-templates/projects?per_page=100
-$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/groups/$github_org/projects?per_page=100";
+$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/groups/$github_org/projects?per_page=100";
 log_print("Get GitLab group $github_org project list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, '"message"')>=0) {
@@ -169,7 +169,7 @@ sub create_gitlab_group {
 	my ($p_gitlab_groupname) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
-	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}' $v_http://$gitlab_domain_name/api/v4/groups/";
+	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}' $v_http://localhost:32080/api/v4/groups/";
 	$cmd_msg = `$cmd`;
 	$ret = '';
 	if (index($cmd_msg, $p_gitlab_groupname)>=0){
@@ -188,7 +188,7 @@ sub delete_gitlab_group {
 	my ($p_gitlab_groupid) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X DELETE  https://gitlab-demo.iiidevops.org/api/v4/groups/12
-	$cmd = "$v_cmd -s -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE  $v_http://$gitlab_domain_name/api/v4/groups/$p_gitlab_groupid";
+	$cmd = "$v_cmd -s -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X DELETE  $v_http://localhost:32080/api/v4/groups/$p_gitlab_groupid";
     $cmd_msg = `$cmd`;
     if (index($cmd_msg, "Accepted")>=0){
 		$hash_msg = decode_json($cmd_msg);
@@ -204,8 +204,8 @@ sub create_gitlab_group_project {
 	my ($project_name, $namespace_id) = @_;
 	my ($cmd, $cmd_msg, $ret, %hash_msg);
 	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
-	#$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"name=$project_name&namespace_id=$namespace_id\" $v_http://$gitlab_domain_name/api/v4/projects/";
-	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$project_name\",\"namespace_id\": \"$namespace_id\"}' $v_http://$gitlab_domain_name/api/v4/projects/";
+	#$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"name=$project_name&namespace_id=$namespace_id\" $v_http://localhost:32080/api/v4/projects/";
+	$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$project_name\",\"namespace_id\": \"$namespace_id\"}' $v_http://localhost:32080/api/v4/projects/";
 	$cmd_msg = `$cmd`;
 	$ret = '';
 	if (index($cmd_msg, $project_name)>=0){
@@ -225,7 +225,7 @@ sub delete_gitlab {
 	my ($cmd, $cmd_msg);
 
 	#curl --request DELETE --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/projects/2
-	$cmd = "$v_cmd -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://$gitlab_domain_name/api/v4/projects/$p_gitlab_id";
+	$cmd = "$v_cmd -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$p_gitlab_id";
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, 'Accepted')<0) {
 		log_print("delete_gitlab [$p_gitlab_id] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
