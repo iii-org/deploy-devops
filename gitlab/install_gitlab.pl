@@ -171,6 +171,44 @@ if ($isChk) {
 	log_print("Failed to deploy GitLab!\n");
 	exit;
 }
+
+# DNS mode set CoreDNS configmap
+if ($deploy_mode eq 'DNS') {
+	$gitlab_cluster_ip = `kubectl get svc gitlab-service -o jsonpath='{.spec.clusterIP}'`;
+	$yaml_file = $yaml_path.'coredns-configmap.yml';
+	$tmpl_file = $yaml_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		exit;
+	}
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{gitlab_cluster_ip}}/$gitlab_cluster_ip/g;
+	$template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;
+	#log_print("-----\n$template\n-----\n\n");
+	open(FH, '>', $yaml_file) or die $!;
+	print FH $template;
+	close(FH);
+	$cmd = "kubectl apply -f $yaml_file ; kubectl rollout restart deployment rancher -n cattle-system";
+	$cmd_msg = `$cmd`;
+	log_print("Set GitLab Domain on K8s CoreDNS...\n");
+	# check deploy status
+	$isChk=1;
+	while($isChk) {
+		sleep($isChk);
+		$isChk = 0;
+		foreach $line (split(/\n/, `kubectl get deployment -n cattle-system | grep rancher`)) {
+			$line =~ s/( )+/ /g;
+			($l_name, $l_ready, $l_update, $l_available, $l_age) = split(/ /, $line);
+			($l_ready_pod, $l_replica_pod) = split("/", $l_ready);
+			if ($l_replica_pod ne $l_update || $l_replica_pod ne $l_available) {
+				log_print("...");
+				$isChk = 3;
+			} 
+		}
+	}
+	log_print("Update setting OK\n");	
+}
+
 log_print("Successfully deployed GitLab! URL - $gitlab_url\n");
 
 exit;
