@@ -7,5 +7,6 @@ use FindBin qw($Bin);
 $|=1; # force flush output
 
 system("$Bin/p004.pl");
+system("$Bin/p005.pl");
 
 exit;

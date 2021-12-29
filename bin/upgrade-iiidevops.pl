@@ -24,7 +24,9 @@ $tmpl_list = `ls ~/deploy-devops/bin/patch/*.pl`;
 $patch_num = 0;
 $cmd = '';
 foreach $tmpl_name (split(".pl\n", $tmpl_list)) {
-	$cmd .= "perl $tmpl_name.pl;"
+	if($tmpl_name ne 'p000') {
+		$cmd .= "perl $tmpl_name.pl;"		
+	}
 }
 system($cmd);
 
