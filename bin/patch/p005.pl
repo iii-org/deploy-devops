@@ -22,7 +22,7 @@ if ($cmd_msg ne 'rkeuser') {
 }
 
 $cmd =<<END;
-$Bin/../../gitlab/install_gitlab.pl force
+$Bin/../../gitlab/install_gitlab.pl dns_set
 END
 
 system($cmd);

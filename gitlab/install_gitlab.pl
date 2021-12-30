@@ -24,6 +24,11 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
+if (lc($ARGV[0]) eq 'dns_set') {
+	dns_set();
+	exit;
+}
+
 # Check GitLab service is working
 if (!$p_force && get_service_status('gitlab')) {
 	log_print("GitLab is running, I skip the installation!\n\n");
@@ -172,8 +177,28 @@ if ($isChk) {
 	exit;
 }
 
-# DNS mode set CoreDNS configmap
 if ($deploy_mode eq 'DNS') {
+	dns_set();
+}
+
+log_print("Successfully deployed GitLab! URL - $gitlab_url\n");
+
+exit;
+
+# DNS mode set CoreDNS configmap
+sub dns_set {
+	if ($gitlab_domain_name eq '') {
+		log_print("The Gitlab domain name is not defined!\n");
+		exit;
+	}
+	
+	$coredns_configmap_cmd = "kubectl get configmap coredns -n kube-system -o jsonpath='{.data.Corefile}'";
+	$cmd_msg = `$coredns_configmap_cmd`;
+	if(index($cmd_msg,$gitlab_domain_name)>=0) {
+		log_print("The DNS is already set up !\n");
+		exit;
+	}
+
 	$gitlab_cluster_ip = `kubectl get svc gitlab-service -o jsonpath='{.spec.clusterIP}'`;
 	$yaml_file = $yaml_path.'coredns-configmap.yml';
 	$tmpl_file = $yaml_file.'.tmpl';
@@ -206,9 +231,7 @@ if ($deploy_mode eq 'DNS') {
 			} 
 		}
 	}
-	log_print("Update setting OK\n");	
+	log_print("Update setting OK\n");
+
+	return;
 }
-
-log_print("Successfully deployed GitLab! URL - $gitlab_url\n");
-
-exit;
