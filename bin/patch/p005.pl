@@ -22,7 +22,8 @@ if ($cmd_msg ne 'rkeuser') {
 }
 
 $cmd =<<END;
-$Bin/../../gitlab/install_gitlab.pl dns_set
+$Bin/../../gitlab/install_gitlab.pl dns_set;
+$Bin/../../gitlab/install_gitlab.pl modify_ingress;
 END
 
 system($cmd);
