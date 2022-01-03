@@ -24,8 +24,12 @@ require("$Bin/../lib/common_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-if (lc($ARGV[0]) eq 'dns_set') {
+if (lc($ARGV[0]) eq 'dns_set' || lc($ARGV[0]) eq 'dns_set_force') {
 	dns_set();
+	exit;
+}
+if (lc($ARGV[0]) eq 'modify_ingress') {
+	modify_ingress();
 	exit;
 }
 
@@ -189,22 +193,24 @@ exit;
 sub dns_set {
 	if ($gitlab_domain_name eq '') {
 		log_print("The Gitlab domain name is not defined!\n");
-		exit;
+		return;
 	}
-	
-	$coredns_configmap_cmd = "kubectl get configmap coredns -n kube-system -o jsonpath='{.data.Corefile}'";
-	$cmd_msg = `$coredns_configmap_cmd`;
-	if(index($cmd_msg,$gitlab_domain_name)>=0) {
-		log_print("The DNS is already set up !\n");
-		exit;
+	if(!$p_force && lc($ARGV[0]) ne 'dns_set_force'){
+		$coredns_configmap_cmd = "kubectl get configmap coredns -n kube-system -o jsonpath='{.data.Corefile}'";
+		$cmd_msg = `$coredns_configmap_cmd`;
+		if(index($cmd_msg,$gitlab_domain_name)>=0) {
+			log_print("The DNS is already set up !\n");
+			return;
+		}
 	}
 
 	$gitlab_cluster_ip = `kubectl get svc gitlab-service -o jsonpath='{.spec.clusterIP}'`;
+	$yaml_path = "$Bin/../gitlab/";
 	$yaml_file = $yaml_path.'coredns-configmap.yml';
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+		return;
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{gitlab_cluster_ip}}/$gitlab_cluster_ip/g;
@@ -233,5 +239,30 @@ sub dns_set {
 	}
 	log_print("Update setting OK\n");
 
+	return;
+}
+
+sub modify_ingress {
+	if ($gitlab_domain_name eq '') {
+		log_print("The Gitlab domain name is not defined!\n");
+		return;
+	}
+	$ingress_tmpl_file = ($gitlab_domain_name_tls ne '')?'gitlab-ingress-ssl.yml.tmpl':'gitlab-ingress.yml.tmpl';
+	$yaml_path = "$Bin/../gitlab/";
+	$yaml_file = $yaml_path.'gitlab-ingress.yml';
+	$tmpl_file = $yaml_path.$ingress_tmpl_file;
+	if (!-e $tmpl_file) {
+		log_print("The template file [$tmpl_file] does not exist!\n");
+		return;
+	}
+	$template = `cat $tmpl_file`;
+	$template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;
+	$template =~ s/{{gitlab_domain_name_tls}}/$gitlab_domain_name_tls/g;
+	open(FH, '>', $yaml_file) or die $!;
+	print FH $template;
+	close(FH);
+	$cmd = "kubectl apply -f $yaml_file";
+	$cmd_msg = `$cmd`;
+	log_print("$cmd_msg");
 	return;
 }
