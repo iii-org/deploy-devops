@@ -42,7 +42,7 @@ $token_check_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authoriza
 
 $validate_token_msg = decode_json(`$token_check_cmd`);
 if(index($validate_token_msg->{'message'},'success')>=0) {
-    log_print('validate token success\n');
+    log_print("validate token success\n");
     
     # sync env github toke
     if ($sync_templ_key ne $github_user_token) {
@@ -62,11 +62,11 @@ else {
 	exit;
 }
 
-log_print("sync github iiidevops-templates ...\n");
 system("perl $Bin/sync-prj-templ.pl");
-
-log_print("sync sync github chart templates ...\n");
+log_print("sync github iiidevops-templates... SUCCESS\n");
+log_print("----------------------------------------\n");
 system("perl $Bin/sync_chart_index.pl gitlab_update");
+log_print("sync sync github chart templates... SUCCESS\n");
 
 sub log_print {
 	my ($p_msg) = @_;
