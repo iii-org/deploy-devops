@@ -42,6 +42,7 @@ log_print("Install GitLab ..\n");
 
 # Deploy GitLab on kubernetes cluster
 # Modify gitlab/gitlab-deployment.yml.tmpl
+$gitlab_ver = '13.12.15';
 $gitlab_domain_name = get_domain_name('gitlab');
 if ($gitlab_domain_name_tls ne '') {
 	# Check & import cert files
@@ -94,6 +95,7 @@ if (!-e $tmpl_file) {
 	exit;
 }
 $template = `cat $tmpl_file`;
+$template =~ s/{{gitlab_ver}}/$gitlab_ver/g;
 $template =~ s/{{gitlab_url}}/$gitlab_url/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;

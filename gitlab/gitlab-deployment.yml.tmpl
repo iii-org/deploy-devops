@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: gitlab
-        image: gitlab/gitlab-ce:13.12.15-ce.0
+        image: gitlab/gitlab-ce:{{gitlab_ver}}-ce.0
         env:
         - name: GITLAB_OMNIBUS_CONFIG
           value: "external_url '{{gitlab_url}}';letsencrypt['enable'] = false;prometheus_monitoring['enable'] = false;unicorn['worker_processes'] = 2;sidekiq['concurrency'] = 9;gitlab_rails['gitlab_default_projects_features_container_registry'] = false;gitlab_rails['initial_root_password'] = '{{gitlab_root_passwd}}';gitlab_rails['gitlab_default_projects_features_builds'] = 'false'"
