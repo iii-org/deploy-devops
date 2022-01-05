@@ -59,10 +59,12 @@ $docker_ver = get_system_ver('docker');
 $kubectl_ver = get_system_ver('kubectl');
 $rancher_ver = get_image_tag('rancher/rancher', 'cattle-system');
 $gitlab_ver = call_gitlab_api('GET', 'version');
+$redmine_ver = get_image_tag('redmine');
+$harbor_ver = get_image_tag('goharbor/harbor-core');
 $sonarqube_ver = call_sonarqube_api('GET', 'server/version');
 
 # json
-$json_ver = 20211209001;
+$json_ver = 20220105001;
 $json_data = <<END;
 {
 	"json_ver" : $json_ver,
@@ -99,6 +101,8 @@ $meminfo_json
 		"kubectl" : $kubectl_ver,
 		"rancher" : "$rancher_ver",
 		"gitlab" : $gitlab_ver,
+		"redmine" : "$redmine_ver",
+		"harbor" : "$harbor_ver",
 		"sonarqube" : "$sonarqube_ver"
 	}
 }
