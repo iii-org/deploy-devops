@@ -309,6 +309,41 @@ sub call_sonarqube_api {
 	return($v_msg);
 }
 
+# Get Image Tag(version)
+# $rancher_ver = get_image_tag('rancher/rancher', 'cattle-system');
+# $rancher_ver : v2.4.17
+#
+sub get_image_tag {
+	my ($p_image_name, $p_name_space) = @_;
+	my ($v_cmd, $v_cmd_msg, $v_ns, $t1, $t2, $t3, $v_tag);
+	
+	if ($p_image_name eq '') {
+		return('ERR_0');
+	}
+	
+	$v_cmd = '/usr/local/bin/kubectl';
+	if (!-e $v_cmd) {
+		$v_cmd = '/snap/bin/kubectl';
+		if (!-e $v_cmd) {
+			return('ERR_1');
+		}
+	}
+	$v_ns = ($p_name_space ne '')?"-n '$p_name_space'":'';
+	$v_cmd = "$v_cmd describe pod $v_ns | grep Image: | grep '$p_image_name:' | head -1";
+	$v_cmd_msg = `$v_cmd 2>&1`;
+	$v_cmd_msg =~ s/\n|\r//g;
+	if ($v_cmd_msg eq '') {
+		return('ERR_2');
+	}
+	
+	#    Image:         rancher/rancher:v2.4.17
+	$v_cmd_msg =~ s/( )+/ /g;
+	($t1, $t2, $t3) = split(/ /, $v_cmd_msg);
+	($t1, $v_tag) = split(/:/, $t3);
+
+	return($v_tag);
+}
+
 # Get System Version
 #rke : v1.2.7 , v1.1.19
 #docker : 19.03.x

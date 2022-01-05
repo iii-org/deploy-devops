@@ -57,7 +57,9 @@ foreach $line (split(/\n/, $meminfo)) {
 $rke_ver = get_system_ver('rke');
 $docker_ver = get_system_ver('docker');
 $kubectl_ver = get_system_ver('kubectl');
+$rancher_ver = get_image_tag('rancher/rancher', 'cattle-system');
 $gitlab_ver = call_gitlab_api('GET', 'version');
+$sonarqube_ver = call_sonarqube_api('GET', 'server/version');
 
 # json
 $json_ver = 20211209001;
@@ -95,7 +97,9 @@ $meminfo_json
 		"rke" : "$rke_ver",
 		"docker" : "$docker_ver",
 		"kubectl" : $kubectl_ver,
-		"gitlab" : $gitlab_ver
+		"rancher" : "$rancher_ver",
+		"gitlab" : $gitlab_ver,
+		"sonarqube" : "$sonarqube_ver"
 	}
 }
 END
