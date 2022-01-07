@@ -366,7 +366,7 @@ sub validate_guthub_token {
 	# check github user token
 	$v_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/monitoring/github/validate_token'";
 	$v_cmd_msg = decode_json(`$v_cmd`);
-	$v_ret = $v_cmd_msg->{'message'},'success')>=0;
+	$v_ret = ($v_cmd_msg->{'message'},'success')>=0;
 	
 	return($v_ret);
 }

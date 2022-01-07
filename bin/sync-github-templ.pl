@@ -15,7 +15,7 @@ if (!-e $p_config) {
 require($p_config);
 
 if (!defined($ARGV[0])) {
-    print("Please setting github_token");
+    print("Please setting github_token!\n");
     exit;
 }
 
@@ -41,7 +41,7 @@ if (validate_guthub_token()) {
     # sync env github toke
     if ($sync_templ_key ne $github_user_token) {
         system("perl $Bin/generate_env.pl sync_templ_key $github_user_token -y");
-        log_print("sync env sync_templ_key to $github_user_token");
+        log_print("sync env sync_templ_key to $github_user_token \n");
     }
 }
 elsif ($validate_token_msg->{'message'} ne '') {
@@ -51,7 +51,7 @@ elsif ($validate_token_msg->{'message'} ne '') {
 	exit;
 }
 else {
-    log_print("api error : "+$validate_token_msg->{'msg'});
+    log_print("api error : ".$validate_token_msg->{'msg'}."\n");
 	exit;
 }
 
@@ -60,15 +60,3 @@ log_print("sync github iiidevops-templates... SUCCESS\n");
 log_print("----------------------------------------\n");
 system("perl $Bin/sync_chart_index.pl gitlab_update");
 log_print("sync sync github chart templates... SUCCESS\n");
-
-sub log_print {
-	my ($p_msg) = @_;
-
-    print "$p_msg";
-	
-	open(FH, '>>', $logfile) or die $!;
-	print FH $p_msg;
-	close(FH);	
-
-    return;
-}

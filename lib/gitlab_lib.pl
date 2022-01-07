@@ -105,7 +105,7 @@ sub delete_gitlab {
 
 sub import_github {
 	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
-	my ($cmd, $cmd_msg, $arg_user, $hash_msg, $id, $import_status);
+	my ($cmd, $cmd_msg, $arg_user, $hash_msg, $id, $import_status, $v_name);
 
 	$github_token = substr($github_user_token, rindex($github_user_token,":")+1);
 	#$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=iiidevops-catalog  \" $v_http://localhost:32080/api/v4/import/github";
@@ -130,7 +130,7 @@ sub import_github {
 		}
 		else {
 			$hash_msg = decode_json($cmd_msg);
-			$import_status = $hash_msg->{'import_status'};			
+			$import_status = $hash_msg->{'import_status'};
 			sleep(1);
 		}
 	}
@@ -139,14 +139,19 @@ sub import_github {
 		exit;
 	}
 
-	# transfer import project to target_namespace
-	#$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
-	$cmd_msg = call_gitlab_api('PUT', "projects/$repo_id/transfer?namespace=$p_target_namespace");
-	if (index($cmd_msg, $p_new_name)<0) {
-		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-		sed_alert_msg($error_msg);
-		exit;
+	$cmd_msg = call_gitlab_api('GET', "/groups/$p_target_namespace");
+	$hash_msg = decode_json($cmd_msg);
+	$v_name = $hash_msg->{'name'};
+	if ($v_name ne 'iiidevops-catalog') {
+		# transfer import project to target_namespace
+		#$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
+		$cmd_msg = call_gitlab_api('PUT', "projects/$repo_id/transfer?namespace=$p_target_namespace");
+		if (index($cmd_msg, $p_new_name)<0) {
+			log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+			$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+			sed_alert_msg($error_msg);
+			exit;
+		}
 	}
 
 	return($cmd_msg);
