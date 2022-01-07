@@ -17,7 +17,7 @@ require($p_config);
 if (!defined($ARGV[0])) {
 	if ( $sync_templ_key eq '' ) {
 		print("Usage: $prgname [github_id:github_token] [github_org] [force-sync]\n");
-		print("OR Setting ~/deploy-devops/bin/generate_env.pl sync_templ_key [github_id:github_token]");
+		print("OR Setting ~/deploy-devops/bin/generate_env.pl sync_templ_key [github_id:github_token]\n");
 		exit;
 	}
 	else {
@@ -34,6 +34,9 @@ if (length($github_token)!=40) {
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 require("$Bin/../lib/common_lib.pl");
+require("$Bin/../lib/iiidevops_lib.pl");
+require("$Bin/../lib/gitlab_lib.pl");
+
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
@@ -50,8 +53,7 @@ $cmd_msg = `$cmd`;
 if (index($cmd_msg, 'node_id')<0) {
 	log_print("Get GitHub org [$github_org] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
 	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-    $sed_alert = `$sed_cmd`;
+	sed_alert_msg($error_msg);
 	exit;
 }
 $hash_github_repo = decode_json($cmd_msg);
@@ -90,8 +92,7 @@ if (index($group_list, "[$github_org]")<0) {
 	if ($ret<0) {
 		log_print("Add GitLab group [$github_org] Error!\n---\n$cmd_msg\n---\n");
 		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-		$sed_alert = `$sed_cmd`;
+		sed_alert_msg($error_msg);
 		exit;
 	}
 	log_print("Add GitLab group [$github_org] OK!\n\n");
@@ -106,8 +107,7 @@ if (index($group_list, "[$local_group]")<0) {
 	if ($ret<0) {
 		log_print("Add GitLab group [$local_group] Error!\n---\n$cmd_msg\n---\n");
 		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-		$sed_alert = `$sed_cmd`;
+		sed_alert_msg($error_msg);
 		exit;
 	}
 	log_print("Add GitLab group [$local_group] OK!\n\n");
@@ -127,8 +127,7 @@ $cmd_msg = call_gitlab_api('GET', "groups/$github_org/projects?per_page=100");
 if (index($cmd_msg, '"message"')>=0) {
 	log_print("Get GitLab group [$github_org] projects Error!\n---\n$cmd_msg\n---\n");
 	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-	$sed_alert = `$sed_cmd`;
+	sed_alert_msg($error_msg);
 	exit;
 }
 
@@ -191,121 +190,3 @@ if ($isUpdate>0) {
 }
 
 exit;
-
-sub create_gitlab_group {
-	my ($p_gitlab_groupname) = @_;
-	my ($cmd, $cmd_msg, $ret, %hash_msg);
-	# curl -H "Content-Type: application/json" -H "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" -X POST -d '{"name": "iiidevops-templates","path": "iiidevops-templates"}' https://gitlab-demo.iiidevops.org/api/v4/groups/
-	#$cmd = "$v_cmd -s -H \"Content-Type: application/json\" -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X POST -d '{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}' $v_http://localhost:32080/api/v4/groups/";	
-	$cmd_msg = call_gitlab_api('POST', 'groups', "{\"name\": \"$p_gitlab_groupname\",\"path\": \"$p_gitlab_groupname\"}");
-	$ret = '';
-	if (index($cmd_msg, $p_gitlab_groupname)>=0){
-		$hash_msg = decode_json($cmd_msg);
-		$ret = $hash_msg->{'name'};
-		print("[$ret]\n");
-	}
-	if ($ret eq '' || $ret ne $p_gitlab_groupname){
-		log_print("---\n$cmd_msg\n---\n");
-		return(-1);
-	}
-
-	return(1);
-}
-
-sub update_github {
-	my ($p_gitlab_id, $p_repo_id, $p_new_name, $p_target_namespace) = @_;
-	my ($cmd, $cmd_msg);
-
-	delete_gitlab($p_gitlab_id);
-	import_github($p_repo_id, $p_new_name, $p_target_namespace);
-
-	return;
-}
-
-sub delete_gitlab {
-	my ($p_gitlab_id) = @_;
-	my ($cmd, $cmd_msg);
-
-	#curl --request DELETE --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" https://gitlab-demo.iiidevops.org/api/v4/projects/2
-	#$cmd = "$v_cmd -s --request DELETE --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$p_gitlab_id";
-	$cmd_msg = call_gitlab_api('DELETE', "projects/$p_gitlab_id");
-	if (index($cmd_msg, 'Accepted')<0) {
-		log_print("delete_gitlab [$p_gitlab_id] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-		$sed_alert = `$sed_cmd`;
-		exit;
-	}
-	sleep(5);
-
-	return;
-}
-
-sub import_github {
-	my ($p_repo_id, $p_new_name, $p_target_namespace) = @_;
-	my ($cmd, $cmd_msg, $arg_user, $hash_msg, $id, $import_status);
-
-	# curl --request POST --header "PRIVATE-TOKEN: QMi2xAxxxxxxxxxx-oaQ" --data "personal_access_token=de8b68c3ee3eccdf7d4d69c6260bff66482283a9&repo_id=336984846&new_name=django-postgresql-todo&target_namespace=iiidevops-templates" https://gitlab-demo.iiidevops.org/api/v4/import/github
-	#$cmd = "$v_cmd -s --request POST --header \"PRIVATE-TOKEN: $gitlab_private_token\" --data \"personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace\" $v_http://localhost:32080/api/v4/import/github";
-	$cmd_msg = call_gitlab_api('POST', 'import/github', "personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=$p_target_namespace");
-	if (index($cmd_msg, $p_new_name)<0) {
-		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-		$sed_alert = `$sed_cmd`;
-		exit;
-	}
-	# Ref - https://docs.gitlab.com/ee/api/import.html
-	$hash_msg = decode_json($cmd_msg);
-	$id = $hash_msg->{'id'};
-	# Ref - https://docs.gitlab.com/ee/api/project_import_export.html
-	# curl --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/1/import"
-	#$cmd = "$v_cmd -s --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$id/import";
-	$import_status = '';
-	while ($import_status ne 'failed' && $import_status ne 'finished') {
-		$cmd_msg = call_gitlab_api('GET', "projects/$id/import");
-		if (index($cmd_msg, $p_new_name)<0) {
-			$import_status = 'failed';
-		}
-		else {
-			$hash_msg = decode_json($cmd_msg);
-			$import_status = $hash_msg->{'import_status'};			
-			sleep(1);
-		}
-	}
-	if ($import_status eq 'failed') {
-		log_print("Import failed! [$cmd_msg]\n");
-		exit;
-	}
-	return;
-}
-
-sub refresh_tmpl_cache {
-	my ($cmd, $cmd_msg, $key_word);
-	
-	#curl --location --request GET 'http://10.20.0.77:31850/template_list_for_cronjob?force_update=1'
-	$cmd = "curl -s --request GET 'http://$iiidevops_ip:31850/template_list_for_cronjob?force_update=1'";
-	$cmd_msg = `$cmd`;
-	$key_word = '"message": "success"';
-	if (index($cmd_msg, $key_word)<0) {
-		log_print("refresh III DevOps template cache Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-		$sed_alert = `$sed_cmd`;
-		exit;
-	}
-	
-	return;
-}
-
-sub log_print {
-	my ($p_msg) = @_;
-
-    print "$p_msg";
-	
-	open(FH, '>>', $logfile) or die $!;
-	print FH $p_msg;
-	close(FH);	
-
-    return;
-}

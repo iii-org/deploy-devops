@@ -29,19 +29,13 @@ if (length($github_token)!=40) {
 $prgname = substr($0, rindex($0,"/")+1);
 $logfile = "$Bin/$prgname.log";
 require("$Bin/../lib/common_lib.pl");
+require("$Bin/../lib/iiidevops_lib.pl");
+require("$Bin/../lib/gitlab_lib.pl");
+
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-# Get API login token
-$login_cmd = "curl -s -H \"Content-Type: application/json\" --request POST '$iiidevops_api/user/login' --data-raw '{\"username\": \"$admin_init_login\",\"password\": \"$admin_init_password\"}'";
-$api_token = decode_json(`$login_cmd`)->{'data'}->{'token'};
-$sed_alert_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/alert_message'";
-
-# check github user token
-$token_check_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $api_token\" --request POST '$iiidevops_api/monitoring/github/validate_token'";
-
-$validate_token_msg = decode_json(`$token_check_cmd`);
-if(index($validate_token_msg->{'message'},'success')>=0) {
+if (validate_guthub_token()) {
     log_print("validate token success\n");
     
     # sync env github toke
@@ -53,8 +47,7 @@ if(index($validate_token_msg->{'message'},'success')>=0) {
 elsif ($validate_token_msg->{'message'} ne '') {
 	log_print("validate token fail : $validate_token_msg->{'message'}\n");
     $error_msg = encode_json($validate_token_msg->{'error'});
-	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
-    $sed_alert = `$sed_cmd`;
+	sed_alert_msg($error_msg);
 	exit;
 }
 else {

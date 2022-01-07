@@ -9,7 +9,7 @@ use JSON::MaybeXS qw(encode_json decode_json);
 #
 sub get_version_center_info {
 	my ($p_vc_url, $p_uuid) = @_;
-	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret, $v_auth, $v_deploy_version, $v_api_tag, $v_ui_tag);
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message, $v_ret, $v_auth, $v_deploy_version, $v_api_tag, $v_ui_tag);
 	
 	# Login in version center
 	if ($p_vc_url eq '' || $p_uuid eq '') {
@@ -108,9 +108,10 @@ sub set_nexus_deploy_version {
 # GET /prod-api/system_git_commit_id HTTP/1.1
 #curl --location -g --request GET 'http://10.20.0.85:31850/system_git_commit_id' \
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
+# Global Vars: $g_api_key , $iiidevops_api
 sub get_iiidevops_ver {
 	my ($p_type) = @_;
-	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message, $v_ret);
 	if ($g_api_key eq '') {
 		get_api_key_api();
 	}
@@ -137,8 +138,9 @@ sub get_iiidevops_ver {
 
 #curl --location -g --request GET 'http://10.20.0.85:31850/maintenance/update_rc_pj_pipe_id?force=true' \
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
+# Global Vars: $g_api_key , $iiidevops_api
 sub fix_pipeline_api {
-	my ($v_cmd, $v_hash_msg, $v_message, $v_ret);
+	my ($v_cmd, %v_hash_msg, $v_message, $v_ret);
 
 	if ($g_api_key eq '') {
 		get_api_key_api();
@@ -158,8 +160,9 @@ sub fix_pipeline_api {
 
 # curl --location -g --request PUT 'http://10.20.0.85:31850/maintenance/update_pj_http_url' \
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
+# Global Vars: $g_api_key , $iiidevops_api
 sub fix_gitlab_url {
-	my ($v_cmd, $v_hash_msg, $v_message, $v_ret);
+	my ($v_cmd, %v_hash_msg, $v_message, $v_ret);
 
 	if ($g_api_key eq '') {
 		get_api_key_api();
@@ -177,19 +180,223 @@ sub fix_gitlab_url {
 	return($v_ret);
 }
 
-#curl --location --request GET 'http://10.20.0.72:31850/maintenance/registry_into_rc_all' \
-#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
-sub get_registry_api {
-	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+#
+# Catalog related functions
+#
+# Global Vars: $g_secrets_path
+sub add_catalogs {
+	my ($p_name, %key_value) = @_;
+	my ($v_json_file, $tmpl_file, $ret_msg, $v_template, $v_key, $api_msg);
+
+	$v_json_file = $g_secrets_path.$p_name.'-catalogs.json';
+	$tmpl_file = $v_json_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		$ret_msg = "The template file [$tmpl_file] does not exist!";
+		return($ret_msg);
+	}
+
+	$v_template = `cat $tmpl_file`;
+	foreach $v_key (keys %key_value) {
+		$v_template =~ s/{{$v_key}}/$key_value{$v_key}/g;
+	}
+	#print("-----\n$v_template\n-----\n\n");
+	$api_msg = add_catalogs_api($v_template);
+	$ret_msg = "Create Catalogs $v_json_file..$api_msg";
+	
+	return($ret_msg);
+}
+
+# Global Vars: $g_api_key , $iiidevops_api, $hash_catalogs
+sub get_catalogs_api {
+	my ($v_cmd, %hash_msg, $v_message, $v_ret);
 
 	if ($g_api_key eq '') {
 		get_api_key_api();
 	}
 
-	$v_cmd = <<END;
-curl -s --location --request GET '$iiidevops_api/maintenance/registry_into_rc_all' --header 'Authorization: Bearer $g_api_key'
+	$v_cmd = "curl -s --location --request GET '$iiidevops_api/rancher/catalogs' --header 'Authorization: Bearer $g_api_key'";
+	$hash_msg = decode_json(`$v_cmd`);
+	$v_message = $hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$hash_catalogs = $hash_msg;
+		$v_ret = @{ $hash_msg->{'data'} };
+	}
+	else {
+		print("get catalogs list Error : $v_message \n");
+		$v_ret=-1;
+	}
+	
+	return($v_ret);
+}
 
-END
+# Global Vars: $g_api_key , $iiidevops_api
+sub add_catalogs_api {
+	my ($p_data) = @_;
+	my ($v_cmd, $api_msg, %hash_msg, $v_message);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$v_cmd = "curl -s --location --request POST '$iiidevops_api/rancher/catalogs' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$p_data'";
+	$api_msg = `$v_cmd`;
+	$hash_msg = decode_json($api_msg);
+	$v_message = $hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$api_msg = 'OK!';
+	}
+	else {
+		print("add catalogs Error:\n$api_msg\n");
+		$api_msg = 'Failed!';
+	}
+	
+	return($api_msg);	
+}
+
+# Global Vars: $g_api_key , $iiidevops_api, $g_secrets_path
+sub update_catalogs_api {
+	my ($p_name, %key_value) = @_;
+	my ($v_json_file, $tmpl_file, $ret_msg, $v_template, $v_key, $v_cmd, $api_msg, %hash_msg, $v_message);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$v_json_file = $g_secrets_path.$p_name.'-catalogs.json';
+	$tmpl_file = $v_json_file.'.tmpl';
+	if (!-e $tmpl_file) {
+		$ret_msg = "The template file [$tmpl_file] does not exist!";
+		return($ret_msg);
+	}
+
+	$v_template = `cat $tmpl_file`;
+	foreach $v_key (keys %key_value) {
+		$v_template =~ s/{{$v_key}}/$key_value{$v_key}/g;
+	}
+	
+	$v_cmd = "curl -s --location --request PUT '$iiidevops_api/rancher/catalogs/$p_name' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$v_template'";
+	$api_msg = `$v_cmd`;
+	$hash_msg = decode_json($api_msg);
+	$v_message = $hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$api_msg = 'OK!';
+	}
+	else {
+		print("update catalogs Error:\n$api_msg\n");
+		$api_msg = 'Failed!';
+	}
+	
+	return($api_msg);	
+}
+
+# Global Vars: $g_api_key , $iiidevops_api
+sub delete_catalogs_api {
+	my ($p_name) = @_;
+	my ($v_cmd, $api_msg, %hash_msg, $v_message);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$v_cmd = "curl -s --location --request DELETE '$iiidevops_api/rancher/catalogs/$p_name' --header 'Authorization: Bearer $g_api_key'";
+	$api_msg = `$v_cmd`;
+	$hash_msg = decode_json($api_msg);
+	$v_message = $hash_msg->{'message'};
+	print($v_message);
+	if ($v_message eq 'success') {
+		$api_msg = 'OK!';
+	}
+	else {
+		print("delete catalogs Error:\n$api_msg\n");
+		$api_msg = 'Failed!';
+	}
+	
+	return($api_msg);	
+}
+
+# Global Vars: $g_api_key , $iiidevops_api
+sub refresh_catalogs_api {
+	my ($v_cmd, $api_msg, %hash_msg, $v_message);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$v_cmd = "curl -s --location --request POST '$iiidevops_api/rancher/catalogs_refresh' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json'";
+	$api_msg = `$v_cmd`;
+	$hash_msg = decode_json($api_msg);
+	$v_message = $hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$api_msg = 'refresh catalogs OK!';
+	}
+	else {
+		print("refresh catalogs Error:\n$api_msg\n");
+		$api_msg = 'Failed!';
+	}
+	
+	return($api_msg);	
+}
+
+# Global Vars: $iiidevops_api
+sub refresh_tmpl_cache {
+	my ($v_cmd, $v_cmd_msg, $v_key_word, $v_error_msg, $v_sed_cmd);
+	
+	#curl --location --request GET 'http://10.20.0.77:31850/template_list_for_cronjob?force_update=1'
+	$v_cmd = "curl -s --request GET 'http://$iiidevops_ip:31850/template_list_for_cronjob?force_update=1'";
+	$v_cmd_msg = `$v_cmd`;
+	$v_key_word = '"message": "success"';
+	if (index($v_cmd_msg, $v_key_word)<0) {
+		log_print("refresh III DevOps template cache Error!\n---\n$v_cmd\n---\n$v_cmd_msg\n---\n");
+		$v_error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$v_cmd_msg},\"alert_code\":20004}";
+		sed_alert_msg($v_error_msg);
+		exit;
+	}
+
+	return;
+}
+
+# Global Vars: $g_api_key, $iiidevops_api
+sub validate_guthub_token {
+	my ($v_cmd, $v_cmd_msg, $v_ret);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	# check github user token
+	$v_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/monitoring/github/validate_token'";
+	$v_cmd_msg = decode_json(`$v_cmd`);
+	$v_ret = $v_cmd_msg->{'message'},'success')>=0;
+	
+	return($v_ret);
+}
+
+# Global Vars: $g_api_key, $iiidevops_api
+sub sed_alert_msg {
+	my ($p_msg) = @_;
+	my ($v_cmd, $v_ret);
+	
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	$v_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/alert_message' --data-raw '$p_msg'";
+	$v_ret = `$v_sed_cmd`;
+	
+	return($v_ret);
+}
+
+#curl --location --request GET 'http://10.20.0.72:31850/maintenance/registry_into_rc_all' \
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
+# Global Vars: $g_api_key , $iiidevops_api, $g_hash_registry
+sub get_registry_api {
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message, $v_ret);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	$v_cmd = "curl -s --location --request GET '$iiidevops_api/maintenance/registry_into_rc_all' --header 'Authorization: Bearer $g_api_key'";
 	$v_cmd_msg = `$v_cmd`;
 	$v_hash_msg = decode_json($v_cmd_msg);
 	$v_message = $v_hash_msg->{'message'};
@@ -214,18 +421,16 @@ END
 # "username": "admin",
 # "password": "MyPassword!"
 #}'
+# Global Vars: $g_api_key , $iiidevops_api
 sub add_registry_api {
 	my ($p_data) = @_;
-	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message, $v_ret);
 
 	if ($g_api_key eq '') {
 		get_api_key_api();
 	}
 	
-	$v_cmd = <<END;
-curl -s --location --request POST '$iiidevops_api/maintenance/registry_into_rc_all' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$p_data'
-
-END
+	$v_cmd = "curl -s --location --request POST '$iiidevops_api/maintenance/registry_into_rc_all' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$p_data'";
 	$v_cmd_msg = `$v_cmd`;
 	$v_hash_msg = decode_json($v_cmd_msg);
 	$v_message = $v_hash_msg->{'message'};
@@ -250,18 +455,16 @@ END
 #    "api-origin": "http://10.20.0.68:31850"
 # }
 #}'
+# Global Vars: $g_api_key , $iiidevops_api
 sub add_secrets_api {
 	my ($p_data) = @_;
-	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message, $v_ret);
 
 	if ($g_api_key eq '') {
 		get_api_key_api();
 	}
 	
-	$v_cmd = <<END;
-curl -s --location --request POST '$iiidevops_api/maintenance/secretes_into_rc_all' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$p_data'
-
-END
+	$v_cmd = "curl -s --location --request POST '$iiidevops_api/maintenance/secretes_into_rc_all' --header 'Authorization: Bearer $g_api_key' --header 'Content-Type: application/json' --data-raw '$p_data'";
 	$v_cmd_msg = `$v_cmd`;
 	$v_hash_msg = decode_json($v_cmd_msg);
 	$v_message = $v_hash_msg->{'message'};
@@ -278,30 +481,28 @@ END
 
 #curl --location --request GET 'http://10.20.0.68:31850/maintenance/secretes_into_rc_all' \
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk3NDc4NzEsIm5iZiI6MTYwOTc0Nzg3MSwianRpIjoiNDZmNTk2NjAtZDJhNy00ZWNlLTg3NmEtYTBlODg3MzE1NWI0IiwiZXhwIjoxNjEyMzM5ODcxLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.r1jdzklgHQufSCUTl2mODpsrt0Wh0ztaMwo2wYSgEas'
+# Global Vars: $g_api_key , $iiidevops_api, $g_hash_secrets
 sub get_secrets_api {
-	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message, $v_ret);
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message, $v_ret);
 
 	if ($g_api_key eq '') {
 		get_api_key_api();
 	}
 
-	$v_cmd = <<END;
-curl -s --location --request GET '$iiidevops_api/maintenance/secretes_into_rc_all' --header 'Authorization: Bearer $g_api_key'
-
-END
+	$v_cmd = "curl -s --location --request GET '$iiidevops_api/maintenance/secretes_into_rc_all' --header 'Authorization: Bearer $g_api_key'";
 	$v_cmd_msg = `$v_cmd`;
 	$v_hash_msg = decode_json($v_cmd_msg);
 	$v_message = $v_hash_msg->{'message'};
 	if ($v_message eq 'success') {
 		$g_hash_secrets = $v_hash_msg;
-		$ret = @{ $v_hash_msg->{'data'} };
+		$v_ret = @{ $v_hash_msg->{'data'} };
 	}
 	else {
 		print("get secrets list Error : $v_cmd_msg \n");
-		$ret=-1;
+		$v_ret=-1;
 	}
 	
-	return($ret);
+	return($v_ret);
 }
 
 #curl --location --request POST 'http://10.20.0.86:31850/user/login' \
@@ -310,8 +511,9 @@ END
 # "username": "super",
 # "password": "MyPassword"
 #}'
+# Global Vars: $g_api_key , $iiidevops_api , $admin_init_login , $admin_init_password
 sub get_api_key_api {
-	my ($v_cmd, $v_hash_msg, $v_message);
+	my ($v_cmd, %v_hash_msg, $v_message);
 
 	$v_cmd = <<END;
 curl -s --location --request POST '$iiidevops_api/user/login' --header 'Content-Type: application/json' --data-raw '{
@@ -336,8 +538,9 @@ END
 #--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
 #{"default_cluster_name": true}
 # Check Rancher Cluster Name is iiidevops-k8s
+# Global Vars: $g_api_key
 sub is_rancher_default_name_ok {
-	my ($v_cmd, $v_cmd_msg, $v_hash_msg, $v_message);
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message);
 
 	if ($g_api_key eq '') {
 		get_api_key_api();

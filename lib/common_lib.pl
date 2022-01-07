@@ -232,7 +232,7 @@ sub check_secert_tls {
 
 # Call Gitlab API
 sub call_gitlab_api {
-	my ($p_method, $p_api, $p_data) = @_;
+	my ($p_method, $p_api, $p_data, $p_type) = @_;
 	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http, $v_port);
 	
 	#$v_domain_name = get_domain_name('gitlab');
@@ -241,9 +241,13 @@ sub call_gitlab_api {
 	$v_curl = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 
 	$v_cmd = "$v_curl -s --request $p_method '$v_http://localhost:$v_port/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	if ($p_type ne '') {
+		$v_cmd .= " --header 'Content-Type: $p_type'";
+	}
 	if ($p_data ne '') {
 		$v_cmd .= " -d '$p_data'";
 	}
+	#print("[$v_cmd]\n");
 	$v_msg = `$v_cmd 2>&1`;
 
 	return($v_msg);
@@ -251,7 +255,7 @@ sub call_gitlab_api {
 
 # Call SonarQube API
 sub call_sonarqube_api {
-	my ($p_method, $p_api, $p_data) = @_;
+	my ($p_method, $p_api, $p_data, $p_type) = @_;
 	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http);
 	
 	# Default token
@@ -263,6 +267,9 @@ sub call_sonarqube_api {
 
 	#$v_cmd = "$v_curl -u $sonarqube_admin_token: --request GET '$v_http://$v_domain_name/api/authentication/validate'";
 	$v_cmd = "$v_curl -s -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
+	if ($p_type ne '') {
+		$v_cmd .= " --header 'Content-Type: $p_type'";
+	}
 	if ($p_data ne '') {
 		$v_cmd .= " -d '$p_data'";
 	}
