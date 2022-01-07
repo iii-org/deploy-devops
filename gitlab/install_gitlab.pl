@@ -150,8 +150,13 @@ if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
 	exit;
 }
-$gitlab_port = (uc($deploy_mode) ne 'IP')?80:32080;
+
+$http_type = ($gitlab_domain_name_tls ne '')?'https':'http';
+$http_port = ($gitlab_domain_name_tls ne '')?443:80;
+$gitlab_port = ($gitlab_domain_name_tls ne '')?32081:32080;
 $template = `cat $tmpl_file`;
+$template =~ s/{{http_type}}/$http_type/g;
+$template =~ s/{{http_port}}/$http_port/g;
 $template =~ s/{{gitlab_port}}/$gitlab_port/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;

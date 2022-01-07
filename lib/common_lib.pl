@@ -43,11 +43,11 @@ sub get_service_status {
 		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	elsif ($p_service eq 'gitlab') {
-		$v_domain_name = get_domain_name('gitlab');
-		#$v_port = (uc($deploy_mode) ne 'IP')?80:32080;
+		#$v_domain_name = get_domain_name('gitlab');
+		$v_port = ($gitlab_domain_name_tls ne '')?32081:32080;
 		$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
 		$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
-		$v_cmd .= " -q --max-time 5 -I $v_http://$v_domain_name/users/sign_in";
+		$v_cmd .= " -q --max-time 5 -I $v_http://localhost:$v_port/users/sign_in";
 		#HTTP/1.1 200 OK , HTTP/2 200
 		$v_chk_key = ($gitlab_domain_name_tls ne '')?'HTTP/2 200':'HTTP/1.1 200';
 		$v_cmd_msg = `$v_cmd 2>&1`;
@@ -88,6 +88,17 @@ sub get_service_status {
 		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	elsif ($p_service eq 'iiidevops') {
+		$v_domain_name = get_domain_name('iiidevops');
+		$v_http = ($iiidevops_domain_name_tls ne '')?'https':'http';
+		$v_cmd = ($iiidevops_domain_name_tls ne '')?'curl -k':'curl';
+		$v_cmd .= " -q --max-time 5 -I $v_http://$v_domain_name";
+		# HTTP/1.1 200 OK
+		$v_chk_key = ($iiidevops_domain_name_tls ne '')?'HTTP/2 200':'HTTP/1.1 200';
+		# Content-Type: text/html;charset=utf-8
+		#$v_chk_key = 'Content-Type: text/html;charset=utf-8';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		#log_print("-----\n$v_cmd_msg-----\n");
+		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
 	}
 	else {
 		$v_status = -1;
@@ -96,7 +107,7 @@ sub get_service_status {
 	return($v_status);
 }
 
-# Deploy Mode $deploy_mode = # IP(Default), DNS, nip.io, xip.io
+# Deploy Mode $deploy_mode = # IP(Default), DNS
 # $p_service : rancher, gitlab, redmine, harbor, sonarqube, iiidevops
 # Exp.
 #   IP : 10.20.0.73
@@ -113,20 +124,6 @@ sub get_service_status {
 #		harbor		harbor.iiidevops.org
 #		sonarqube	sonarqube.iiidevops.org
 #		iiidevops	www.iiidevops.org
-#	nip.io
-#		rancher		rancher.iiidevops.10.20.0.73.nip.io
-#		gitlab		gitlab.iiidevops.10.20.0.73.nip.io
-#		redmine		redmine.iiidevops.10.20.0.73.nip.io
-#		harbor		harbor.iiidevops.10.20.0.73.nip.io
-#		sonarqube	sonarqube.iiidevops.10.20.0.73.nip.io
-#		iiidevops	iiidevops.10.20.0.73.nip.io
-#	xip.io
-#		rancher		rancher.iiidevops.10.20.0.73.xip.io
-#		gitlab		gitlab.iiidevops.10.20.0.73.xip.io
-#		redmine		redmine.iiidevops.10.20.0.73.xip.io
-#		harbor		harbor.iiidevops.10.20.0.73.xip.io
-#		sonarqube	sonarqube.iiidevops.10.20.0.73.xip.io
-#		iiidevops	iiidevops.10.20.0.73.xip.io
 #
 sub get_domain_name {
 	my ($p_service) = @_;
@@ -151,46 +148,6 @@ sub get_domain_name {
 		}
 		elsif ($p_service eq 'iiidevops') {
 			$v_domain_name = $iiidevops_domain_name;
-		}
-	}
-	elsif (lc($deploy_mode) eq 'nip.io') {
-		if ($p_service eq 'rancher') {
-			$v_domain_name = 'rancher.iiidevops.'.$rancher_ip.'.nip.io';
-		}
-		elsif ($p_service eq 'gitlab') {
-			$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.nip.io';
-		}
-		elsif ($p_service eq 'redmine') {
-			$v_domain_name = 'redmine.iiidevops.'.$redmine_ip.'.nip.io';
-		}
-		elsif ($p_service eq 'harbor') {
-			$v_domain_name = 'harbor.iiidevops.'.$harbor_ip.'.nip.io';
-		}
-		elsif ($p_service eq 'sonarqube') {
-			$v_domain_name = 'sonarqube.iiidevops.'.$sonarqube_ip.'.nip.io';
-		}
-		elsif ($p_service eq 'iiidevops') {
-			$v_domain_name = 'iiidevops.'.$iiidevops_ip.'.nip.io';
-		}
-	}
-	elsif (lc($deploy_mode) eq 'xip.io') {
-		if ($p_service eq 'rancher') {
-			$v_domain_name = 'rancher.iiidevops.'.$rancher_ip.'.xip.io';
-		}
-		elsif ($p_service eq 'gitlab') {
-			$v_domain_name = 'gitlab.iiidevops.'.$gitlab_ip.'.xip.io';
-		}
-		elsif ($p_service eq 'redmine') {
-			$v_domain_name = 'redmine.iiidevops.'.$redmine_ip.'.xip.io';
-		}
-		elsif ($p_service eq 'harbor') {
-			$v_domain_name = 'harbor.iiidevops.'.$harbor_ip.'.xip.io';
-		}
-		elsif ($p_service eq 'sonarqube') {
-			$v_domain_name = 'sonarqube.iiidevops.'.$sonarqube_ip.'.xip.io';
-		}
-		elsif ($p_service eq 'iiidevops') {
-			$v_domain_name = 'iiidevops.'.$iiidevops_ip.'.xip.io';
 		}
 	}
 	else {
@@ -276,15 +233,17 @@ sub check_secert_tls {
 # Call Gitlab API
 sub call_gitlab_api {
 	my ($p_method, $p_api, $p_data) = @_;
-	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http);
+	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http, $v_port);
 	
 	#$v_domain_name = get_domain_name('gitlab');
 	$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
+	$v_port = ($gitlab_domain_name_tls ne '')?32081:32080;
 	$v_curl = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
 
-	#$v_cmd = "$v_curl --request PUT '$v_http://$gitlab_domain_name/api/v4/application/settings?allow_local_requests_from_web_hooks_and_services=true' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
-	#$v_cmd = "$v_curl -s --request $p_method '$v_http://$v_domain_name/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
-	$v_cmd = "$v_curl -s --request $p_method '$v_http://localhost:32080/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	$v_cmd = "$v_curl -s --request $p_method '$v_http://localhost:$v_port/api/v4/$p_api' --header 'PRIVATE-TOKEN: $gitlab_private_token'";
+	if ($p_data ne '') {
+		$v_cmd .= " -d '$p_data'";
+	}
 	$v_msg = `$v_cmd 2>&1`;
 
 	return($v_msg);
@@ -304,6 +263,9 @@ sub call_sonarqube_api {
 
 	#$v_cmd = "$v_curl -u $sonarqube_admin_token: --request GET '$v_http://$v_domain_name/api/authentication/validate'";
 	$v_cmd = "$v_curl -s -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
+	if ($p_data ne '') {
+		$v_cmd .= " -d '$p_data'";
+	}
 	$v_msg = `$v_cmd 2>&1`;
 
 	return($v_msg);

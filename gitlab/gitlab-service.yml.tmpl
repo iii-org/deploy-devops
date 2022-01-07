@@ -9,10 +9,7 @@ spec:
   selector:
     app: gitlab
   ports:
-    - name: http
+    - name: {{http_type}}
       protocol: TCP
-      port: {{gitlab_port}}
-      nodePort: 32080
-    - name: https
-      protocol: TCP
-      port: 443
+      port: {{http_port}}
+      nodePort: {{gitlab_port}}
