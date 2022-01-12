@@ -171,7 +171,7 @@ END
 	# export harbor helm install values yaml
 	$datestring = strftime "%Y%m%d%H%M", localtime;
 	$cmd_msg = `helm get values harbor > $nfs_dir/deploy-config/harbor-install-$datestring.yaml`;
-	log_print("output harbor yaml : $nfs_dir/deploy-config/harbor-install-$datestring.yaml");
+	log_print("output harbor yaml : $nfs_dir/deploy-config/harbor-install-$datestring.yaml\n");
 
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to deploy Harbor service. Please wait.. \n");
@@ -316,7 +316,7 @@ sub manual_secret_tls {
 	# export harbor helm install values yaml
 	$datestring = strftime "%Y%m%d%H%M", localtime;
 	$cmd_msg = `helm get values harbor > $nfs_dir/deploy-config/harbor-install-$datestring.yaml`;
-	log_print("output harbor yaml : $nfs_dir/deploy-config/harbor-install-$datestring.yaml");
+	log_print("output harbor yaml : $nfs_dir/deploy-config/harbor-install-$datestring.yaml\n");
 
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to upgrade Harbor service. Please wait.. \n");
