@@ -73,14 +73,6 @@ if (-e $p_config_ans) {
 	$env_template =~ s/{{ask_sonarqube_domain_name_tls}}//g ;
 	$env_template =~ s/{{ask_ingress_domain_name_tls}}//g ;
 	$env_template =~ s/{{ask_iiidevops_domain_name_tls}}//g ;
-	$env_template =~ s/{{ask_checkmarx_origin}}//g;
-	$env_template =~ s/{{ask_checkmarx_username}}//g;
-	$env_template =~ s/{{ask_checkmarx_password}}//g;
-	$env_template =~ s/{{ask_checkmarx_secret}}//g;	
-	$env_template =~ s/{{ask_webinspect_base_url}}//g;
-	$env_template =~ s/{{ask_webinspect_type}}//g ;
-	$env_template =~ s/{{ask_webinspect_username}}//g ;
-	$env_template =~ s/{{ask_webinspect_password}}//g ;
 	$env_template =~ s/{{ask_auto_password}}/$hash_conf{'AUTO_PWD'}/g;
 	$env_template =~ s/{{ask_random_key}}/$hash_conf{'RANDOM_KEY'}/g;
 	$env_template =~ s/{{ask_sync_templ_key}}//g ;

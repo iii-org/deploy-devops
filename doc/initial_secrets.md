@@ -1,22 +1,10 @@
 # Secrets
-Initial secrets needed by https://github.com/iii-org/newman-runner, https://github.com/iii-org/checkmarx-runner, https://github.com/iii-org/webinspect-runner
+Initial secrets needed by https://github.com/iii-org/newman-runner
 
 Define installation template - https://github.com/iii-org/deploy-devops/tree/master/devops-api/secrets
 
 ## nexus
 - api-origin
-
-## checkmarx
-- cm-url
-- username
-- password
-- client-secret
-
-## webinspect
-- wi-base-url
-- wi-type (If you use WIE set `WIE`, otherwise omit it)
-- wi-username (If you use WIE)
-- wi-password (If you use WIE)
 
 ## sonarqube
 - sonar-url

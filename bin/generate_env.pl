@@ -769,39 +769,6 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'sync_templ_key') {
 	}
 }
 
-#------------------------------
-# checkmarx setting(Option)
-#------------------------------
-if (!defined($ARGV[0])) {
-	$question = "Q11. Do you want to change Checkmarx setting(Option)?(y/N)";
-	$answer = "A11. Skip Set Checkmarx setting!";
-	$Y_N = prompt_for_input($question);
-	$isAsk = (lc($Y_N) eq 'y');	
-}
-else {
-	$isAsk = 1;
-}
-if ($isAsk) {
-	require($Bin.'/generate_env_checkmarx.pl');
-}
-
-#------------------------------
-# WebInspect setting(Option)
-#------------------------------
-if (!defined($ARGV[0])) {
-	$question = "Q12. Do you want to change WebInspect setting(Option)?(y/N)";
-	$answer = "A12. Skip Set WebInspect setting!";
-	$Y_N = prompt_for_input($question);
-	$isAsk = (lc($Y_N) eq 'y');	
-}
-else {
-	$isAsk = 1;
-}
-if ($isAsk) {
-	require($Bin.'/generate_env_webinspect.pl');
-}
-
-
 
 #------------------------------
 # 21. Generate env.pl
@@ -859,14 +826,6 @@ sub convert {
 	$env_template =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/g;
 	$env_template =~ s/{{ask_auto_password}}/$ask_auto_password/g;
 	$env_template =~ s/{{ask_random_key}}/$ask_random_key/g;
-	$env_template =~ s/{{ask_checkmarx_origin}}/$ask_checkmarx_origin/g;
-	$env_template =~ s/{{ask_checkmarx_username}}/$ask_checkmarx_username/g;
-	$env_template =~ s/{{ask_checkmarx_password}}/$ask_checkmarx_password/g;
-	$env_template =~ s/{{ask_checkmarx_secret}}/$ask_checkmarx_secret/g;	
-	$env_template =~ s/{{ask_webinspect_base_url}}/$ask_webinspect_base_url/g;
-	$env_template =~ s/{{ask_webinspect_type}}/$ask_webinspect_type/g;
-	$env_template =~ s/{{ask_webinspect_username}}/$ask_webinspect_username/g;
-	$env_template =~ s/{{ask_webinspect_password}}/$ask_webinspect_password/g;
 	$env_template =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/g;
 	$env_template =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/g;
 	$env_template =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/g;
@@ -921,14 +880,6 @@ sub write_ans {
 	$ans_file =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;
 	$ans_file =~ s/{{ask_auto_password}}/$ask_auto_password/;
 	$ans_file =~ s/{{ask_random_key}}/$ask_random_key/;
-	$ans_file =~ s/{{ask_checkmarx_origin}}/$ask_checkmarx_origin/;
-	$ans_file =~ s/{{ask_checkmarx_username}}/$ask_checkmarx_username/;
-	$ans_file =~ s/{{ask_checkmarx_password}}/$ask_checkmarx_password/;
-	$ans_file =~ s/{{ask_checkmarx_secret}}/$ask_checkmarx_secret/;
-	$ans_file =~ s/{{ask_webinspect_base_url}}/$ask_webinspect_base_url/;
-	$ans_file =~ s/{{ask_webinspect_type}}/$ask_webinspect_type/;
-	$ans_file =~ s/{{ask_webinspect_username}}/$ask_webinspect_username/;
-	$ans_file =~ s/{{ask_webinspect_password}}/$ask_webinspect_password/;
 	$ans_file =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/;
 	$ans_file =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;
 	$ans_file =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;

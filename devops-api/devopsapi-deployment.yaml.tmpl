@@ -59,14 +59,6 @@ spec:
           value: "{{rancher_admin_password}}"
         - name: RANCHER_CLUSTER_NAME
           value: "iiidevops-k8s"
-        - name: CHECKMARX_ORIGIN
-          value: "{{checkmarx_origin}}"
-        - name: CHECKMARX_USERNAME
-          value: "{{checkmarx_username}}"
-        - name: CHECKMARX_PASSWORD
-          value: "{{checkmarx_password}}"
-        - name: CHECKMARX_SECRET
-          value: "{{checkmarx_secret}}"
         - name: SONARQUBE_INTERNAL_BASE_URL
           value: "http://sonarqube-server-service:9000/api"
         - name: SONARQUBE_EXTERNAL_BASE_URL
@@ -87,8 +79,6 @@ spec:
           value: "{{ingress_domain_name}}"
         - name: INGRESS_EXTERNAL_TLS
           value: "{{ingress_domain_name_tls}}"
-        - name: WEBINSPECT_BASE_URL
-          value: "{{webinspect_base_url}}"
         - name: ADMIN_INIT_LOGIN
           value: "{{admin_init_login}}"
         - name: ADMIN_INIT_EMAIL

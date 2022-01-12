@@ -41,34 +41,6 @@ else {
 	print("$name : already exists, Skip!\n");
 }
 
-# checkmarx
-$name = 'checkmarx';
-$key_value{'client-secret'} = $checkmarx_secret;
-$key_value{'cm-url'} = $checkmarx_origin;
-$key_value{'username'} = $checkmarx_username;
-$key_value{'password'} = $checkmarx_password;
-if (index($g_secrets_name_list, '['.$name.']')<0) {
-	$ret_msg = add_secrets($name, %key_value);
-	print("$name : $ret_msg\n");
-}
-else {
-	print("$name : already exists, Skip!\n");
-}
-
-# webinspect
-$name = 'webinspect';
-$key_value{'wi-base-url'} = $webinspect_base_url;
-$key_value{'wi-type'} = $webinspect_type;
-$key_value{'wi-username'} = $webinspect_username;
-$key_value{'wi-password'} = $webinspect_password;
-if (index($g_secrets_name_list, '['.$name.']')<0) {
-	$ret_msg = add_secrets($name, %key_value);
-	print("$name : $ret_msg\n");
-}
-else {
-	print("$name : already exists, Skip!\n");
-}
-
 # rancher
 $name = 'rancher';
 $rancher_hostname=($deploy_mode eq 'IP')?$rancher_ip.':31443':$rancher_domain_name;
