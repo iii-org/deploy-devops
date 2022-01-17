@@ -121,7 +121,7 @@ sub get_iiidevops_ver {
 	if ($v_cmd_msg eq '') {
 		$v_ret=$iiidevops_ver;
 	}
-	elsif (index('success', $v_cmd_msg)<0) {
+	elsif (index($v_cmd_msg, 'success')<0) {
 		print("Get III DevOps ver Error : $v_cmd_msg \n");
 		$v_ret='';
 	}
@@ -530,7 +530,7 @@ END
 		print("call api but return empty\n");
 		return;
 	}
-	if (index('success', $v_cmd_msg)<0) {
+	if (index($v_cmd_msg, 'success')<0) {
 		print("get api key Error : $v_cmd_msg \n");
 		return;
 	}
