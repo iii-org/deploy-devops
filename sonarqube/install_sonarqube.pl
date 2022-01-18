@@ -59,9 +59,24 @@ open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
 $cmd = "kubectl apply -f $yaml_path";
-log_print("Deploy sonarqube-postgresql..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg-----\n");
+log_print("Deploy sonarqube-postgresql..");
+
+$isChk=1;
+$count=0;
+$wait_sec=60;
+while($isChk && $count<$wait_sec) {
+	log_print('.');
+	$isChk = (!chk_svcipport('localhost', 32750))?3:0;
+	$count = $count + $isChk;
+	sleep($isChk);
+}
+if ($isChk) {
+	log_print("Failed to deploy Sonarqube!\n");
+	exit;
+}
+log_print("OK!\n");
 
 # Modify sonarqube/sonarqube/sonar-server-deployment.yaml.tmpl
 $yaml_path = "$Bin/../sonarqube/sonarqube";
@@ -207,10 +222,20 @@ sub initial_sonarqube {
 	# Wait 3 Secs
 	sleep(3);
 
+	# Find default_template
+	$cmd_msg = call_sonarqube_api('GET', 'permissions/search_templates');
+	if (index($cmd_msg, 'templateId')<0) {
+		log_print("get default_template Error : $cmd_msg \n");
+		return;
+	}
+	$hash_msg = decode_json($cmd_msg);
+	$templateId = $hash_msg->{'defaultTemplates'}[0]->{'templateId'};
+	log_print("get default_template ID : $templateId \n");
+	
 	# Setting default sonarqube group template permission ( admin, codeviewer, issueadmin, securityhotspotadmin, scan, user ) 
 	$permission_str = 'admin,codeviewer,issueadmin,securityhotspotadmin,scan,user';	
 	foreach $permission (split(',', $permission_str)) {
-		$cmd_msg = call_sonarqube_api('POST', "permissions/add_group_to_template?templateId=default_template&groupName=sonar-administrators&permission=$permission");
+		$cmd_msg = call_sonarqube_api('POST', "permissions/add_group_to_template?templateId=$templateId&groupName=sonar-administrators&permission=$permission");
 		if ($cmd_msg ne '') {
 			log_print("Add group sonar-administrators $permission permission Error : $cmd_msg \n");
 		}
@@ -218,7 +243,7 @@ sub initial_sonarqube {
 			log_print("Add group sonar-administrators $permission permission OK!\n");
 		}
 		
-		$cmd_msg = call_sonarqube_api('POST', "permissions/remove_group_from_template?templateId=default_template&groupName=sonar-users&permission=$permission");
+		$cmd_msg = call_sonarqube_api('POST', "permissions/remove_group_from_template?templateId=$templateId&groupName=sonar-users&permission=$permission");
 		if ($cmd_msg ne '') {
 			log_print("Remove group sonar-users $permission permission Error : $cmd_msg \n");
 		}

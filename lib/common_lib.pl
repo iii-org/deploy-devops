@@ -431,6 +431,17 @@ sub get_k8sdeploy {
 	return('ERR_0');
 }
 
+# Check service IP port
+sub chk_svcipport {
+	my ($p_ip, $p_port, $p_keyword) = @_;
+	my ($v_msg);
+	
+	$p_keyword = ($p_keyword eq '')?'succeeded':$p_keyword;
+	$v_msg = `nc -z -v $p_ip $p_port 2>&1`;
+	
+	return(index($v_msg, $p_keyword)>=0);
+}
+
 # url encode / decode
 # Ref - https://stackoverflow.com/questions/4510550/using-perl-how-do-i-decode-or-create-those-encodings-on-the-web
 sub url_encode {
