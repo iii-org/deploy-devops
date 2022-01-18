@@ -255,24 +255,20 @@ sub call_gitlab_api {
 
 # Call SonarQube API
 sub call_sonarqube_api {
-	my ($p_method, $p_api, $p_data, $p_type) = @_;
+	my ($p_method, $p_api) = @_;
 	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http);
-	
-	# Default token
-	$sonarqube_admin_token = ($sonarqube_admin_token eq '')?'YWRtaW46YWRtaW4=':$sonarqube_admin_token;
 	
 	$v_domain_name = get_domain_name('sonarqube');
 	$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
 	$v_curl = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
 
-	#$v_cmd = "$v_curl -u $sonarqube_admin_token: --request GET '$v_http://$v_domain_name/api/authentication/validate'";
-	$v_cmd = "$v_curl -s -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
-	if ($p_type ne '') {
-		$v_cmd .= " --header 'Content-Type: $p_type'";
+	if ($sonarqube_admin_token eq '') {
+		$v_cmd = "$v_curl -s --request $p_method '$v_http://$v_domain_name/api/$p_api' --header 'Authorization: Basic YWRtaW46YWRtaW4='";
 	}
-	if ($p_data ne '') {
-		$v_cmd .= " -d '$p_data'";
+	else {
+		$v_cmd = "$v_curl -s -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
 	}
+	#print("[$v_cmd]\n");
 	$v_msg = `$v_cmd 2>&1`;
 
 	return($v_msg);
@@ -433,6 +429,23 @@ sub get_k8sdeploy {
 	}
 	
 	return('ERR_0');
+}
+
+# url encode / decode
+# Ref - https://stackoverflow.com/questions/4510550/using-perl-how-do-i-decode-or-create-those-encodings-on-the-web
+sub url_encode {
+	my ($p_url) = @_;
+	
+	$p_url =~ s/([^^A-Za-z0-9\-_.!~*'()])/ sprintf "%%%02x", ord $1 /eg;
+	
+	return($p_url);
+}
+sub url_decode {
+	my ($p_url) = @_;
+	
+	$p_url =~ s/%([A-Fa-f\d]{2})/chr hex $1/eg;
+	
+	return($p_url);
 }
 
 # $logfile

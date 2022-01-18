@@ -167,32 +167,19 @@ sub initial_sonarqube {
 		return;
 	}
 	
-	$sonarqube_domain_name = get_domain_name('sonarqube');
-	# get admin token
-	# curl --silent --location --request POST 'http://10.50.1.56:31910/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-	$cmd_add = <<END;
-curl --silent --location --request POST 'http://$sonarqube_domain_name/api/user_tokens/generate?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-
-END
-	# response
-	#{"login":"admin","name":"API_SERVER","token":"3d8d8cb48f0ee8feb889f673bd859fd69be7106b","createdAt":"2021-01-21T07:41:46+0000"}
-	$cmd_del = <<END;
-curl --silent --location --request POST 'http://$sonarqube_domain_name/api/user_tokens/revoke?login=admin&name=API_SERVER' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-
-END
-
+	# Generate admin token
 	$chk_key='API_SERVER';
 	$isChk=1;
 	$count=0;
 	$wait_sec=300;
 	while($isChk && $count<$wait_sec) {
 		log_print('.');
-		$cmd_msg = `$cmd_add`;
+		$cmd_msg = call_sonarqube_api('POST', 'user_tokens/generate?login=admin&name=API_SERVER');
 		#print("1:$cmd_msg\n");
 		if (index($cmd_msg, 'already exists')>=0) {
-			`$cmd_del`;
+			call_sonarqube_api('POST', 'user_tokens/revoke?login=admin&name=API_SERVER');
 			sleep(1);
-			$cmd_msg = `$cmd_add`;
+			$cmd_msg = call_sonarqube_api('POST', 'user_tokens/generate?login=admin&name=API_SERVER');
 			#print("2:$cmd_msg\n");
 		}
 		$isChk = (index($cmd_msg, $chk_key)<0)?3:0;
@@ -221,25 +208,9 @@ END
 	sleep(3);
 
 	# Setting default sonarqube group template permission ( admin, codeviewer, issueadmin, securityhotspotadmin, scan, user ) 
-	$permission_str = 'admin,codeviewer,issueadmin,securityhotspotadmin,scan,user';
-	# Add sonar-admin permissions
-	# curl --location --request POST 'http://10.50.1.56:31910/api/permissions/add_group_to_template?templateId=default_template&groupName=sonar-administrators&permission=codeviewer' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-	$cmd_add_permission = <<END;
-curl --silent --location --request POST 'http://$sonarqube_domain_name/api/permissions/add_group_to_template?templateId=default_template&groupName=sonar-administrators&permission=%%permission%%' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-
-END
-
-	# Remove sonar-user permissions
-	# curl --location --request POST 'http://10.50.1.56:31910/api/permissions/remove_group_from_template?templateId=default_template&groupName=sonar-users&permission=admin' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-	$cmd_remove_permission = <<END;
-curl --silent --location --request POST 'http://$sonarqube_domain_name/api/permissions/remove_group_from_template?templateId=default_template&groupName=sonar-users&permission=%%permission%%' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-
-END
-	
+	$permission_str = 'admin,codeviewer,issueadmin,securityhotspotadmin,scan,user';	
 	foreach $permission (split(',', $permission_str)) {
-		$cmd = $cmd_add_permission;
-		$cmd =~ s/%%permission%%/$permission/g;
-		$cmd_msg = `$cmd`;
+		$cmd_msg = call_sonarqube_api('POST', "permissions/add_group_to_template?templateId=default_template&groupName=sonar-administrators&permission=$permission");
 		if ($cmd_msg ne '') {
 			log_print("Add group sonar-administrators $permission permission Error : $cmd_msg \n");
 		}
@@ -247,9 +218,7 @@ END
 			log_print("Add group sonar-administrators $permission permission OK!\n");
 		}
 		
-		$cmd = $cmd_remove_permission;
-		$cmd =~ s/%%permission%%/$permission/g;
-		$cmd_msg = `$cmd`;
+		$cmd_msg = call_sonarqube_api('POST', "permissions/remove_group_from_template?templateId=default_template&groupName=sonar-users&permission=$permission");
 		if ($cmd_msg ne '') {
 			log_print("Remove group sonar-users $permission permission Error : $cmd_msg \n");
 		}
@@ -257,14 +226,10 @@ END
 			log_print("Remove group sonar-users $permission permission OK!\n");
 		}			
 	}
-
+	
 	# update admin password
-	# curl --silent --location --request POST 'http://10.50.1.56:31910/api/users/change_password?login=admin&password=NewPassword&previousPassword=admin' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-	$cmd = <<END;
-curl --silent --location --request POST 'http://$sonarqube_domain_name/api/users/change_password?login=admin&password=$sonarqube_admin_passwd&previousPassword=admin' --header 'Authorization: Basic YWRtaW46YWRtaW4='
-
-END
-	$cmd_msg = `$cmd`;
+	$url_sonarqube_admin_passwd = url_encode($sonarqube_admin_passwd);
+	$cmd_msg = call_sonarqube_api('POST', "users/change_password?login=admin&password=$url_sonarqube_admin_passwd&previousPassword=admin");
 	if ($cmd_msg ne '') {
 		log_print("update admin password Error : $cmd_msg \n");
 		exit;
