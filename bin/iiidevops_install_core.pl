@@ -127,22 +127,24 @@ open(FH, '>', $yaml_file) or die $!;
 print FH $template;
 close(FH);
 $cmd = "kubectl apply -f $yaml_path";
-log_print("Deploy devops-db..\n");
 $cmd_msg = `$cmd`;
 #log_print("-----\n$cmd_msg\n-----\n\n");
 
-# Check the database is ready!
+log_print("Deploy devops-db..");
 $isChk=1;
-$cmd = "psql -d 'postgresql://postgres:$db_passwd\@$db_ip:31403' -q -c 'SELECT version();'";
-# PostgreSQL 12.6 (Debian 12.6-1.pgdg100+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 8.3.0-6) 8.3.0, 64-bit
-$chk_key = 'PostgreSQL';
-while($isChk) {
-	print('.');
-	$cmd_msg = `$cmd 2>&1`;
-	$isChk = index($cmd_msg, $chk_key)<0?3:0;
+$count=0;
+$wait_sec=60;
+while($isChk && $count<$wait_sec) {
+	log_print('.');
+	$isChk = (!chk_svcipport('localhost', 31403))?3:0;
+	$count = $count + $isChk;
 	sleep($isChk);
 }
-print("OK!\n");
+if ($isChk) {
+	log_print("Failed to deploy devops-db!\n");
+	exit;
+}
+log_print("OK!\n");
 
 # Check & Set deploy version
 $t_now_ver = get_nexus_info('deploy_version');
