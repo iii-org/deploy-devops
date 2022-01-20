@@ -103,6 +103,19 @@ else {
 	print("$name : already exists, Skip!\n");
 }
 
+# harbor-localhost
+$name = 'harbor-localhost';
+$key_value{'url'} = 'localhost:32443';
+$key_value{'username'} = 'admin';
+$key_value{'password'} = $harbor_admin_password;
+if (index($g_registry_name_list, '['.$name.']')<0) {
+	$ret_msg = add_registry($name, %key_value);
+	print("$name : $ret_msg\n");
+}
+else {
+	print("$name : already exists, Skip!\n");
+}
+
 exit;
 
 sub add_secrets {
