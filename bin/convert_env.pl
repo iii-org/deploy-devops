@@ -41,6 +41,7 @@ if (-e $p_config_ans) {
 
 # Replace env.pl.ans template
 	$env_template = $ans_tmpl;
+	$env_template =~ s/{{ask_deploy_env}}/$hash_conf{'DEPLOY_ENV'}/g;
 	$env_template =~ s/{{ask_deploy_mode}}/$hash_conf{'DEPLOY_MODE'}/g;
 	$env_template =~ s/{{ask_iiidevops_ver}}/$hash_conf{'VERSION'}/g;
 	$env_template =~ s/{{ask_vm1_ip}}/$hash_conf{'VM1_IP'}/g;

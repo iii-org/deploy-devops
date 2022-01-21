@@ -73,6 +73,20 @@ if (!get_service_status('gitlab')) {
 }
 log_print("GitLab is working well!\n\n");
 
+# offline setting
+if ($deploy_env eq 'offline') {
+	$cmd =<<END;
+kubectl get configmap coredns -n kube-system -o yaml > $home/coredns.yaml;
+sed -i '/forward\ .\ "\/etc\/resolv.conf\"/d' $home/coredns.yaml;
+kubectl apply -f $home/coredns.yaml;
+kubectl get deployment metrics-server -n kube-system -o yaml > $home/metrics.yaml; 
+sed -i "s/imagePullPolicy\:\ Always/imagePullPolicy\:\ IfNotPresent/g" $home/metrics.yaml; 
+kubectl apply -f $home/metrics.yaml
+END
+
+	system($cmd);
+}
+
 log_print("----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 log_print("The deployment of these services has been completed. The service URLs are: \n");

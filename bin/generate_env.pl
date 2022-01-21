@@ -795,6 +795,7 @@ sub convert {
 	}
 	
 	$env_template = `cat $p_config_tmpl`;
+	$env_template =~ s/{{ask_deploy_env}}/$ask_deploy_env/g;
 	$env_template =~ s/{{ask_deploy_mode}}/$ask_deploy_mode/g;
 	$env_template =~ s/{{ask_iiidevops_ver}}/$ask_iiidevops_ver/g;
 	$env_template =~ s/{{ask_vm1_ip}}/$ask_vm1_ip/g;
@@ -849,6 +850,7 @@ sub convert {
 sub write_ans {
 
 	$ans_file = $ans_tmpl;
+	$ans_file =~ s/{{ask_deploy_env}}/$ask_deploy_env/;
 	$ans_file =~ s/{{ask_deploy_mode}}/$ask_deploy_mode/;
 	$ans_file =~ s/{{ask_iiidevops_ver}}/$ask_iiidevops_ver/;
 	$ans_file =~ s/{{ask_vm1_ip}}/$ask_vm1_ip/;
