@@ -262,7 +262,7 @@ sub call_sonarqube_api {
 	$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
 	$v_curl = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
 
-	if ($sonarqube_admin_token eq '') {
+	if ($sonarqube_admin_token eq '' || $sonarqube_admin_token eq 'skip') {
 		$v_cmd = "$v_curl -s --request $p_method '$v_http://$v_domain_name/api/$p_api' --header 'Authorization: Basic YWRtaW46YWRtaW4='";
 	}
 	else {

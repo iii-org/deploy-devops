@@ -77,7 +77,7 @@ log_print("GitLab is working well!\n\n");
 if ($deploy_env eq 'offline') {
 	$cmd =<<END;
 kubectl get configmap coredns -n kube-system -o yaml > $home/coredns.yaml;
-sed -i '/forward\ .\ "\/etc\/resolv.conf\"/d' $home/coredns.yaml;
+sed -i '/forward\\ .\\ "\\/etc\\/resolv.conf\\"/d' $home/coredns.yaml;
 kubectl apply -f $home/coredns.yaml;
 kubectl get deployment metrics-server -n kube-system -o yaml > $home/metrics.yaml; 
 sed -i "s/imagePullPolicy\:\ Always/imagePullPolicy\:\ IfNotPresent/g" $home/metrics.yaml; 
