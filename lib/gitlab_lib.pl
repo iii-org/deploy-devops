@@ -139,19 +139,29 @@ sub import_github {
 		exit;
 	}
 
+	# iiidevops-catalog group already exist, only import chart_idx project
+	if ($p_target_namespace eq '') {
+		$cmd_msg = call_gitlab_api('GET', "projects/$repo_id");
+		$hash_msg = decode_json($cmd_msg);
+		return($hash_msg->{'web_url'});
+	}
+	
+	# target_namespace : iiidevops-catalog group
 	$cmd_msg = call_gitlab_api('GET', "/groups/$p_target_namespace");
 	$hash_msg = decode_json($cmd_msg);
 	$v_name = $hash_msg->{'name'};
-	if ($v_name ne 'iiidevops-catalog') {
-		# transfer import project to target_namespace
-		#$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
-		$cmd_msg = call_gitlab_api('PUT', "projects/$repo_id/transfer?namespace=$p_target_namespace");
-		if (index($cmd_msg, $p_new_name)<0) {
-			log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-			$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
-			sed_alert_msg($error_msg);
-			exit;
-		}
+	if ($v_name eq 'iiidevops-catalog') {
+		return($hash_msg->{'projects'}[0]->{'web_url'});
+	}
+	
+	# transfer import project to target_namespace
+	#$cmd = "$v_cmd -s --request PUT --header \"PRIVATE-TOKEN: $gitlab_private_token\" $v_http://localhost:32080/api/v4/projects/$repo_id/transfer?namespace=$p_target_namespace";
+	$cmd_msg = call_gitlab_api('PUT', "projects/$repo_id/transfer?namespace=$p_target_namespace");
+	if (index($cmd_msg, $p_new_name)<0) {
+		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		sed_alert_msg($error_msg);
+		exit;
 	}
 
 	return($cmd_msg);

@@ -29,7 +29,7 @@ $sed_alert_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorizati
 #-----
 # Add Apps Catalogs
 #-----
-print("\nAdd Apps Catalogs\n-----\n");
+log_print("\nAdd Apps Catalogs\n-----\n");
 # Get catalogs List
 $hash_catalogs = {};
 $catalogs_num = get_catalogs_api();
@@ -59,13 +59,13 @@ foreach $group_hash (@ {$hash_msg}) {
 			if ($is_update eq 'gitlab_update') {
 				$github_user_token = $sync_templ_key;
 				if (index($github_user_token, ":")<=0) {
-					print("github_token:[$github_user_token] is worng!\n");
+					log_print("github_token:[$github_user_token] is worng!\n");
 					exit;
 				} else {
 					$token_ck_cmd = "curl -s -u $github_user_token https://api.github.com/user";
 					$token_msg = `$token_ck_cmd`;
 					if(index($token_msg,"node_id")<0) {
-						print("github_token:[$github_user_token] is worng!\n");
+						log_print("github_token:[$github_user_token] is worng!\n");
 						exit;
 					} elsif ($iiidevops_ver ne 'develop') {
 						$g_github_repo_cmd = "curl -s -u $github_user_token -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
@@ -79,12 +79,12 @@ foreach $group_hash (@ {$hash_msg}) {
 						$cmd_msg = call_gitlab_api('GET', 'projects?search=devops-charts-pack-and-index');
 						$gitlab_prj_created_at = decode_json($cmd_msg)->[0]->{'created_at'};
 						if ($repo_max_time le $gitlab_prj_created_at) {
-							print("GitLab repo [$helm_catalog] ($repo_max_time) is latest\n");
+							log_print("GitLab repo [$helm_catalog] ($repo_max_time) is latest\n");
 							exit;
 						}
 					}
 					else {
-						print("Always update the GitLab repo [$helm_catalog] in the development environment!\n");
+						log_print("Always update the GitLab repo [$helm_catalog] in the development environment!\n");
 					}
 				}
 			}
@@ -151,7 +151,7 @@ else {
 
 my $p_tar = "$Bin/$helm_catalog.tar.gz";
 if (!-e $p_tar) {
-	print("The file [$p_tar] does not exist!\n");
+	log_print("The file [$p_tar] does not exist!\n");
 	exit; 
 }
 
@@ -191,13 +191,13 @@ else {
 if ($is_update ne 'gitlab_offline' && $is_update ne 'gitlab_offline_update') {
 	$github_user_token = $sync_templ_key;
 	if (index($github_user_token, ":")<=0) {
-		print("github_token:[$github_user_token] is worng!\n");
+		log_print("github_token:[$github_user_token] is worng!\n");
 		exit;
 	} else {
 		$token_ck_cmd = "curl -s -u $github_user_token https://api.github.com/user";
 		$token_msg = `$token_ck_cmd`;
 		if(index($token_msg,"node_id")<0) {
-			print("github_token:[$github_user_token] is worng!\n");
+			log_print("github_token:[$github_user_token] is worng!\n");
 			exit;
 		}
 	}
@@ -260,8 +260,7 @@ if (index($prj_name_list, "[$helm_catalog]")<0) {
 		}
 		else {
 			log_print("Add Gitlab Helm Catalog [$helm_catalog] templates OK\n");
-			$hash_msg = decode_json($ret);
-			$helm_catalog_url = $hash_msg->{'web_url'};
+			$helm_catalog_url = $ret;
 		}
 	}
 }
@@ -307,7 +306,7 @@ else {
 		log_print("\nUpdate catalog [$name] OK]\n");
 	}
 	else {
-		print("$name : already exists, Skip!\n");
+		log_print("$name : already exists, Skip!\n");
 	}
 }
 
