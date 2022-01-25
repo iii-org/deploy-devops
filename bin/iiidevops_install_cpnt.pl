@@ -82,6 +82,9 @@ kubectl apply -f $home/coredns.yaml;
 kubectl get deployment metrics-server -n kube-system -o yaml > $home/metrics.yaml; 
 sed -i "s/imagePullPolicy\:\ Always/imagePullPolicy\:\ IfNotPresent/g" $home/metrics.yaml; 
 kubectl apply -f $home/metrics.yaml
+echo "* * * * * /home/rkeuser/deploy-devops/bin/set-pipeline-offline.pl /home/rkeuser/.kube/config >> /tmp/set-pipeline-offline.log 2>&1" >> /home/rkeuser/cron.txt; 
+crontab /home/rkeuser/cron.txt;
+crontab -l
 END
 
 	system($cmd);
