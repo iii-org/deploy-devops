@@ -217,7 +217,7 @@ sub check_secert_tls {
 	my ($cmd_kubectl, $v_namespace, $v_cmd, $v_cmd_msg, $v_ret);
 	
 	$cmd_kubectl = '/snap/bin/kubectl';
-	if (!-e $$cmd_kubectl) {
+	if (!-e $cmd_kubectl) {
 		$cmd_kubectl = '/usr/local/bin/kubectl';
 	}
 
