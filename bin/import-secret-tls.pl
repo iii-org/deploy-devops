@@ -22,7 +22,7 @@ $key_file = $ARGV[2];
 $namespace = defined($ARGV[3])?'-n '.$ARGV[3]:'';
 
 $cmd_kubectl = '/snap/bin/kubectl';
-if (!-e $$cmd_kubectl) {
+if (!-e $cmd_kubectl) {
 	$cmd_kubectl = '/usr/local/bin/kubectl';
 }
 

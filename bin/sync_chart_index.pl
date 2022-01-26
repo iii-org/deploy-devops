@@ -285,15 +285,20 @@ if (index($catalogs_name_list, '['.$name.']')<0) {
 }
 else {
 	if($is_update eq 'gitlab_update' || $is_update eq 'gitlab_offline_update') {
+		$cmd_kubectl = '/snap/bin/kubectl';
+		if (!-e $cmd_kubectl) {
+			$cmd_kubectl = '/usr/local/bin/kubectl';
+		}
+
 		$ret_msg = update_catalogs_api($name, %key_value);
-		$cmd_msg = `kubectl rollout restart deployment rancher -n cattle-system`;
+		$cmd_msg = `$cmd_kubectl rollout restart deployment rancher -n cattle-system`;
 		log_print("Update catalog");
 		# check deploy status
 		$isChk=1;
 		while($isChk) {
 			sleep($isChk);
 			$isChk = 0;
-			foreach $line (split(/\n/, `kubectl get deployment -n cattle-system | grep rancher`)) {
+			foreach $line (split(/\n/, `$cmd_kubectl get deployment -n cattle-system | grep rancher`)) {
 				$line =~ s/( )+/ /g;
 				($l_name, $l_ready, $l_update, $l_available, $l_age) = split(/ /, $line);
 				($l_ready_pod, $l_replica_pod) = split("/", $l_ready);
