@@ -29,6 +29,11 @@ if (lc($ARGV[0]) eq 'create_dockerhub_proxy') {
 	exit;
 }
 
+if (lc($ARGV[0]) eq 'offline'){
+	create_dockerhub();
+	exit;
+}
+
 if (lc($ARGV[0]) eq 'manual_secret_tls') {
 	manual_secret_tls();
 }
@@ -62,8 +67,11 @@ $the_url = get_domain_name('harbor');
 log_print("Successfully deployed Harbor! URL - https://$the_url\n");
 
 # create dockerhub proxy project
-create_dockerhub_proxy();
-
+if ($deploy_env eq 'offline') {
+	create_dockerhub();
+} else {
+	create_dockerhub_proxy();
+}
 exit;
 
 sub install_harbor {
@@ -176,6 +184,41 @@ END
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to deploy Harbor service. Please wait.. \n");
 
+	return;
+}
+sub create_dockerhub {
+# Add dockerhub Registry & create dockerhub Proxy Cache Project
+	$harbor_key = encode_base64("admin:$harbor_admin_password");
+	$harbor_key =~ s/\n|\r//;
+	$harbor_domain_name = get_domain_name('harbor');
+
+$cmd =<<END;
+curl -s -k --location --request POST 'https://$harbor_domain_name/api/v2.0/projects' --header 'Authorization: Basic $harbor_key' --header 'Content-Type: application/json' --data-raw '{
+  "project_name": "dockerhub",
+  "storage_limit": -1,
+  "public": true
+}'
+END
+	$isRun=1;
+	$count=0;
+	while ($isRun && $count<10) {
+		$isRun=0;
+		$cmd_msg = `$cmd`;
+		if ($cmd_msg ne '' && index($cmd_msg, "The project named dockerhub already exists")<=0) {
+			log_print('.');
+			#log_print("Create dockerhub Proxy Cache Project Error: $cmd_msg");
+			sleep(5);
+			$count ++;
+			$isRun=1;
+		}
+	}
+	if (index($cmd_msg, "The project named dockerhub already exists")>0) {
+		log_print("The dockerhub Projcet is already exists, skip adding.\n");
+	}
+	else {
+		log_print("\nAdd dockerhub Projcet OK.\n");
+	}
+	
 	return;
 }
 
