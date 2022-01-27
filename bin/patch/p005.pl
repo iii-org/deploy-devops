@@ -24,6 +24,7 @@ if ($cmd_msg ne 'rkeuser') {
 $cmd =<<END;
 $Bin/../../gitlab/install_gitlab.pl dns_set;
 $Bin/../../gitlab/install_gitlab.pl modify_ingress;
+$Bin/../../redmine/install_redmine.pl force
 END
 
 system($cmd);
