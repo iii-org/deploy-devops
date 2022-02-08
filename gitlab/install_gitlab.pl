@@ -81,12 +81,10 @@ if ($gitlab_domain_name_tls ne '') {
 	}
 	
 	$gitlab_url = 'https://'.$gitlab_domain_name;
-	$external_ur = $gitlab_url;
 	$ingress_tmpl_file = 'gitlab-ingress-ssl.yml.tmpl';
 }
 else {
 	$gitlab_url = 'http://'.$gitlab_domain_name;
-	$external_ur = 'http://'.$first_ip;
 	$ingress_tmpl_file = 'gitlab-ingress.yml.tmpl';
 }
 $yaml_path = "$Bin/../gitlab/";
@@ -98,7 +96,7 @@ if (!-e $tmpl_file) {
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{gitlab_ver}}/$gitlab_ver/g;
-$template =~ s/{{gitlab_url}}/$external_ur/g;
+$template =~ s/{{gitlab_url}}/$gitlab_url/g;
 $template =~ s/{{gitlab_root_passwd}}/$gitlab_root_passwd/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
 $template =~ s/{{nfs_dir}}/$nfs_dir/g;
@@ -158,7 +156,7 @@ $http_port = ($gitlab_domain_name_tls ne '')?443:80;
 $gitlab_port = ($gitlab_domain_name_tls ne '')?32081:32080;
 $template = `cat $tmpl_file`;
 $template =~ s/{{http_type}}/$http_type/g;
-$template =~ s/{{http_port}}/$http_port/g;
+$template =~ s/{{http_port}}/$gitlab_port/g;
 $template =~ s/{{gitlab_port}}/$gitlab_port/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;

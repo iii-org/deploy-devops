@@ -82,7 +82,7 @@ END
 		return(-1);
 	}
 
-	return($hash_msg->{'id'});
+	return($cmd_msg);
 }
 
 sub delete_gitlab {
