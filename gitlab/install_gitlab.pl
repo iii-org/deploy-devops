@@ -156,8 +156,12 @@ $http_port = ($gitlab_domain_name_tls ne '')?443:80;
 $gitlab_port = ($gitlab_domain_name_tls ne '')?32081:32080;
 $template = `cat $tmpl_file`;
 $template =~ s/{{http_type}}/$http_type/g;
-$template =~ s/{{http_port}}/$gitlab_port/g;
 $template =~ s/{{gitlab_port}}/$gitlab_port/g;
+if ($deploy_mode eq 'IP') {
+	$template =~ s/{{http_port}}/$gitlab_port/g;
+} else {
+	$template =~ s/{{http_port}}/$http_port/g;
+}
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
