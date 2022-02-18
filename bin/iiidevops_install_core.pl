@@ -146,6 +146,13 @@ if ($isChk) {
 }
 log_print("OK!\n");
 
+# Deploy DevOps Redis on kubernetes cluster
+$yaml_path = "$Bin/../devops-redis/";
+$cmd = "kubectl apply -f $yaml_path";
+log_print("Deploy devops-redis..\n");
+$cmd_msg = `$cmd`;
+log_print("-----\n$cmd_msg\n-----\n\n");
+
 # Check & Set deploy version
 $t_now_ver = get_nexus_info('deploy_version');
 $t_set_ver = ($iiidevops_ver eq 'develop')?'develop':'V'.$iiidevops_ver;
