@@ -4,4 +4,5 @@ metadata:
   name: iiidevops-nfs-storage
 provisioner: iiidevops-nfs-provisioner
 parameters:
-  archiveOnDelete: "false"
+  pathPattern: "${.PVC.namespace}-${.PVC.name}" 
+  onDelete: delete
