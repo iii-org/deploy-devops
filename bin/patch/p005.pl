@@ -25,7 +25,7 @@ $cmd =<<END;
 $Bin/../../gitlab/install_gitlab.pl dns_set;
 $Bin/../../gitlab/install_gitlab.pl modify_ingress;
 $Bin/../../redmine/install_redmine.pl force
-$Bin/../../sonarqube/install_sonarqube.pl
+$Bin/../../sonarqube/install_sonarqube.pl force
 kubectl apply -f $Bin/../../devops-redis
 END
 
