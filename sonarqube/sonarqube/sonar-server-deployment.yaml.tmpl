@@ -19,6 +19,19 @@ spec:
         image: sonarqube:8.9.6-community
         ports:
         - containerPort: 9000
+        livenessProbe:
+          httpGet:
+            path: /session/new
+            port: 9000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /session/new
+            port: 9000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 6
         env:
         - name: sonar.jdbc.username
           value: postgres
