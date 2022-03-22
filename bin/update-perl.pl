@@ -34,16 +34,6 @@ system($cmd);
 # Get Zip hash
 $zip_hash = `md5sum $home_path/$ins_repo.zip`;
 
-# Check ins_repo.zip hash info
-$hash_info_file = $home_path.'/'.$ins_repo.'.md5';
-if (-e $hash_info_file) {
-	$hash_info = `cat $hash_info_file`;
-	if ($hash_info eq $zip_hash) {
-		print("The version is the same, no need to perform the following steps.\n");
-		exit;
-	}
-}
-
 # If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
 $p_config = "$home_path/deploy-devops/env.pl";
 if (-e "$nfs_dir/deploy-config/env.pl") {
@@ -53,6 +43,17 @@ if (-e "$nfs_dir/deploy-config/env.pl") {
 if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 	$cmd_msg = `ln -s $nfs_dir/deploy-config/env.pl.ans $p_config.ans`; 
 	print("env.pl.ans file link is automatically created ..OK!\n");
+}
+
+# Check ins_repo.zip hash info
+$hash_info_file = $home_path.'/'.$ins_repo.'.md5';
+if (-e $hash_info_file) {
+	$hash_info = `cat $hash_info_file`;
+	if ($hash_info eq $zip_hash) {
+		print("The version is the same, no need to perform the following steps.\n");
+		print("$end_str\n");
+		exit;
+	}
 }
 
 # Executing Patch
