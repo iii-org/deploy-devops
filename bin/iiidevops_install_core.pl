@@ -146,10 +146,30 @@ if ($isChk) {
 }
 log_print("OK!\n");
 
+# check & create NFS redis dir
+if (!-e "$nfs_dir/devops-redis") {
+	$cmd =<<END;
+mkdir -p $nfs_dir/devops-redis;
+chmod 777 $nfs_dir/devops-redis;
+END
+	system($cmd);
+}
+
 # Deploy DevOps Redis on kubernetes cluster
 $yaml_path = "$Bin/../devops-redis/";
+$yaml_file = $yaml_path.'devops-redis-deployment.yaml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	log_print("The template file [$tmpl_file] does not exist!\n");
+	exit;
+}
+$template = `cat $tmpl_file`;
+$template =~ s/{{nfs_ip}}/$nfs_ip/g;
+$template =~ s/{{nfs_dir}}/$nfs_dir/g;
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
 $cmd = "kubectl apply -f $yaml_path";
-log_print("Deploy devops-redis..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n\n");
 

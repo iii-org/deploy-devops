@@ -49,6 +49,8 @@ sudo mkdir -p $nfs_dir/api-logs;
 sudo chmod 777 $nfs_dir/api-logs;
 sudo mkdir -p $nfs_dir/devops-data;
 sudo chmod 777 $nfs_dir/devops-data;
+sudo mkdir -p $nfs_dir/devops-redis;
+sudo chmod 777 $nfs_dir/devops-redis;
 sudo mkdir -p $nfs_dir/sonarqube-postgresql;
 sudo chmod 777 $nfs_dir/sonarqube-postgresql;
 END
