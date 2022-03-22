@@ -28,6 +28,10 @@ if (!defined($nfs_dir) || $nfs_dir eq '') {
 
 if (-e "$nfs_dir/devops-data") {
 	print("OK! The NFS directory [devops-data] have been defined!\n");
+}
+
+if (-e "$nfs_dir/devops-redis") {
+	print("OK! The NFS directory [devops-redis] have been defined!\n");
 	exit;
 }
 
