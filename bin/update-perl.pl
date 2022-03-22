@@ -31,6 +31,19 @@ END
 print("Install iiidevops Deploy Scripts..\n");
 system($cmd);
 
+# Get Zip hash
+$zip_hash = `md5sum $home_path/$ins_repo.zip`;
+
+# Check ins_repo.zip hash info
+$hash_info_file = $home_path.'/'.$ins_repo.'.md5';
+if (-e $hash_info_file) {
+	$hash_info = `cat $hash_info_file`;
+	if ($hash_info eq $zip_hash) {
+		print("The version is the same, no need to perform the following steps.\n");
+		exit;
+	}
+}
+
 # If /iiidevopsNFS/deploy-config/env.pl exists, the file link is automatically created
 $p_config = "$home_path/deploy-devops/env.pl";
 if (-e "$nfs_dir/deploy-config/env.pl") {
@@ -45,6 +58,10 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 # Executing Patch
 print("Executing Patch Scripts..\n");
 system("$Bin/patch/p000.pl");
-
 print("$end_str\n");
+
+# Write hash_info
+open(FH, '>', $hash_info_file) or die $!;
+print FH $zip_hash;
+close(FH);
 exit;
