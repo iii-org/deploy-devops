@@ -562,4 +562,36 @@ sub is_rancher_default_name_ok {
 	return($v_message eq 'true');
 }
 
+#curl --location --request GET http://localhost:31850/system_parameter
+#--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MDk4MjYyNjAsIm5iZiI6MTYwOTgyNjI2MCwianRpIjoiYjY1MTkyNzEtZjYyNi00NTQ5LWIzNzUtYWY3NWQ3ZTQxMzQwIiwiZXhwIjoxNjEyNDE4MjYwLCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoxLCJ1c2VyX2FjY291bnQiOiJzdXBlciIsInJvbGVfaWQiOjUsInJvbGVfbmFtZSI6IkFkbWluaXN0cmF0b3IifSwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.p1VlT_JME_azSuQ59dwwmJOGkGxW34yPa4CeNvgp4JE'
+#{"id": 8,"name": "gitlab_domain_connection","value": {"gitlab_domain_connection": false},"active": true}
+sub get_system_info {
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	$v_cmd = "curl -s --location --request GET 'http://localhost:31850/system_parameter' --header 'Authorization: Bearer $g_api_key'";
+	$v_cmd_msg = `$v_cmd`;
+	if ($v_cmd_msg ne '') {
+		$v_hash_msg = decode_json($v_cmd_msg);
+		foreach $v_key (keys %key_value) {
+			
+		}
+		return $v_hash_msg;
+	}
+	return -1;
+}
+
+sub get_gitlab_domain_connection {
+	$data = get_system_info();
+	foreach $v_item (@{ $data->{'data'} }) {
+        if($v_item->{'name'} eq "gitlab_domain_connection" && $v_item->{'active'}){
+            return $v_item->{'value'}->{'gitlab_domain_connection'};
+    	}
+	}
+	return 0;
+}
+
 1;

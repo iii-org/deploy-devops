@@ -12,6 +12,7 @@ if (!-e $p_config) {
 	exit;
 }
 require($p_config);
+require("$Bin/../../lib/iiidevops_lib.pl");
 
 # Check running user
 $cmd_msg = `whoami`;
@@ -21,11 +22,17 @@ if ($cmd_msg ne 'rkeuser') {
 	exit;
 }
 
-$cmd =<<END;
-$Bin/../../gitlab/install_gitlab.pl dns_set;
-$Bin/../../gitlab/install_gitlab.pl modify_ingress;
+# Check Gitlab domain connection status
+if(!get_gitlab_domain_connection() && $deploy_mode eq "DNS") {
+	$cmd =<<END;
+	$Bin/../../gitlab/install_gitlab.pl dns_set;
+	$Bin/../../gitlab/install_gitlab.pl modify_ingress;
 END
-system($cmd);
+	system($cmd);
+}
+else {
+	print("The gitlab_domain_connection setting already enable! Skip patch!\n");
+}
 
 # Check redmine SECRET_KEY_BASE setting
 $cmd = "kubectl describe deployment redmine | grep REDMINE_SECRET_KEY_BASE";
