@@ -34,6 +34,11 @@ if (lc($ARGV[0]) eq 'offline'){
 	exit;
 }
 
+if (lc($ARGV[0]) eq 'update_pvc_patch'){
+	update_pvc_patch();
+	exit;
+}
+
 if (lc($ARGV[0]) eq 'manual_secret_tls') {
 	manual_secret_tls();
 }
@@ -364,5 +369,73 @@ sub manual_secret_tls {
 	# Display Wait 3 min. message
 	log_print("It takes 1 to 3 minutes to upgrade Harbor service. Please wait.. \n");
 
+	return;
+}
+
+sub update_pvc_patch {
+	$nfs_provisioner_image = `kubectl describe deploy nfs-client-provisioner`;
+	$chk_image = "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner:v4.0.2";
+	$chk_sc=`kubectl get sc iiidevops-nfs-storage --output="jsonpath={.parameters.pathPattern}"`;
+	if (index($nfs_provisioner_image, $chk_image)<0 || !$chk_sc){
+		# Delete StorageClass iiidevops-nfs-storage
+		$del_sc_cmd_msg = `kubectl delete StorageClass iiidevops-nfs-storage`;
+		print("$del_sc_cmd_msg\n");
+		# $cmd=`kubectl get pvc | grep harbor-harbor | awk '{print "mv $nfs_dir/pvc/default-"\$1"-"\$3 }'`;
+		$cmd=`kubectl get pvc | grep harbor-harbor | awk '{print "mv $nfs_dir/pvc/default-"\$1"-"\$3" $nfs_dir/pvc/default-"\$1 }'`;
+		foreach $v_cmd (split("\n", $cmd)) {
+			print("$v_cmd\n");
+			system($v_cmd);
+		}
+		print("Backup harbor helm value\n");
+		system("helm get values harbor > $nfs_dir/deploy-config/harbor-install-bak.yaml");
+		
+		print("Helm delete harbor\n");
+		system("helm uninstall harbor");
+		
+		print("Delete harbor PVC)");
+		system("kubectl delete pvc \$(kubectl get pvc | grep harbor-harbor | awk '{print \$1}')");
+
+		# Add helm chart harbor repo - https://artifacthub.io/packages/helm/harbor/harbor/1.5.5
+		$cmd = "helm repo add harbor https://helm.goharbor.io";
+		$cmd_msg = `$cmd 2>&1`;
+		log_print("-----\n$cmd_msg-----\n");	
+
+		# Modify harbor/nfs-client-provisioner-pv.yaml.tmpl
+		$yaml_path = "$Bin/../harbor/";
+		$yaml_file = $yaml_path.'nfs-client-provisioner-pv.yaml';
+		$tmpl_file = $yaml_file.'.tmpl';
+		if (!-e $tmpl_file) {
+			log_print("The template file [$tmpl_file] does not exist!\n");
+			exit;
+		}
+		$template = `cat $tmpl_file`;
+		$template =~ s/{{nfs_ip}}/$nfs_ip/g;
+		$template =~ s/{{nfs_dir}}/$nfs_dir/g;
+		#log_print("-----\n$template\n-----\n\n");
+		open(FH, '>', $yaml_file) or die $!;
+		print FH $template;
+		close(FH);
+		
+		log_print("Deploy K8s Volumes..\n");
+		$cmd =<<END;
+kubectl apply -f $yaml_path/nfs-client-provisioner-serviceaccount.yaml;
+kubectl apply -f $yaml_path/nfs-client-provisioner-runner-clusterrole.yaml;
+kubectl apply -f $yaml_path/run-nfs-client-provisioner-clusterrolebinding.yaml;
+kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-role.yaml;
+kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-rolebinding.yaml;
+kubectl apply -f $yaml_path/iiidevops-nfs-storage-storageclass.yaml;
+kubectl apply -f $yaml_file
+END
+		$cmd_msg = `$cmd`;
+		log_print("-----\n$cmd_msg-----\n");
+		
+		log_print("Upgrade Harbor service..\n");
+		$cmd = "helm install harbor --version=1.5.5 harbor/harbor -f $nfs_dir/deploy-config/harbor-install-bak.yaml";
+		$cmd_msg = `$cmd`;
+		log_print("-----\n$cmd_msg-----\n");
+
+		# Display Wait 3 min. message
+		log_print("It takes 1 to 3 minutes to deploy Harbor service. Please wait.. \n");
+	}
 	return;
 }
