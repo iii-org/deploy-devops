@@ -8,6 +8,10 @@ spec:
   type: NodePort
   selector:
     app: devopsui
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 20
   ports:
     - name: webport
       protocol: TCP
