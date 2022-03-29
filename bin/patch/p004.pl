@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-# 11:02 2021/12/6
-# Provide project default NFS path Patch:
+# 15:46 2022/03/29
+# Provide project default NFS path Patch / devops-redis NFS path Patch / websocket setting patch
 # [V]Auto
 # [ ]Manual
 use FindBin qw($Bin);
@@ -32,6 +32,14 @@ if (-e "$nfs_dir/devops-data") {
 
 if (-e "$nfs_dir/devops-redis") {
 	print("OK! The NFS directory [devops-redis] have been defined!\n");
+	exit;
+}
+
+# Check API & UI Service websocket mult pod setting
+$cmd = "kubectl get svc devopsapi-service devopsui-service -o yaml | grep \"sessionAffinity: ClientIP\"";
+$cmd_msg = `$cmd 2>&1`;
+if ($cmd_msg ne '') {
+	print("OK! The API & UI websocket setting already exists! Skip patch!\n");
 	exit;
 }
 
