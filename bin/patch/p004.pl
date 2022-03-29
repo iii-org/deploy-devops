@@ -32,7 +32,6 @@ if (-e "$nfs_dir/devops-data") {
 
 if (-e "$nfs_dir/devops-redis") {
 	print("OK! The NFS directory [devops-redis] have been defined!\n");
-	exit;
 }
 
 # Check API & UI Service websocket mult pod setting
