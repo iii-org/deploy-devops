@@ -203,7 +203,7 @@ exit;
 # DNS mode set CoreDNS configmap
 sub dns_set {
 	if ($gitlab_domain_name eq '' || $gitlab_domain_name_tls ne '') {
-		log_print("The Gitlab domain name is not defined!\n");
+		log_print("The Gitlab domain name is not defined or SSL Environment!\n");
 		return;
 	}
 	if(!$p_force && lc($ARGV[0]) ne 'dns_set_force'){
