@@ -6,7 +6,12 @@
 use FindBin qw($Bin);
 $|=1; # force flush output
 
-system("$Bin/p004.pl");
-system("$Bin/p005.pl");
-
-exit;
+$error_count=0;
+$error_count += system("$Bin/p004.pl") >> 8;
+$error_count += system("$Bin/p005.pl") >> 8;
+if($error_count){
+    exit($error_count);
+}
+else {
+	exit;
+}

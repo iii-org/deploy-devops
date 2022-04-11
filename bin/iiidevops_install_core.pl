@@ -8,7 +8,7 @@ $|=1; # force flush output
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
-	exit;
+	exit(1);
 }
 require($p_config);
 
@@ -33,21 +33,21 @@ if (-e "$Bin/github/") {
 log_print("Check kubernetes status..\n");
 if (!get_service_status('kubernetes')) {
 	log_print("The Kubernetes cluster is not working properly!\n");
-	exit;
+	exit(1);
 }
 log_print("Kubernetes cluster is working well!\n");
 
 # Check GitLab service is working
 if (!get_service_status('gitlab')) {
 	log_print("GitLab is not working!\n");
-	exit;
+	exit(1);
 }
 $chk_key = ',"username":';
 $cmd_msg = call_gitlab_api('GET', 'users');
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("GitLab private-token is not working!\n");
 	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit(1);	
 }
 log_print("GitLab is working well!\n");
 
@@ -57,7 +57,7 @@ $cmd_msg = call_gitlab_api('PUT', 'application/settings?allow_local_requests_fro
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Set GitLab allow_local_requests_from_web_hooks_and_services failed!\n");
 	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit(1);	
 }
 log_print("Set GitLab allow_local_requests_from_web_hooks_and_services = true!\n");
 
@@ -67,21 +67,21 @@ $cmd_msg = call_gitlab_api('PUT', 'application/settings?signup_enabled=false');
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Set GitLab signup_enabled failed!\n");
 	log_print("-----\n$cmd_msg-----\n");
-	exit;	
+	exit(1);	
 }
 log_print("Set GitLab signup_enabled = false!\n");
 
 # Check Rancher service is working
 if (!get_service_status('rancher')) {
 	log_print("Rancher is not working!\n");
-	exit;
+	exit(1);
 }
 log_print("Rancher is working well!\n");
 
 # Check Harbor service is working
 if (!get_service_status('harbor')) {
 	log_print("Harbor is not working!\n");
-	exit;
+	exit(1);
 }
 $harbor_domain_name = get_domain_name('harbor');
 log_print("Harbor is working well!\n");
@@ -89,14 +89,14 @@ log_print("Harbor is working well!\n");
 # Check Redmine service is working
 if (!get_service_status('redmine')) {
 	log_print("Redmine is not working!\n");
-	exit;
+	exit(1);
 }
 log_print("Redmine is working well!\n");
 
 # Check Sonarqube service is working
 if (!get_service_status('sonarqube')) {
 	log_print("Sonarqube is not working!\n");
-	exit;
+	exit(1);
 }
 # Check token-key
 #curl -u 72110dbe6fb0f621657204b9db1594cf3bd805a1: --request GET 'http://10.20.0.35:31910/api/authentication/validate'
@@ -106,7 +106,7 @@ $cmd_msg = call_sonarqube_api('GET', 'authentication/validate');
 if (index($cmd_msg, $chk_key)<0) {
 	log_print("Sonarqube admin-token is not working!\n");
 	log_print("-----\n$cmd_msg-----\n");
-	exit;
+	exit(1);
 }
 log_print("Sonarqube is working well!\n");
 
@@ -116,7 +116,7 @@ $yaml_file = $yaml_path.'devopsdb-deployment.yaml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{db_passwd}}/$db_passwd/g;
@@ -142,7 +142,7 @@ while($isChk && $count<$wait_sec) {
 }
 if ($isChk) {
 	log_print("Failed to deploy devops-db!\n");
-	exit;
+	exit(1);
 }
 log_print("OK!\n");
 
@@ -161,7 +161,7 @@ $yaml_file = $yaml_path.'devops-redis-deployment.yaml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
@@ -186,7 +186,7 @@ elsif ($t_now_ver eq '') {
 	}
 	else {
 		print("Failed to set deploy version : [$t_ret_ver]!!!\n");
-		exit;
+		exit(1);
 	}
 }
 else {
@@ -261,7 +261,7 @@ $yaml_file = $yaml_path.'devopsapi-deployment.yaml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 
 $template = `cat $tmpl_file`;
@@ -313,7 +313,7 @@ $yaml_file = $yaml_path.'devopsui-deployment.yaml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{ui_replicas}}/$ui_replicas/g;
@@ -330,17 +330,17 @@ if ($iiidevops_domain_name_tls ne '') {
 	$cer_file = "$cert_path/fullchain.pem";
 	if (!-e $cer_file) {
 		log_print("The cert file [$cer_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$key_file = "$cert_path/privkey.pem";
 	if (!-e $key_file) {
 		log_print("The key file [$key_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	system("$Bin/../bin/import-secret-tls.pl $iiidevops_domain_name_tls $cer_file $key_file");
 	if (!check_secert_tls($iiidevops_domain_name_tls)) {
 		log_print("The Secert TLS [$iiidevops_domain_name_tls] does not exist in K8s!\n");
-		exit;		
+		exit(1);		
 	}
 	$url = 'https://';
 	$ingress_tmpl_file = 'devopsui-ingress-ssl.yaml.tmpl';
@@ -356,7 +356,7 @@ if ($deploy_mode ne '' && uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{iiidevops_domain_name}}/$v_iiidevops_domain_name/g;
@@ -416,7 +416,7 @@ print("\n");
 # Check Rancher Cluster Name is iiidevops-k8
 if (!is_rancher_default_name_ok()) {
 	log_print("Rancher cluster name IS NOT iiidevops-k8s! Please refer to Step 4 at https://github.com/iii-org/deploy-devops \n");
-	exit;
+	exit(1);
 }
 log_print("Rancher cluster name is already iiidevops-k8s!\n");
 

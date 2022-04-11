@@ -18,12 +18,12 @@ $cmd_msg = `whoami`;
 $cmd_msg =~ s/\n|\r//g;
 if ($cmd_msg ne 'rkeuser') {
 	print("Error! You must use the 'rkeuser' account to run the installation script!\n");
-	exit;
+	exit(1);
 }
 
 if (!defined($nfs_dir) || $nfs_dir eq '') {
 	print("Error! The NFS directory is not defined!\n");
-	exit;
+	exit(1);
 }
 
 if (-e "$nfs_dir/devops-data") {

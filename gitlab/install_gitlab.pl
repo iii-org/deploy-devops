@@ -7,13 +7,13 @@ $|=1; # force flush output
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
-	exit;
+	exit(1);
 }
 require($p_config);
 
 if ($gitlab_ip eq '') {
 	print("The gitlab_ip in [$p_config] is ''!\n\n");
-	exit;
+	exit(1);
 }
 
 $p_force=(lc($ARGV[0]) eq 'force');
@@ -25,11 +25,17 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 if (lc($ARGV[0]) eq 'dns_set' || lc($ARGV[0]) eq 'dns_set_force') {
-	dns_set();
+	$dns_set = dns_set();
+	if($dns_set){
+		exit(1);
+	}
 	exit;
 }
 if (lc($ARGV[0]) eq 'modify_ingress') {
-	modify_ingress();
+	$modify_ingress = modify_ingress();
+	if($modify_ingress){
+		exit(1);
+	}
 	exit;
 }
 
@@ -51,17 +57,17 @@ if ($gitlab_domain_name_tls ne '') {
 	$cer_file = "$cert_path/fullchain.pem";
 	if (!-e $cer_file) {
 		log_print("The cert file [$cer_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$key_file = "$cert_path/privkey.pem";
 	if (!-e $key_file) {
 		log_print("The key file [$key_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	system("$Bin/../bin/import-secret-tls.pl $gitlab_domain_name_tls $cer_file $key_file");
 	if (!check_secert_tls($gitlab_domain_name_tls)) {
 		log_print("The Secert TLS [$gitlab_domain_name_tls] does not exist in K8s!\n");
-		exit;		
+		exit(1);		
 	}
 
 	# Copy to gitlab dir
@@ -71,13 +77,13 @@ if ($gitlab_domain_name_tls ne '') {
 	system("sudo cp $cer_file $gitlab_cer_file");
 	if (!-e $gitlab_cer_file) {
 		log_print("Copy cert file to [$gitlab_cer_file] failed!\n");
-		exit;
+		exit(1);
 	}
 	$gitlab_key_file = "$gitlab_ssl_dir/$gitlab_domain_name.key";
 	system("sudo cp $key_file $gitlab_key_file");
 	if (!-e $gitlab_key_file) {
 		log_print("Copy cert file to [$gitlab_key_file] failed!\n");
-		exit;
+		exit(1);
 	}
 	
 	$gitlab_url = 'https://'.$gitlab_domain_name;
@@ -92,7 +98,7 @@ $yaml_file = $yaml_path.'gitlab-deployment.yml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{gitlab_ver}}/$gitlab_ver/g;
@@ -124,7 +130,7 @@ if (uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;
@@ -148,7 +154,7 @@ $yaml_file = $yaml_path.'gitlab-service.yml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 
 $http_type = ($gitlab_domain_name_tls ne '')?'https':'http';
@@ -189,7 +195,7 @@ while($isChk && $count<$wait_sec) {
 log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy GitLab!\n");
-	exit;
+	exit(1);
 }
 
 if ($deploy_mode eq 'DNS') {
@@ -221,7 +227,7 @@ sub dns_set {
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		return;
+		return 1;
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{gitlab_cluster_ip}}/$gitlab_cluster_ip/g;
@@ -264,7 +270,7 @@ sub modify_ingress {
 	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		return;
+		return 1;
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{gitlab_domain_name}}/$gitlab_domain_name/g;

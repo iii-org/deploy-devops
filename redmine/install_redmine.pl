@@ -9,13 +9,13 @@ $|=1; # force flush output
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
-	exit;
+	exit(1);
 }
 require($p_config);
 
 if ($redmine_ip eq '') {
 	print("The redmine_ip in [$p_config] is ''!\n\n");
-	exit;
+	exit(1);
 }
 
 $p_force=(lc($ARGV[0]) eq 'force');
@@ -29,7 +29,7 @@ log_print(`TZ='Asia/Taipei' date`);
 # Check Redmine service is working
 if (!$p_force && get_service_status('redmine')) {
 	log_print("Redmine is running, I skip the installation!\n\n");
-	exit;
+	exit(1);
 }
 log_print("Install Redmine ..\n");
 
@@ -40,7 +40,7 @@ $yaml_file = $yaml_path.'redmine-postgresql.yml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{redmine_db_passwd}}/$redmine_db_passwd/g;
@@ -66,7 +66,7 @@ if (index($cmd_msg, $chk_key)<0) {
 	$tmpl_file = $yaml_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$template = `cat $tmpl_file`;
 	open(FH, '>', $yaml_file) or die $!;
@@ -76,7 +76,7 @@ if (index($cmd_msg, $chk_key)<0) {
 	$cmd_msg = `$cmd 2>&1`;
 	if (index($cmd_msg, 'error:')>=0) {
 		log_print("Failed to deploy redmine config!\n$cmd_msg\n");
-		exit;
+		exit(1);
 	}
 	log_print("Deploy redmine config..\n$cmd_msg\n");
 
@@ -96,7 +96,7 @@ if (index($cmd_msg, $chk_key)<0) {
 	log_print("\n");
 	if ($isChk) {
 		log_print("Failed to deploy Redmine config!\n");
-		exit;
+		exit(1);
 	}
 	log_print("Deploy redmine config OK!\n");
 	# remove yaml_file
@@ -104,7 +104,7 @@ if (index($cmd_msg, $chk_key)<0) {
 	$cmd_msg = `$cmd 2>&1`;
 	if ($cmd_msg ne '') {
 		log_print("$cmd Error!\n$cmd_msg-----\n");
-		exit;
+		exit(1);
 	}
 }
 else {
@@ -117,7 +117,7 @@ $yaml_file = $yaml_path.'redmine-deployment.yml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{redmine_db_passwd}}/$redmine_db_passwd/g;
@@ -136,17 +136,17 @@ if ($redmine_domain_name_tls ne '') {
 	$cer_file = "$cert_path/fullchain.pem";
 	if (!-e $cer_file) {
 		log_print("The cert file [$cer_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$key_file = "$cert_path/privkey.pem";
 	if (!-e $key_file) {
 		log_print("The key file [$key_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	system("$Bin/../bin/import-secret-tls.pl $redmine_domain_name_tls $cer_file $key_file");
 	if (!check_secert_tls($redmine_domain_name_tls)) {
 		log_print("The Secert TLS [$redmine_domain_name_tls] does not exist in K8s!\n");
-		exit;		
+		exit(1);
 	}
 	$url = 'https://';
 	$ingress_tmpl_file = 'redmine-ingress-ssl.yml.tmpl';
@@ -162,7 +162,7 @@ if ($redmine_domain_name ne '' && uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{redmine_domain_name}}/$redmine_domain_name/g;
@@ -202,7 +202,7 @@ while($isChk && $count<$wait_sec) {
 log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy Redmine!\n");
-	exit;
+	exit(1);
 }
 $the_url = get_domain_name('redmine');
 log_print("Successfully deployed Redmine! URL - $url$the_url\n");
@@ -231,7 +231,7 @@ sub chk_psql {
 	log_print("Check psql versioon : $cmd_msg");
 	if (index($cmd_msg, '(PostgreSQL) 12')<0) {
 		log_print("pgsql ..Error!\n\n");
-		exit;
+		exit(1);
 	}
 	
 	return;
@@ -254,7 +254,7 @@ sub import_init_data {
 	$tmpl_file = $sql_file.'.tmpl';
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$api_key = $redmine_api_key; # 100f750e76fb671a003ee3859825363095e0162e
 	$salt = md5_hex($redmine_db_passwd); # 0bdb14a0f8068a7c07fc05b738f1558f

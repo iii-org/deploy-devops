@@ -58,7 +58,12 @@ if (-e $hash_info_file) {
 
 # Executing Patch
 print("Executing Patch Scripts..\n");
-system("$Bin/patch/p000.pl");
+$run_patch = system("$Bin/patch/p000.pl") >> 8;
+print("\nrun patch error: $run_patch\n");
+if ($run_patch) {
+	print("Error! Update run patch fail !\n");
+	exit;
+}
 print("$end_str\n");
 
 # Write hash_info

@@ -9,7 +9,7 @@ $|=1; # force flush output
 my $p_config = "$Bin/../../env.pl";
 if (!-e $p_config) {
 	print("Error! The configuration file [$p_config] does not exist!\n");
-	exit;
+	exit(1);
 }
 require($p_config);
 require("$Bin/../../lib/iiidevops_lib.pl");
@@ -19,27 +19,17 @@ $cmd_msg = `whoami`;
 $cmd_msg =~ s/\n|\r//g;
 if ($cmd_msg ne 'rkeuser') {
 	print("Error! You must use the 'rkeuser' account to run the installation script!\n");
-	exit;
+	exit(1);
 }
 
-# Check Gitlab domain connection status
-if(!get_gitlab_domain_connection() && $deploy_mode eq "DNS") {
-	$cmd =<<END;
-	$Bin/../../gitlab/install_gitlab.pl dns_set;
-	$Bin/../../gitlab/install_gitlab.pl modify_ingress;
-END
-	system($cmd);
-}
-else {
-	print("The gitlab_domain_connection setting already enable! Skip patch!\n");
-}
+$error_count=0;
 
 # Check redmine SECRET_KEY_BASE setting
 $cmd = "kubectl describe deployment redmine | grep REDMINE_SECRET_KEY_BASE";
 $cmd_msg = `$cmd 2>&1`;
 if ($cmd_msg eq '') {
 	$cmd = "$Bin/../../redmine/install_redmine.pl force";
-	system($cmd);
+	$error_count += system($cmd) >> 8;
 }
 else {
 	print("The redmine SECRET_KEY_BASE setting already exists! Skip patch!\n");
@@ -50,17 +40,10 @@ $cmd = "kubectl describe deployment sonarqube-server | grep Liveness";
 $cmd_msg = `$cmd 2>&1`;
 if ($cmd_msg eq '') {
 	$cmd = "$Bin/../../sonarqube/install_sonarqube.pl force";
-	system($cmd);
+	$error_count += system($cmd) >> 8;
 }
 else {
 	print("The sonarqube-server liveness setting already exists! Skip patch!\n");
 }
 
-# Check devops-redis dir
-if (!-e "$nfs_dir/devops-redis/") {
-	$cmd = "kubectl apply -f $Bin/../../devops-redis";
-	system($cmd);
-}
-else {
-	print("The redis storage directory already exists! Skip patch!\n");
-}
+exit($error_count);

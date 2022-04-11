@@ -8,13 +8,13 @@ $|=1; # force flush output
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
-	exit;
+	exit(1);
 }
 require($p_config);
 
 if ($sonarqube_ip eq '') {
 	print("The sonarqube_ip in [$p_config] is ''!\n\n");
-	exit;
+	exit(1);
 }
 
 $p_force=(lc($ARGV[0]) eq 'force');
@@ -26,7 +26,10 @@ log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
 if (lc($ARGV[0]) eq 'initial_sonarqube') {
-	initial_sonarqube();
+	$initial_sonarqube = initial_sonarqube();
+	if($initial_sonarqube){
+		exit(1);
+	}
 	exit;
 }
 
@@ -35,7 +38,10 @@ if (!$p_force && get_service_status('sonarqube')) {
 	log_print("Sonarqube is running, I skip the installation!\n\n");
 	# Check $sonarqube_admin_token
 	if ($sonarqube_admin_token eq '' || lc($sonarqube_admin_token) eq 'skip') {
-		initial_sonarqube();
+		$initial_sonarqube = initial_sonarqube();
+		if($initial_sonarqube){
+			exit(1);
+		}
 	}
 	exit;
 }
@@ -48,7 +54,7 @@ $yaml_file = $yaml_path.'/sonarqube-postgresql.yml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{sonarqube_db_passwd}}/$sonarqube_db_passwd/g;
@@ -74,7 +80,7 @@ while($isChk && $count<$wait_sec) {
 }
 if ($isChk) {
 	log_print("Failed to deploy Sonarqube!\n");
-	exit;
+	exit(1);
 }
 log_print("OK!\n");
 
@@ -84,7 +90,7 @@ $yaml_file = $yaml_path.'/sonar-server-deployment.yaml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit;
+	exit(1);
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{sonarqube_db_passwd}}/$sonarqube_db_passwd/g;
@@ -101,17 +107,17 @@ if ($sonarqube_domain_name_tls ne '') {
 	$cer_file = "$cert_path/fullchain.pem";
 	if (!-e $cer_file) {
 		log_print("The cert file [$cer_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$key_file = "$cert_path/privkey.pem";
 	if (!-e $key_file) {
 		log_print("The key file [$key_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	system("$Bin/../bin/import-secret-tls.pl $sonarqube_domain_name_tls $cer_file $key_file");
 	if (!check_secert_tls($sonarqube_domain_name_tls)) {
 		log_print("The Secert TLS [$sonarqube_domain_name_tls] does not exist in K8s!\n");
-		exit;
+		exit(1);
 	}
 	$url = 'https://';
 	$ingress_tmpl_file = 'sonar-server-ingress-ssl.yaml.tmpl';
@@ -127,7 +133,7 @@ if ($sonarqube_domain_name ne '' && uc($deploy_mode) ne 'IP') {
 	$tmpl_file = $yaml_path.$ingress_tmpl_file;
 	if (!-e $tmpl_file) {
 		log_print("The template file [$tmpl_file] does not exist!\n");
-		exit;
+		exit(1);
 	}
 	$template = `cat $tmpl_file`;
 	$template =~ s/{{sonarqube_domain_name}}/$sonarqube_domain_name/g;
@@ -167,13 +173,16 @@ while($isChk && $count<$wait_sec) {
 log_print("\n");
 if ($isChk) {
 	log_print("Failed to deploy Sonarqube!\n");
-	exit;
+	exit(1);
 }
 $the_url = get_domain_name('sonarqube');
 log_print("Successfully deployed Sonarqube! URL - $url$the_url\n");
 
 # Initial SonarQube
-initial_sonarqube();
+$initial_sonarqube = initial_sonarqube();
+if($initial_sonarqube){
+	exit(1);
+}
 exit;
 
 sub initial_sonarqube {
@@ -216,7 +225,7 @@ sub initial_sonarqube {
 	}
 	else {
 		log_print("get admin token Error : $message \n");
-		return;
+		return 1;
 	}
 
 	# Wait 3 Secs
@@ -226,7 +235,7 @@ sub initial_sonarqube {
 	$cmd_msg = call_sonarqube_api('GET', 'permissions/search_templates');
 	if (index($cmd_msg, 'templateId')<0) {
 		log_print("get default_template Error : $cmd_msg \n");
-		return;
+		return 1;
 	}
 	$hash_msg = decode_json($cmd_msg);
 	$templateId = $hash_msg->{'defaultTemplates'}[0]->{'templateId'};
@@ -257,7 +266,7 @@ sub initial_sonarqube {
 	$cmd_msg = call_sonarqube_api('POST', "users/change_password?login=admin&password=$url_sonarqube_admin_passwd&previousPassword=admin");
 	if ($cmd_msg ne '') {
 		log_print("update admin password Error : $cmd_msg \n");
-		exit;
+		exit(1);
 	}
 	log_print("update admin password OK!\n");
 
