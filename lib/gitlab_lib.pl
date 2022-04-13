@@ -94,7 +94,7 @@ sub delete_gitlab {
 	$cmd_msg = call_gitlab_api('DELETE', "projects/$p_gitlab_id");
 	if (index($cmd_msg, 'Accepted')<0) {
 		log_print("delete_gitlab [$p_gitlab_id] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 		sed_alert_msg($error_msg);
 		exit;
 	}
@@ -112,7 +112,7 @@ sub import_github {
 	$cmd_msg = call_gitlab_api('POST', "import/github", "personal_access_token=$github_token&repo_id=$p_repo_id&new_name=$p_new_name&target_namespace=iiidevops-catalog");
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 		sed_alert_msg($error_msg);
 		exit;
 	}
@@ -159,7 +159,7 @@ sub import_github {
 	$cmd_msg = call_gitlab_api('PUT', "projects/$repo_id/transfer?namespace=$p_target_namespace");
 	if (index($cmd_msg, $p_new_name)<0) {
 		log_print("import_github [$p_new_name] Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 		sed_alert_msg($error_msg);
 		exit;
 	}
