@@ -52,7 +52,7 @@ log_print("Get GitHub org $github_org repo list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, 'node_id')<0) {
 	log_print("Get GitHub org [$github_org] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 	sed_alert_msg($error_msg);
 	exit;
 }
@@ -91,7 +91,7 @@ if (index($group_list, "[$github_org]")<0) {
 	$ret = create_gitlab_group($github_org);
 	if ($ret<0) {
 		log_print("Add GitLab group [$github_org] Error!\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 		sed_alert_msg($error_msg);
 		exit;
 	}
@@ -106,7 +106,7 @@ if (index($group_list, "[$local_group]")<0) {
 	$ret = create_gitlab_group($local_group);
 	if ($ret<0) {
 		log_print("Add GitLab group [$local_group] Error!\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 		sed_alert_msg($error_msg);
 		exit;
 	}
@@ -126,7 +126,7 @@ log_print("Get GitLab group $github_org project list..\n");
 $cmd_msg = call_gitlab_api('GET', "groups/$github_org/projects?per_page=100");
 if (index($cmd_msg, '"message"')>=0) {
 	log_print("Get GitLab group [$github_org] projects Error!\n---\n$cmd_msg\n---\n");
-	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg},\"alert_code\":20004}";
+	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 	sed_alert_msg($error_msg);
 	exit;
 }

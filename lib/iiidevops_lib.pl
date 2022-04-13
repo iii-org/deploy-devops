@@ -350,7 +350,7 @@ sub refresh_tmpl_cache {
 	$v_key_word = '"message": "success"';
 	if (index($v_cmd_msg, $v_key_word)<0) {
 		log_print("refresh III DevOps template cache Error!\n---\n$v_cmd\n---\n$v_cmd_msg\n---\n");
-		$v_error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$v_cmd_msg},\"alert_code\":20004}";
+		$v_error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$v_cmd_msg}}";
 		sed_alert_msg($v_error_msg);
 		exit;
 	}
@@ -383,7 +383,7 @@ sub sed_alert_msg {
 		get_api_key_api();
 	}
 
-	$v_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/alert_message' --data-raw '$p_msg'";
+	$v_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/notification_message' \\--form 'message=\"$p_msg\"' \\--form 'type_ids=\"[4]\"' \\--form 'type_parameters=\"{\\\"role_ids\\\": [5]}\"' \\--form 'alert_level=\"103\"' \\--form 'title=\"GitHub token is unavailable\"'";
 	$v_ret = `$v_sed_cmd`;
 	
 	return($v_ret);
