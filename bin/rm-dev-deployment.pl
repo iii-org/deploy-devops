@@ -14,6 +14,7 @@ require($p_config);
 $prgname = substr($0, rindex($0,"/")+1);
 require("$Bin/../lib/iiidevops_lib.pl");
 require("$Bin/../lib/common_lib.pl");
+$white_list_file = $nfs_dir.'/deploy-config/rm-dev-deployment.whitelist';
 
 # Check running user
 $cmd_msg = `whoami`;
@@ -49,8 +50,20 @@ if (!-e $cmd_kubectl) {
 	exit;
 }
  
+# Get user namespace white list
+$skip_user_ns ='';
+if (-e $white_list_file) {
+	$file_msg = `cat $white_list_file`;
+	foreach $line (split("\n|\r", $file_msg)) {
+		$line =~ s/ //g;
+		if ($line ne '') {
+			$skip_user_ns .= $line.' |';
+		}
+	}
+}
+
 # Delete user namespace deployment
-$skip_ns = "account |iiidevops-env-secret |cattle-global-data |cattle-global-nt |cattle-pipeline |cattle-system |cert-manager |ingress-nginx |kube-node-lease |kube-public |kube-system |default |^p-";
+$skip_ns = $skip_user_ns."account |iiidevops-env-secret |cattle-global-data |cattle-global-nt |cattle-pipeline |cattle-system |cert-manager |ingress-nginx |kube-node-lease |kube-public |kube-system |default |^p-";
 $cmd_msg = `$cmd_kubectl get ns | egrep -v "$skip_ns" | grep -v "NAME " | awk '{print \$1}'`;
 foreach $line (split("\n", $cmd_msg)) {
         print(`TZ='Asia/Taipei' date +%Y/%m/%d-%H:%M:%S`."Delete [$line] deployment at ...\n");
