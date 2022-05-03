@@ -35,7 +35,8 @@ require("$Bin/../lib/gitlab_lib.pl");
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
 
-if (validate_guthub_token()) {
+$validate_token_msg = validate_guthub_token();
+if (index($validate_token_msg->{'message'},'success')>=0) {
     log_print("validate token success\n");
     
     # sync env github toke
@@ -46,8 +47,7 @@ if (validate_guthub_token()) {
 }
 elsif ($validate_token_msg->{'message'} ne '') {
 	log_print("validate token fail : $validate_token_msg->{'message'}\n");
-    $error_msg = encode_json($validate_token_msg->{'error'});
-	sed_alert_msg($error_msg);
+	sed_alert_msg($validate_token_msg->{'message'});
 	exit;
 }
 else {
