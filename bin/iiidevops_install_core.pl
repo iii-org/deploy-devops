@@ -155,23 +155,6 @@ END
 	system($cmd);
 }
 
-# Deploy DevOps Redis on kubernetes cluster
-$yaml_path = "$Bin/../devops-redis/";
-$yaml_file = $yaml_path.'devops-redis-deployment.yaml';
-$tmpl_file = $yaml_file.'.tmpl';
-if (!-e $tmpl_file) {
-	log_print("The template file [$tmpl_file] does not exist!\n");
-	exit(1);
-}
-$template = `cat $tmpl_file`;
-$template =~ s/{{nfs_ip}}/$nfs_ip/g;
-$template =~ s/{{nfs_dir}}/$nfs_dir/g;
-open(FH, '>', $yaml_file) or die $!;
-print FH $template;
-close(FH);
-$cmd = "kubectl apply -f $yaml_path";
-$cmd_msg = `$cmd`;
-log_print("-----\n$cmd_msg\n-----\n\n");
 
 # Check & Set deploy version
 $t_now_ver = get_nexus_info('deploy_version');
@@ -304,6 +287,23 @@ log_print("Deploy devops-api..\n");
 $cmd_msg = `$cmd`;
 log_print("-----\n$cmd_msg\n-----\n\n");
 
+# Deploy DevOps Redis on kubernetes cluster
+$yaml_path = "$Bin/../devops-redis/";
+$yaml_file = $yaml_path.'devops-redis-deployment.yaml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	log_print("The template file [$tmpl_file] does not exist!\n");
+	exit(1);
+}
+$template = `cat $tmpl_file`;
+$template =~ s/{{nfs_ip}}/$nfs_ip/g;
+$template =~ s/{{nfs_dir}}/$nfs_dir/g;
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
+$cmd = "kubectl apply -f $yaml_path";
+$cmd_msg = `$cmd`;
+log_print("-----\n$cmd_msg\n-----\n\n");
 
 # Deploy DevOps UI (VueJS) on kubernetes cluster
 $v_iiidevops_domain_name = get_domain_name('iiidevops');
@@ -403,13 +403,27 @@ while($isChk) {
 $cmd = "curl -s --max-time 5 --location --request POST '$iiidevops_api/user/login'";
 #{ "message": {
 #        "username": "Missing required parameter in the JSON body or the post body or the query string" }}
+$cmd_kubectl = '/snap/bin/kubectl';
+if (!-e $cmd_kubectl) {
+	$cmd_kubectl = '/usr/local/bin/kubectl';
+}
+
 $isChk=1;
+$count=0;
+$wait_sec=300;
 while($isChk) {
 	print('.');
 	$isChk = 0;
 	$cmd_msg = `$cmd`;
 	$isChk = (index($cmd_msg, 'username')<0)?3:0;
 	sleep($isChk);
+
+	$count = $count + $isChk;
+	if($count>$wait_sec){
+		$cmd_msg = `$cmd_kubectl rollout restart deployment devopsdb devopsapi devops-redis`;
+		print("Restart deployment: devopsdb devopsapi devops-redis \n");
+		sleep(10);
+	}
 }
 print("\n");
 
