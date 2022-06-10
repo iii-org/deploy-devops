@@ -507,6 +507,25 @@ sub get_secrets_api {
 	return($v_ret);
 }
 
+sub update_admin_password {
+	my ($p_passwd) = @_;
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+
+	$v_cmd = "curl -s --location -H \"Content-Type: application/json\" --request PUT '$iiidevops_api/user/1' --header 'Authorization: Bearer $g_api_key' -d '{\"old_password\":\"$admin_init_password\",\"password\":\"$p_passwd\"}'";
+	$v_cmd_msg = `$v_cmd`;
+	print("IIIDevOps Administrator Password: $v_cmd_msg\n");
+	if (index($v_cmd_msg, "error")>0) {
+		return(false);
+	}
+	else{
+		return(ture);
+	}
+}
+
 #curl --location --request POST 'http://10.20.0.86:31850/user/login' \
 #--header 'Content-Type: application/json' \
 #--data-raw '{

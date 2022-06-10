@@ -167,4 +167,17 @@ sub import_github {
 	return($cmd_msg);
 }
 
+sub update_gitlab_user_password {
+	my ($p_gl_username,$p_gl_passwd) = @_;
+	my ($cmd, $cmd_msg, $ret, %hash_msg);
+	#$cmd = "$v_cmd -s -H \"PRIVATE-TOKEN: $gitlab_private_token\" -X PUT -d '{"password": "xxxx"}' $v_http://localhost:32080/api/v4/users/$user_id";
+    $gl_user = decode_json(call_gitlab_api('GET', "/users?username=$p_gl_username"));
+	$gl_user_id = @{$gl_user}[0]->{'id'};
+	$update_user_passwd = call_gitlab_api('PUT', "/users/$gl_user_id", "{\"password\": \"$p_gl_passwd\"}", 'application/json');
+	
+	if (index($update_user_passwd, $p_gl_username)<0) {
+		return(false);
+	}
+	return(ture);
+}
 1;

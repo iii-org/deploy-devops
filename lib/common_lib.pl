@@ -268,10 +268,156 @@ sub call_sonarqube_api {
 	else {
 		$v_cmd = "$v_curl -s -u $sonarqube_admin_token: --request $p_method '$v_http://$v_domain_name/api/$p_api'";
 	}
-	#print("[$v_cmd]\n");
+	# print("[$v_cmd]\n");
 	$v_msg = `$v_cmd 2>&1`;
 
 	return($v_msg);
+}
+
+# Validate SonarQube user
+sub sonarqube_user_validate {
+	my ($p_sonarqube_username,$p_sonarqube_passwd) = @_;
+
+	$v_domain_name = get_domain_name('sonarqube');
+	$v_http = ($sonarqube_domain_name_tls ne '')?'https':'http';
+	$v_curl = ($sonarqube_domain_name_tls ne '')?'curl -k':'curl';
+
+	$v_cmd = "$v_curl -s -u $p_sonarqube_username:$p_sonarqube_passwd --request GET '$v_http://$v_domain_name/api/authentication/validate'";
+	
+	# print("[$v_cmd]\n");
+	$v_msg = decode_json(`$v_cmd 2>&1`);
+	return($v_msg->{'valid'});
+}
+
+
+#Update SonarQube user password
+sub update_sonarqube_user_password {
+	my ($p_sonarqube_username,$p_sonarqube_passwd,$p_sonarqube_old_passwd) = @_;
+	my ($cmd, $cmd_msg, $ret, %hash_msg);
+
+	$url_sonarqube_passwd = url_encode($p_sonarqube_passwd);
+	$url_sonarqube_old_passwd = url_encode($p_sonarqube_old_passwd);
+	#$cmd = "$v_cmd -H "Content-Type: application/json" -d '{"key": "xxxx","user": {"password": "xxxx"}}' -X PUT http://127.0.0.1:32748/users/1.json;
+    $update_user_passwd = call_sonarqube_api('POST', "users/change_password?login=$p_sonarqube_username&password=$url_sonarqube_passwd&previousPassword=$url_sonarqube_old_passwd");
+	return(sonarqube_user_validate($p_sonarqube_username,$p_sonarqube_passwd));
+}
+
+# Call Redmine API
+sub call_redmine_api {
+	my ($p_method, $p_api, $p_data, $p_type) = @_;
+	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http, $v_port);
+	
+	$v_domain_name = get_domain_name('redmine');
+	$v_http = ($redmine_domain_name_tls ne '')?'https':'http';
+	$v_cmd = ($redmine_domain_name_tls ne '')?'curl -k':'curl';
+
+	$v_cmd = "$v_cmd -s -H \"Content-Type: application/json\" --request $p_method '$v_http://$v_domain_name/$p_api' ";
+	if ($p_type ne '') {
+		$v_cmd .= " --header 'Content-Type: $p_type'";
+	}
+	if ($p_data ne '') {
+		$v_cmd .= " -d '$p_data'";
+	}
+	# print("[$v_cmd]\n");
+	$v_msg = `$v_cmd 2>&1`;
+
+	return($v_msg);
+}
+
+#Update redmine user password
+sub update_redmine_user_password {
+	my ($p_redmine_username,$p_redmine_passwd) = @_;
+	my ($cmd, $cmd_msg, $ret, %hash_msg);
+	#$cmd = "$v_cmd -H "Content-Type: application/json" -d '{"key": "xxxx","user": {"password": "xxxx"}}' -X PUT http://127.0.0.1:32748/users/1.json;
+    $redmine_users = decode_json(call_redmine_api('GET', "users.json?key=$redmine_api_key"));
+	foreach  $redmine_user (@{$redmine_users->{'users'}}) {
+		$username = $redmine_user->{'login'};
+		if($p_redmine_username eq $username) {
+			$id = $redmine_user->{'id'};
+			$update_user_passwd = call_redmine_api('PUT',"users/$id.json", "{\"key\": \"$redmine_api_key\",\"user\": {\"password\": \"$p_redmine_passwd\"}}");
+			return(true);
+			
+		}
+	}
+	return(false);
+}
+
+# Call Harbor API
+sub call_harbor_api {
+	my ($p_method, $p_api, $p_auth, $p_data, $p_type) = @_;
+	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http, $v_port);
+	
+	$v_domain_name = get_domain_name('harbor');
+
+	$v_cmd = "curl -k -s -H \"Content-Type: application/json\" -u $p_auth --request $p_method 'https://$v_domain_name/api/v2.0/$p_api' ";
+	if ($p_type ne '') {
+		$v_cmd .= " --header 'Content-Type: $p_type'";
+	}
+	if ($p_data ne '') {
+		$v_cmd .= " -d '$p_data'";
+	}
+	# print("[$v_cmd]\n");
+	$v_msg = `$v_cmd`;
+
+	return($v_msg);
+}
+
+#Update harbor user password
+sub update_harbor_user_password {
+	my ($p_harbor_username,$p_harbor_passwd,$p_harbor_old_passwd) = @_;
+	my ($cmd, $cmd_msg, $ret, %hash_msg);
+	#$cmd = "curl -k -H "accept: application/json" -H "Content-Type: application/json" -u "admin:xxx" -d '{"new_password": "oxox", "old_password": "xxx"}' -X PUT "https://127.0.0.1:32443/api/v2.0/users/1/password";
+	if ($p_harbor_username eq "admin") {
+		$harbor_user_id=1;
+	}
+	else {
+		$harbor_user = decode_json(call_harbor_api('GET', "users/search?username=$p_harbor_username", "$p_harbor_username:$p_harbor_old_passwd"));
+		$harbor_user_id = @{$harbor_user}[0]->{'user_id'};
+		
+	}
+	$update_user_passwd = call_harbor_api('PUT',"users/$harbor_user_id/password", "$p_harbor_username:$p_harbor_old_passwd", "{\"new_password\": \"$p_harbor_passwd\", \"old_password\": \"$p_harbor_old_passwd\"}");
+	$harbor_user_chk = call_harbor_api('GET', "users/$harbor_user_id", "$p_harbor_username:$p_harbor_passwd");
+	if (index($harbor_user_chk, "errors")>0) {
+		print($harbor_user_chk);
+		return(false);
+	}
+	else {
+		return(ture);
+	}
+}
+
+# Call Rancher API
+sub call_rancher_api {
+	my ($p_method, $p_api, $p_data, $p_token) = @_;
+	my ($v_msg, $v_domain_name, $v_cmd, $v_curl, $v_http, $v_port);
+	
+	$v_domain_name = get_domain_name('rancher');
+
+	$v_cmd = "curl -k -s -H \"Content-Type: application/json\" --request $p_method 'https://$v_domain_name/$p_api' ";
+	if ($p_token ne '') {
+		$v_cmd .= " --header 'Authorization: Bearer $p_token'";
+	}
+	if ($p_data ne '') {
+		$v_cmd .= " -d '$p_data'";
+	}
+	# print("[$v_cmd]\n");
+	$v_msg = `$v_cmd`;
+
+	return($v_msg);
+}
+
+sub update_rancher_user_password {
+	my ($p_rancher_username,$p_rancher_passwd,$p_rancher_old_passwd) = @_;
+	my ($cmd, $cmd_msg, $ret, %hash_msg);
+	$rancher_login = decode_json(call_rancher_api('POST',"v3-public/localProviders/local?action=login","{\"username\":\"$p_rancher_username\",\"password\":\"$p_rancher_old_passwd\"}"));
+	$token = $rancher_login->{'token'};
+	$update_user_passwd = call_rancher_api('POST',"v3/users?action=changepassword","{\"currentPassword\":\"$p_rancher_old_passwd\",\"newPassword\":\"$p_rancher_passwd\"}","$token");
+	$rancher_user_chk = call_rancher_api('POST',"v3-public/localProviders/local?action=login","{\"username\":\"$p_rancher_username\",\"password\":\"$p_rancher_passwd\"}");
+	if (index($harbor_user_chk, "token")>0) {
+		return(true);
+	}else {
+		return(false);
+	}
 }
 
 # Get Image Tag(version)
