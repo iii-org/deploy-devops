@@ -382,7 +382,7 @@ sub sed_alert_msg {
 		get_api_key_api();
 	}
 
-	$v_cmd = "curl -s -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/v2/notification_message' \\--form 'message=\"$p_msg\"' \\--form 'type_ids=\"[4]\"' \\--form 'type_parameters=\"{\\\"role_ids\\\": [5]}\"' \\--form 'alert_level=\"301\"' \\--form 'title=\"GitHub token is unavailable\"'";
+	$v_cmd = "curl -s -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/v2/notification_message' \\--form 'message=\"$p_msg\"' \\--form 'type_ids=\"[4]\"' \\--form 'type_parameters=\"{\\\"role_ids\\\": [5]}\"' \\--form 'alert_level=\"103\"' \\--form 'title=\"GitHub token is unavailable\"'";
 	$v_ret = `$v_cmd`;
 	
 	return($v_ret);
@@ -502,6 +502,33 @@ sub get_secrets_api {
 	else {
 		print("get secrets list Error : $v_cmd_msg \n");
 		$v_ret=-1;
+	}
+	
+	return($v_ret);
+}
+
+#curl --location --request DELETE 'http://10.20.0.68:31850/maintenance/secretes_into_rc_all/harbor' \
+#--header 'Authorization: Bearer $g_api_key' 
+#
+# Global Vars: $g_api_key , $iiidevops_api
+sub delete_secrets_api {
+	my ($p_name) = @_;
+	my ($v_cmd, $v_cmd_msg, %v_hash_msg, $v_message, $v_ret);
+
+	if ($g_api_key eq '') {
+		get_api_key_api();
+	}
+	
+	$v_cmd = "curl -s --location --request DELETE '$iiidevops_api/maintenance/secretes_into_rc_all/$p_name' --header 'Authorization: Bearer $g_api_key'";
+	$v_cmd_msg = `$v_cmd`;
+	$v_hash_msg = decode_json($v_cmd_msg);
+	$v_message = $v_hash_msg->{'message'};
+	if ($v_message eq 'success') {
+		$v_ret = 'OK!';
+	}
+	else {
+		print("add sectets Error:\n$v_cmd_msg\n");
+		$v_ret = 'Failed!';
 	}
 	
 	return($v_ret);

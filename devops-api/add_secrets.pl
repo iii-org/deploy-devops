@@ -27,7 +27,14 @@ $v_secrets_num = get_secrets_api();
 print("now You already have $v_secrets_num secret(s).\n");
 $g_secrets_name_list = '';
 foreach $v_item (@{ $g_hash_secrets->{'data'} }) {
+    if (defined($v_item->{'data'})) {
         $g_secrets_name_list .= "[$v_item->{'name'}]";
+    }
+	else {
+		$secrets_num = $v_item->{'name'};
+		$del_msg = delete_secrets_api($secrets_num);
+		print("$secrets_num : secrets is null, Delete $secrets_num $del_msg\n");
+	}
 }
 
 # nexus
