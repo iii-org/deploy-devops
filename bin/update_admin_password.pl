@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Install iiidevops core script
+# Update IIIDevOps Admin Password
 #
 use FindBin qw($Bin);
 use MIME::Base64;
@@ -31,19 +31,6 @@ elsif (!($change_passwd =~ /$regex/g) ){
 	print("$change_passwd - Password is irregular!\nPassword should be 8-20 characters long with at least 1 uppercase, 1 lowercase and 1 number!\n");
 	exit(1);
 }
-
-# if(1){
-# 	$iiidevops_chk = update_admin_password($change_passwd);
-# 	if (!$iiidevops_chk) {
-# 		print("Change IIIDevOps administrators password fail!\n");
-# 		exit(1);
-# 	}else{
-# 		print("\nChange IIIDevOps administrators password success!\n");
-# 		print("modify env.pl admin_init_password:\n");
-# 		system("perl $Bin/generate_env.pl admin_init_password $change_passwd -y");
-# 	}
-# 	exit;
-# }
 
 # Check kubernetes status.
 log_print("Check kubernetes status..\n");
