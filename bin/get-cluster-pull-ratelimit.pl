@@ -31,7 +31,7 @@ foreach $node (split(/\n/, $cmd_msg)) {
     $p_pl = `ssh -o \"StrictHostKeyChecking no\" -q $node test -f $Bin/get-dockerhub-pull-ratelimit.pl && echo found || echo not found`;
     if (index($p_pl, 'not found')>=0) {
         print("[$Bin/get-dockerhub-pull-ratelimit.pl] is not exist!!!\n");
-        print("sned get-dockerhub-pull-ratelimit.pl to Host[$node]\n---\n");
+        print("sned get-dockerhub-pull-ratelimit.pl to Host[$node]\n");
         $get_perl = `scp -o \"StrictHostKeyChecking no\" $Bin/get-dockerhub-pull-ratelimit.pl $node:$Bin/get-dockerhub-pull-ratelimit.pl`;
     }
     $pull_limit_cmd = "ssh -o \"StrictHostKeyChecking no\" $node perl $Bin/get-dockerhub-pull-ratelimit.pl";
@@ -50,6 +50,7 @@ foreach $node (split(/\n/, $cmd_msg)) {
     }
     $data .= "},";
 }
+print("---\n");
 $data = substr($data,0,length($data)-1);
 $data .=']';
 $data =~ s/\n|\r//g;
