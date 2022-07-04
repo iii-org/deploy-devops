@@ -145,6 +145,9 @@ sub import_github {
 		$hash_msg = decode_json($cmd_msg);
 		return($hash_msg->{'web_url'});
 	}
+	elsif ($p_target_namespace ne 'iiidevops-catalog') {
+		exit;
+	}
 	
 	# target_namespace : iiidevops-catalog group
 	$cmd_msg = call_gitlab_api('GET', "/groups/$p_target_namespace");
