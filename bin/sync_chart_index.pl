@@ -250,7 +250,7 @@ if (index($prj_name_list, "[$helm_catalog]")<0) {
 		}
 	}
 	else {
-		$ret = import_github($github_prj_id, $github_prj_name, $helm_catalog_group_id);
+		$ret = import_github($github_prj_id, $github_prj_name, $helm_catalog_group);
 		if ($ret<0) {
 			log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] Error!\n---\n$cmd_msg\n---\n");
 			$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
