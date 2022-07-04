@@ -140,13 +140,10 @@ sub import_github {
 	}
 
 	# iiidevops-catalog group already exist, only import chart_idx project
-	if ($p_target_namespace eq '') {
+	if ($p_target_namespace eq '' || $p_target_namespace ne 'iiidevops-catalog') {
 		$cmd_msg = call_gitlab_api('GET', "projects/$repo_id");
 		$hash_msg = decode_json($cmd_msg);
 		return($hash_msg->{'web_url'});
-	}
-	elsif ($p_target_namespace ne 'iiidevops-catalog') {
-		exit;
 	}
 	
 	# target_namespace : iiidevops-catalog group
