@@ -60,12 +60,14 @@ foreach $group_hash (@ {$hash_msg}) {
 				$github_user_token = $sync_templ_key;
 				if (index($github_user_token, ":")<=0) {
 					log_print("github_token:[$github_user_token] is worng!\n");
+					sed_alert_msg("github_token is worng");
 					exit;
 				} else {
 					$token_ck_cmd = "curl -s -u $github_user_token https://api.github.com/user";
 					$token_msg = `$token_ck_cmd`;
 					if(index($token_msg,"node_id")<0) {
 						log_print("github_token:[$github_user_token] is worng!\n");
+						sed_alert_msg($token_msg);
 						exit;
 					} elsif ($iiidevops_ver ne 'develop') {
 						$g_github_repo_cmd = "curl -s -u $github_user_token -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/repos/iii-org/devops-charts-pack-and-index";
