@@ -57,14 +57,14 @@ else {
 
 
 $run_sync_prj = system("perl $Bin/sync-prj-templ.pl") >> 8;
-if ($run_sync_prj) {
+if (!$run_sync_prj) {
     log_print("sync github iiidevops-templates... SUCCESS\n");
 } else {
     log_print("sync github iiidevops-templates... FAIL\n");
 }
 log_print("----------------------------------------\n");
 $run_sync_chart = system("perl $Bin/sync_chart_index.pl gitlab_update") >> 8;
-if ($run_sync_chart) {
+if (!$run_sync_chart) {
     log_print("sync sync github chart templates... SUCCESS\n");
 } else {
     log_print("sync sync github chart templates... FAIL\n");
