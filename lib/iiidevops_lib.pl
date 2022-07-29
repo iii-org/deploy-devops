@@ -382,7 +382,7 @@ sub sed_alert_msg {
 		get_api_key_api();
 	}
 
-	$v_cmd = "curl -s -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/v2/notification_message' \\--form 'message=\"$p_msg\"' \\--form 'type_ids=\"[4]\"' \\--form 'type_parameters=\"{\\\"role_ids\\\": [5]}\"' \\--form 'alert_level=\"103\"' \\--form 'title=\"GitHub token is unavailable\"'";
+	$v_cmd = "curl -s -H \"Content-Type: application/json\" -H \"Authorization: Bearer $g_api_key\" --request POST '$iiidevops_api/v2/notification_message' --data-raw '{\"message\": \"$p_msg\",\"type_ids\": \"[4]\",\"type_parameters\":\"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"103\",\"title\":\"GitHub token is unavailable\"}'";
 	$v_ret = `$v_cmd`;
 	
 	return($v_ret);
