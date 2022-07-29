@@ -10,7 +10,7 @@ $|=1; # force flush output
 my $p_config = "$Bin/../env.pl";
 if (!-e $p_config) {
 	print("The configuration file [$p_config] does not exist!\n");
-	exit;
+	exit(1);
 }
 require($p_config);
 
@@ -18,17 +18,11 @@ if (!defined($ARGV[0])) {
 	if ( $sync_templ_key eq '' ) {
 		print("Usage: $prgname [github_id:github_token] [github_org] [force-sync]\n");
 		print("OR Setting ~/deploy-devops/bin/generate_env.pl sync_templ_key [github_id:github_token]\n");
-		exit;
+		exit(1);
 	}
 	else {
 		$github_user_token = (defined($ARGV[0]))?$ARGV[0]:$sync_templ_key;
 	}
-}
-
-($cmd_msg, $github_token) = split(':', $github_user_token);
-if (length($github_token)!=40) {
-	print("github_token:[$github_token] is worng!\n");
-	exit;
 }
 
 $prgname = substr($0, rindex($0,"/")+1);
@@ -36,6 +30,13 @@ $logfile = "$Bin/$prgname.log";
 require("$Bin/../lib/common_lib.pl");
 require("$Bin/../lib/iiidevops_lib.pl");
 require("$Bin/../lib/gitlab_lib.pl");
+
+($cmd_msg, $github_token) = split(':', $github_user_token);
+if (length($github_token)!=40) {
+	print("github_token:[$github_token] is worng!\n");
+	sed_alert_msg("github_token is worng");
+	exit(1);
+}
 
 log_print("\n----------------------------------------\n");
 log_print(`TZ='Asia/Taipei' date`);
@@ -54,7 +55,7 @@ if (index($cmd_msg, 'node_id')<0) {
 	log_print("Get GitHub org [$github_org] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
 	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 	sed_alert_msg($error_msg);
-	exit;
+	exit(1);
 }
 $hash_github_repo = decode_json($cmd_msg);
 $repo_num=0;
@@ -93,7 +94,7 @@ if (index($group_list, "[$github_org]")<0) {
 		log_print("Add GitLab group [$github_org] Error!\n---\n$cmd_msg\n---\n");
 		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 		sed_alert_msg($error_msg);
-		exit;
+		exit(1);
 	}
 	log_print("Add GitLab group [$github_org] OK!\n\n");
 }
@@ -108,7 +109,7 @@ if (index($group_list, "[$local_group]")<0) {
 		log_print("Add GitLab group [$local_group] Error!\n---\n$cmd_msg\n---\n");
 		$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 		sed_alert_msg($error_msg);
-		exit;
+		exit(1);
 	}
 	log_print("Add GitLab group [$local_group] OK!\n\n");
 }
@@ -128,7 +129,7 @@ if (index($cmd_msg, '"message"')>=0) {
 	log_print("Get GitLab group [$github_org] projects Error!\n---\n$cmd_msg\n---\n");
 	$error_msg = "{\"message\":\"deploy-devops perl error\",\"resource_type\":\"github\",\"detail\":{\"perl\":\"$Bin/$prgname\",\"msg\":$cmd_msg}}";
 	sed_alert_msg($error_msg);
-	exit;
+	exit(1);
 }
 
 $hash_gitlab_project = decode_json($cmd_msg);
