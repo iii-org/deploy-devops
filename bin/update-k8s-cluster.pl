@@ -61,6 +61,7 @@ while ($to_chk) {
 		# update K8s cluster
 		update_k8s_cluster();
 		sleep(10);
+		$to_chk = check_ready_ips();
 	}
 }
 log_print("\n----------------------------------------\n");
