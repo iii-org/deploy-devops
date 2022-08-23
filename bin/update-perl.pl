@@ -44,6 +44,10 @@ if (-e "$nfs_dir/deploy-config/env.pl.ans") {
 	$cmd_msg = `ln -s $nfs_dir/deploy-config/env.pl.ans $p_config.ans`; 
 	print("env.pl.ans file link is automatically created ..OK!\n");
 }
+if (-e "$nfs_dir/sbom/sbom_license") {
+	$cmd_msg = `mkdir $home_path/deploy-devops/sbom;ln -s $nfs_dir/sbom/sbom_license $home_path/deploy-devops/sbom/sbom_license`; 
+	print("sbom  file link is automatically created ..OK!\n");
+}
 
 # Check ins_repo.zip hash info
 $hash_info_file = $home_path.'/'.$ins_repo.'.md5';
