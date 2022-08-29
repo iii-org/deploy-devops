@@ -19,6 +19,8 @@ spec:
         ports:
         - containerPort: 10009
         env:
+        - name: deploy_env
+          value: "{{deploy_env}}"
         - name: DEPLOY_CERTIFICATE_ROOT_PATH
           value: "/root/.kube"
         - name: SQLALCHEMY_DATABASE_URI

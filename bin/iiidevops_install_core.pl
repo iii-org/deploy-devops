@@ -278,6 +278,7 @@ $template =~ s/{{deployment_name}}/$deployment_name/g;
 $template =~ s/{{first_ip}}/$first_ip/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
 $template =~ s/{{nfs_dir}}/$nfs_dir/g;
+$template =~ s/{{deploy_env}}/$deploy_env/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
