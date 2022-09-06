@@ -120,7 +120,7 @@ END
 	while($v_isChk) {
 		$v_isChk = 0;
 		$v_items = 0;
-		foreach $v_line (split(/\n/, `kubectl get pod | grep gitlab-`)) {
+		foreach $v_line (split(/\n/, `kubectl get pod | grep gitlab- | grep -v sync-gitlab-`)) {
 			$v_line =~ s/( )+/ /g;
 			($l_name, $l_ready, $l_status, $l_restarts, $l_age) = split(/ /, $v_line);
 			if ($l_name eq 'NAME') {next;}
