@@ -94,7 +94,7 @@ foreach $group_hash (@ {$hash_msg}) {
 			$ret = delete_gitlab_group($helm_catalog_group_id);
 			if ($ret<0) {
 				log_print("Delete GitLab group [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
-				$error_msg =  "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}"
+				$error_msg =  "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}";
 				$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 				$sed_alert = `$sed_cmd`;
 				exit(1);
@@ -118,7 +118,7 @@ foreach $catalogs_hash (@ {$hash_msg}) {
 			$ret = delete_gitlab($helm_catalog_id);
 			if ($ret<0) {
 				log_print("Delete GitLab Project catalog [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
-				$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}"
+				$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}";
 				$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 				$sed_alert = `$sed_cmd`;
 				exit(1);
@@ -139,7 +139,7 @@ if (index($group_list, "[$helm_catalog_group]")<0) {
 	$ret = create_gitlab_group($helm_catalog_group);
 	if ($ret<0) {
 		log_print("Add GitLab group [$helm_catalog_group] Error!\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}"
+		$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}";
 		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 		$sed_alert = `$sed_cmd`;
 		exit(1);
@@ -168,7 +168,7 @@ log_print("Get GitLab group $helm_catalog_group project list..\n");
 $cmd_msg = call_gitlab_api('GET', "groups/$helm_catalog_group/projects?per_page=100");
 if (index($cmd_msg, '"message"')>=0) {
 	log_print("Get GitLab group [$helm_catalog_group] projects Error!\n---\n$cmd_msg\n---\n");
-	$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}"
+	$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}";
 	$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 	$sed_alert = `$sed_cmd`;
 	exit(1);
@@ -212,7 +212,7 @@ if ($is_update ne 'gitlab_offline' && $is_update ne 'gitlab_offline_update') {
 	$cmd_msg = `$cmd`;
 	if (index($cmd_msg, 'node_id')<0) {
 		log_print("Get GitHub org [devops-charts-pack-and-index] repos Error!\n---\n$cmd\n---\n$cmd_msg\n---\n");
-		$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}"
+		$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}";
 		$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 		$sed_alert = `$sed_cmd`;
 		exit(1);
@@ -227,7 +227,7 @@ if (index($prj_name_list, "[$helm_catalog]")<0) {
 		$ret = create_gitlab_group_project($helm_catalog,$helm_catalog_group_id);
 		if ($ret<0) {
 			log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] Error!\n---\n$cmd_msg\n---\n");
-			$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}"
+			$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}";
 			$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 			$sed_alert = `$sed_cmd`;
 			exit(1);
@@ -257,7 +257,7 @@ if (index($prj_name_list, "[$helm_catalog]")<0) {
 		$ret = import_github($github_prj_id, $github_prj_name, $helm_catalog_group);
 		if ($ret<0) {
 			log_print("Add GitLab group [$helm_catalog_group] project [$helm_catalog] Error!\n---\n$cmd_msg\n---\n");
-			$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}"
+			$error_msg = "{\"message\": \"$cmd_msg\",\"type_ids\": \"[4]\",\"type_parameters\": \"{\\\"role_ids\\\": [5]}\",\"alert_level\": \"3\",\"title\": \"deploy-devops perl error\"}";
 			$sed_cmd = "$sed_alert_cmd --data-raw '$error_msg'";
 			$sed_alert = `$sed_cmd`;
 			exit(1);
