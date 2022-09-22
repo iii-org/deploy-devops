@@ -77,8 +77,8 @@ log_print("GitLab is working well!\n\n");
 if ($deploy_env eq 'offline') {
 	$cmd =<<END;
 docker login --username=admin --password=$harbor_admin_password localhost:32443
-docker images | grep -v localhost |grep iiiorg | awk '{print $1 ":" $2" localhost:32443/dockerhub/" $1":"$2}' |  xargs -n 2 docker tag
-docker images | grep localhost | awk '{print $1 ":" $2}' | xargs -n 1 docker push
+docker images | grep -v localhost |grep iiiorg | awk '{print \$1 ":" \$2" localhost:32443/dockerhub/" \$1":"\$2}' |  xargs -n 2 docker tag
+docker images | grep localhost | awk '{print \$1 ":" \$2}' | xargs -n 1 docker push
 kubectl get configmap coredns -n kube-system -o yaml > $home/coredns.yaml;
 sed -i '/forward\\ .\\ "\\/etc\\/resolv.conf\\"/d' $home/coredns.yaml;
 kubectl apply -f $home/coredns.yaml;
