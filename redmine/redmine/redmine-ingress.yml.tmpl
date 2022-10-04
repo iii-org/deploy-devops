@@ -5,6 +5,7 @@ metadata:
   name: redmine-ing
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
 spec:
   rules:
   - host: "{{redmine_domain_name}}"
