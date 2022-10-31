@@ -1,6 +1,6 @@
 #!/usr/bin/perl
-# 10:31 2022/3/23
-# gitlab DNS mod / Redmine SECRET_KEY_BASE / SonarQube Liveness / Redis Store
+# 10:31 2022/10/31
+# gitlab DNS mod / Redmine SECRET_KEY_BASE && proxy-body-size 100m / SonarQube Liveness / Redis Store
 # [V]Auto
 # [ ]Manual
 use FindBin qw($Bin);
@@ -25,14 +25,30 @@ if ($cmd_msg ne 'rkeuser') {
 $error_count=0;
 
 # Check redmine SECRET_KEY_BASE setting
+$patch_redmine=0;
 $cmd = "kubectl describe deployment redmine | grep REDMINE_SECRET_KEY_BASE";
 $cmd_msg = `$cmd 2>&1`;
 if ($cmd_msg eq '') {
-	$cmd = "$Bin/../../redmine/install_redmine.pl force";
-	$error_count += system($cmd) >> 8;
+	$patch_redmine++;
 }
 else {
 	print("The redmine SECRET_KEY_BASE setting already exists! Skip patch!\n");
+}
+
+# Check redmine proxy-body-size setting
+$cmd = "kubectl describe ingress redmine-ing | grep proxy-body-size";
+$cmd_msg = `$cmd 2>&1`;
+if ($cmd_msg eq '') {
+	$patch_redmine++;
+}
+else {
+	print("The redmine proxy-body-size setting already exists! Skip patch!\n");
+}
+
+# Run Redmine Patch
+if ($patch_redmine) {
+	$cmd = "$Bin/../../redmine/install_redmine.pl force";
+	$error_count += system($cmd) >> 8;
 }
 
 # Check sonarqube-server Liveness setting
