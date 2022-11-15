@@ -46,9 +46,9 @@ $local_group = 'local-templates';
 $force_sync = (defined($ARGV[2]) && lc($ARGV[2]) eq 'force-sync');
 
 # Get GitHub org $github_org (iiidevops-templates) repo list
-# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos
+# curl -H "Accept: application/vnd.github.inertia-preview+json" https://api.github.com/orgs/iiidevops-templates/repos?per_page=100
 $arg_str = ($github_user_token ne '')?"-u $github_user_token ":'';
-$cmd = "curl -s $arg_str -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/orgs/$github_org/repos";
+$cmd = "curl -s $arg_str -H \"Accept: application/vnd.github.inertia-preview+json\" https://api.github.com/orgs/$github_org/repos?per_page=100";
 log_print("Get GitHub org $github_org repo list..\n");
 $cmd_msg = `$cmd`;
 if (index($cmd_msg, 'node_id')<0) {
