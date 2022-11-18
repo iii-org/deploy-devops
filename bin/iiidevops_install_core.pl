@@ -275,6 +275,7 @@ $template =~ s/{{admin_init_login}}/$admin_init_login/g;
 $template =~ s/{{admin_init_email}}/$admin_init_email/g;
 $template =~ s/{{admin_init_password}}/$admin_init_password/g;
 $template =~ s/{{deployment_name}}/$deployment_name/g;
+$template =~ s/{{iiidevops_ver}}/$iiidevops_ver/g;
 $template =~ s/{{first_ip}}/$first_ip/g;
 $template =~ s/{{nfs_ip}}/$nfs_ip/g;
 $template =~ s/{{nfs_dir}}/$nfs_dir/g;
