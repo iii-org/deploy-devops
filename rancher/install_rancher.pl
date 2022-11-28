@@ -153,10 +153,10 @@ sub manual_secret_tls {
 	log_print("-----\n$cmd_msg-----\n");	
 
 	log_print("Upgrade Rancher service..\n");
-	$cmd = "helm upgrade rancher --version=2.4.15 rancher-stable/rancher --namespace cattle-system --set hostname=$rancher_domain_name --set ingress.tls.source=secret --timeout=3600s --wait";
+	$cmd = "helm upgrade rancher --version=2.4.17 rancher-stable/rancher --namespace cattle-system --set hostname=$rancher_domain_name --set ingress.tls.source=secret --timeout=3600s --wait";
 	system($cmd);
 	#~/deploy-devops/bin/import-secret-tls.pl tls-rancher-ingress rancher.devops.iiidevops.org/fullchain1.pem rancher.devops.iiidevops.org/privkey1.pem cattle-system
-	$cmd = "kubectl -n cattle-system patch deploy/cattle-cluster-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"cluster-register\", \"image\": \"rancher/rancher-agent:v2.4.15\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
+	$cmd = "kubectl -n cattle-system patch deploy/cattle-cluster-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"cluster-register\", \"image\": \"rancher/rancher-agent:v2.4.17\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
 	system($cmd);
 	$cmd = "kubectl -n cattle-system patch daemonset/cattle-node-agent -p '{\"spec\": {\"template\": {\"spec\": {\"containers\": [{\"name\": \"agent\", \"env\": [{\"name\": \"CATTLE_CA_CHECKSUM\", \"value\": \"\"}]}]}}}}'";
 	system($cmd);
