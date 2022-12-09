@@ -216,8 +216,7 @@ $gitlab_url = $v_http.'://'.$v_gitlab_domain_name;
 
 # harbor_internal_base_url
 # harbor_internal_basr_url will use http after TLS upgrade 
-$v_http = ($harbor_domain_name_tls ne '')?'http':'https';
-$harbor_internal_base_url = $v_http.'://harbor-harbor-core/api/v2.0';
+$harbor_internal_base_url = 'https://harbor-harbor-core/api/v2.0';
 
 # sonarqube_url
 $v_sonarqube_domain_name = get_domain_name('sonarqube');
