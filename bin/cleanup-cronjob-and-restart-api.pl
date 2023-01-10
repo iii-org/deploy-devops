@@ -32,13 +32,24 @@ if (!-e $cmd_kubectl) {
 }
 $kubectl = "$cmd_kubectl $kubeconf_str";
 
-# kubectl get cronjobs -n default -o custom-columns=:.metadata.name
-@default_cjs = split(/\s+/, `$kubectl get cronjobs -n default -o custom-columns=:.metadata.name`);
+# kubectl get cronjobs -n default -o custom-columns=:.metadata.name --no-headers=true
+@default_cjs = split(/\s+/, `$kubectl get cronjobs -n default -o custom-columns=:.metadata.name --no-headers=true`);
 
 # For each cronjob, delete it
 foreach $cj (@default_cjs) {
     if ($cj) {
         $cmd = `$kubectl delete cronjob $cj -n default`;
+        log_print($cmd);
+    }
+}
+
+# kubectl get jobs.batch -n default --field-selector status.successful=1 -o custom-columns=:.metadata.name --no-headers=true
+@default_jobs = split(/\s+/, `$kubectl get jobs.batch -n default --field-selector status.successful=1 -o custom-columns=:.metadata.name --no-headers=true`);
+
+# For each successful job, delete it
+foreach $jobs (@default_jobs) {
+    if ($jobs) {
+        $cmd = `$kubectl delete jobs.batch $jobs -n default`;
         log_print($cmd);
     }
 }
