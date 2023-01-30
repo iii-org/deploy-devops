@@ -39,6 +39,8 @@ sudo mkdir -p $nfs_dir/redmine-postgresql;
 sudo chmod 777 $nfs_dir/redmine-postgresql;
 sudo mkdir -p $nfs_dir/redmine-files;
 sudo chmod 777 $nfs_dir/redmine-files;
+sudo mkdir -p $nfs_dir/redmine-plugins;
+sudo chmod 777 $nfs_dir/redmine-plugins;
 sudo mkdir -p $nfs_dir/devopsdb;
 sudo chmod 777 $nfs_dir/devopsdb;
 sudo mkdir -p $nfs_dir/kube-config;
@@ -53,6 +55,8 @@ sudo mkdir -p $nfs_dir/devops-redis;
 sudo chmod 777 $nfs_dir/devops-redis;
 sudo mkdir -p $nfs_dir/sonarqube-postgresql;
 sudo chmod 777 $nfs_dir/sonarqube-postgresql;
+sudo mkdir -p $nfs_dir/sonarqube-plugins;
+sudo chmod 777 $nfs_dir/sonarqube-plugins;
 END
 	$cmd_msg = `$cmd 2>&1`;
 	if ($cmd_msg ne '') {

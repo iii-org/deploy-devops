@@ -655,6 +655,75 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'harbor_admin_password') {
 	}
 }
 
+# 9.0 Set SSO service, keycloak
+if (!defined($ARGV[0]) || $ARGV[0] eq 'keycloak_admin') {
+    print("Q9.0. Setting Keycloak service\n");
+    $admin_account = (defined($ask_keycloak_admin) && $ask_keycloak_admin ne '{{ask_keycloak_admin}}' && $ask_keycloak_admin ne '') ? $ask_keycloak_admin : '';
+    $admin_password = (defined($ask_keycloak_admin_password) && $ask_keycloak_admin_password ne '{{ask_keycloak_admin_password}}' && $ask_keycloak_admin_password ne '') ? $ask_keycloak_admin_password : '';
+
+    $should_create = 'y';
+    if ($admin_account eq '') {
+        $admin_account = prompt_for_input(" -> Please enter the Keycloak admin account: ");
+    }
+    else {
+        print(" -> Keycloak admin account: $admin_account\n");
+        $should_create = prompt_for_input(" -> Do you want to change Keycloak admin account?(y/N) ");
+        if (lc($should_create) eq 'y') {
+            $admin_account = prompt_for_input(" -> Please enter the Keycloak admin account: ");
+        }
+    }
+
+    if (lc($should_create) eq 'y') {
+        $password_validated = 1;
+        while ($password_validated) {
+            $password1 = prompt_for_password(" -> Enter password for $admin_account, if you wish use same password as GitLab, please enter 'SAME'");
+            if (uc($password1) eq 'SAME') {
+                $password1 = $same_passwd;
+                last;
+            }
+            else {
+                $password2 = prompt_for_password(" -> Please re-enter the admin password:");
+                $password_validated = !(($password1 eq $password2) && ($password1 ne ''));
+                if ($password1 ne $password2) {
+                    print(" -> The password is not the same, please re-enter!\n");
+                }
+            }
+        }
+        $admin_password = $password1;
+    }
+
+    $db_password = (defined($ask_keycloak_db_password) && $ask_keycloak_db_password ne '{{ask_keycloak_db_password}}' && $ask_keycloak_db_password ne '') ? $ask_keycloak_db_password : '';
+    if ($db_password eq '') {
+        $db_password = random_password(20);
+    }
+    else {
+        $yes_no = prompt_for_input(" -> Keycloak DB password was set, do you want to generate a new one?(y/N)");
+        if (lc($yes_no) eq 'y') {
+            $db_password = random_password(20);
+            print(" -> Generated keycloak database password success!\n")
+        }
+        else {
+            print(" -> Keep the old one!\n")
+        }
+    }
+
+	$ask_keycloak_admin = $admin_account;
+	$ask_keycloak_admin_password = $admin_password;
+	$ask_keycloak_db_password = $db_password;
+
+	print ("Set Keycloak admin account: $admin_account OK!\n\n");
+	if ($ask_keycloak_admin_password ne '') {
+		if (-e $p_config_ans) {
+			$tmp_account=$ask_keycloak_admin;
+			$tmp_password=$ask_keycloak_admin_password;
+			require($p_config_ans);
+			$ask_keycloak_admin=$tmp_account;
+			$ask_keycloak_admin_password=$tmp_password;
+		}
+		write_ans();
+	}
+}
+
 # 9. set III-DevOps settings(Core)
 require($Bin.'/generate_env_iiidevops.pl');
 
@@ -802,6 +871,7 @@ sub convert {
 	$env_template =~ s/{{ask_vm2_ip}}/$ask_vm2_ip/g;
 	$env_template =~ s/{{ask_nfs_ip}}/$ask_nfs_ip/g;
 	$env_template =~ s/{{ask_nfs_dir}}/$ask_nfs_dir/g;
+
 	$env_template =~ s/{{ask_rancher_domain_name}}/$ask_rancher_domain_name/g;
 	$env_template =~ s/{{ask_gitlab_domain_name}}/$ask_gitlab_domain_name/g;
 	$env_template =~ s/{{ask_harbor_domain_name}}/$ask_harbor_domain_name/g;
@@ -810,13 +880,16 @@ sub convert {
 	$env_template =~ s/{{ask_k8sctl_domain_name}}/$ask_k8sctl_domain_name/g;
 	$env_template =~ s/{{ask_ingress_domain_name}}/$ask_ingress_domain_name/g;
 	$env_template =~ s/{{ask_iiidevops_domain_name}}/$ask_iiidevops_domain_name/g;
+	$env_template =~ s/{{ask_keycloak_domain_name}}/$ask_keycloak_domain_name/g;
+
 	$env_template =~ s/{{ask_rancher_domain_name_tls}}/$ask_rancher_domain_name_tls/g;
 	$env_template =~ s/{{ask_gitlab_domain_name_tls}}/$ask_gitlab_domain_name_tls/g;
 	$env_template =~ s/{{ask_harbor_domain_name_tls}}/$ask_harbor_domain_name_tls/g;
 	$env_template =~ s/{{ask_redmine_domain_name_tls}}/$ask_redmine_domain_name_tls/g;
 	$env_template =~ s/{{ask_sonarqube_domain_name_tls}}/$ask_sonarqube_domain_name_tls/g;
 	$env_template =~ s/{{ask_ingress_domain_name_tls}}/$ask_ingress_domain_name_tls/g;
-	$env_template =~ s/{{ask_iiidevops_domain_name_tls}}/$ask_iiidevops_domain_name_tls/g;
+	$env_template =~ s/{{ask_keycloak_domain_name_tls}}/$ask_keycloak_domain_name_tls/g;
+
 	$env_template =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/g;
 	$env_template =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/g;
 	$env_template =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/g;
@@ -825,6 +898,9 @@ sub convert {
 	$env_template =~ s/{{ask_sonarqube_admin_passwd}}/$ask_sonarqube_admin_passwd/g;
 	$env_template =~ s/{{ask_sonarqube_admin_token}}/$ask_sonarqube_admin_token/g;
 	$env_template =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/g;
+    $env_template =~ s/{{ask_keycloak_admin}}/$ask_keycloak_admin/;
+	$env_template =~ s/{{ask_keycloak_admin_password}}/$ask_keycloak_admin_password/;
+	$env_template =~ s/{{ask_keycloak_db_password}}/$ask_keycloak_db_password/;
 	$env_template =~ s/{{ask_auto_password}}/$ask_auto_password/g;
 	$env_template =~ s/{{ask_random_key}}/$ask_random_key/g;
 	$env_template =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/g;
@@ -853,10 +929,12 @@ sub write_ans {
 	$ans_file =~ s/{{ask_deploy_env}}/$ask_deploy_env/;
 	$ans_file =~ s/{{ask_deploy_mode}}/$ask_deploy_mode/;
 	$ans_file =~ s/{{ask_iiidevops_ver}}/$ask_iiidevops_ver/;
+
 	$ans_file =~ s/{{ask_vm1_ip}}/$ask_vm1_ip/;
 	$ans_file =~ s/{{ask_vm2_ip}}/$ask_vm2_ip/;
 	$ans_file =~ s/{{ask_nfs_ip}}/$ask_nfs_ip/;
 	$ans_file =~ s/{{ask_nfs_dir}}/$ask_nfs_dir/;
+
 	$ans_file =~ s/{{ask_rancher_domain_name}}/$ask_rancher_domain_name/g;
 	$ans_file =~ s/{{ask_gitlab_domain_name}}/$ask_gitlab_domain_name/g;
 	$ans_file =~ s/{{ask_harbor_domain_name}}/$ask_harbor_domain_name/g;
@@ -865,6 +943,8 @@ sub write_ans {
 	$ans_file =~ s/{{ask_k8sctl_domain_name}}/$ask_k8sctl_domain_name/g;
 	$ans_file =~ s/{{ask_ingress_domain_name}}/$ask_ingress_domain_name/g;
 	$ans_file =~ s/{{ask_iiidevops_domain_name}}/$ask_iiidevops_domain_name/g;
+	$ans_file =~ s/{{ask_keycloak_domain_name}}/$ask_keycloak_domain_name/g;
+
 	$ans_file =~ s/{{ask_rancher_domain_name_tls}}/$ask_rancher_domain_name_tls/g;
 	$ans_file =~ s/{{ask_gitlab_domain_name_tls}}/$ask_gitlab_domain_name_tls/g;
 	$ans_file =~ s/{{ask_harbor_domain_name_tls}}/$ask_harbor_domain_name_tls/g;
@@ -872,6 +952,8 @@ sub write_ans {
 	$ans_file =~ s/{{ask_sonarqube_domain_name_tls}}/$ask_sonarqube_domain_name_tls/g;
 	$ans_file =~ s/{{ask_ingress_domain_name_tls}}/$ask_ingress_domain_name_tls/g;
 	$ans_file =~ s/{{ask_iiidevops_domain_name_tls}}/$ask_iiidevops_domain_name_tls/g;
+	$ans_file =~ s/{{ask_keycloak_domain_name_tls}}/$ask_keycloak_domain_name_tls/g;
+
 	$ans_file =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/;
 	$ans_file =~ s/{{ask_gitlab_private_token}}/$ask_gitlab_private_token/;
 	$ans_file =~ s/{{ask_rancher_admin_password}}/$ask_rancher_admin_password/;
@@ -880,13 +962,17 @@ sub write_ans {
 	$ans_file =~ s/{{ask_sonarqube_admin_passwd}}/$ask_sonarqube_admin_passwd/;
 	$ans_file =~ s/{{ask_sonarqube_admin_token}}/$ask_sonarqube_admin_token/;
 	$ans_file =~ s/{{ask_harbor_admin_password}}/$ask_harbor_admin_password/;
+	$ans_file =~ s/{{ask_keycloak_admin}}/$ask_keycloak_admin/;
+	$ans_file =~ s/{{ask_keycloak_admin_password}}/$ask_keycloak_admin_password/;
+	$ans_file =~ s/{{ask_keycloak_db_password}}/$ask_keycloak_db_password/;
+
 	$ans_file =~ s/{{ask_auto_password}}/$ask_auto_password/;
 	$ans_file =~ s/{{ask_random_key}}/$ask_random_key/;
 	$ans_file =~ s/{{ask_admin_init_login}}/$ask_admin_init_login/;
 	$ans_file =~ s/{{ask_admin_init_email}}/$ask_admin_init_email/;
 	$ans_file =~ s/{{ask_admin_init_password}}/$ask_admin_init_password/;
 	$ans_file =~ s/{{ask_sync_templ_key}}/$ask_sync_templ_key/;
-	
+
 	open(FH, '>', $p_config_ans) or die $!;
 	print FH $ans_file;
 	close(FH);
@@ -912,9 +998,11 @@ sub prompt_for_password {
 	my $regex = qr/(?=.*\d)(?=.*[a-z])(?=.*[A-Z])^[\w!@#$%^&*()+|{}\[\]`~\-\'\";:\/?.\\>,<]{8,20}$/mp;	
 
 	require Term::ReadKey;
-	
+
 	my $password = '';
-	while(!($password =~ /$regex/g) && lc($password) ne 'same') {
+
+	$is_validate = 1;
+	while($is_validate) {
 		# Tell the terminal not to show the typed chars
 		Term::ReadKey::ReadMode('noecho');
 		print "$p_question";
@@ -925,6 +1013,11 @@ sub prompt_for_password {
 
 		# get rid of that pesky line ending (and works on Windows)
 		$password =~ s/\R\z//;
+		$is_validate = !($password =~ /$regex/g) && lc($password) ne 'same';
+
+		if ($is_validate) {
+		    print("Password must be 8-20 characters long, contain at least one uppercase letter, one lowercase letter, and one number.\n");
+		}
 	}
 
     return $password;

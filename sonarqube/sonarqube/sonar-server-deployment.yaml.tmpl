@@ -14,28 +14,64 @@ spec:
       labels:
         app: sonarqube-server
     spec:
+      initContainers:
+        - name: add-iiidevops-ca-cert
+          image: sonarqube:8.9.6-community
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              keytool -import -noprompt -trustcacerts \
+                -keystore /opt/java/openjdk/lib/security/cacerts -storepass changeit \
+                -alias iiidevops --file /opt/java/openjdk/lib/security/ca.crt && \
+              cp -r /opt/java/openjdk/lib/security/* /security && \
+              echo "[Success] IIIdevops CA imported" && \
+              exit 0
+          volumeMounts:
+            - name: iiidevops-common-ca
+              mountPath: /opt/java/openjdk/lib/security/ca.crt
+              subPath: ca.crt
+            - name: iiidevops-temp-dir
+              mountPath: /security
       containers:
-      - name: sonarqube-server
-        image: sonarqube:8.9.6-community
-        ports:
-        - containerPort: 9000
-        livenessProbe:
-          httpGet:
-            path: /session/new
-            port: 9000
-          initialDelaySeconds: 60
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /session/new
-            port: 9000
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          failureThreshold: 6
-        env:
-        - name: sonar.jdbc.username
-          value: postgres
-        - name: sonar.jdbc.password
-          value: {{sonarqube_db_passwd}}
-        - name: sonar.jdbc.url
-          value: jdbc:postgresql://sonarqube-postgresql-service:5432/sonarqube
+        - name: sonarqube-server
+          image: sonarqube:8.9.6-community
+          livenessProbe:
+            httpGet:
+              path: /session/new
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /session/new
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 6
+          ports:
+            - containerPort: 9000
+          env:
+            - name: sonar.jdbc.username
+              value: postgres
+            - name: sonar.jdbc.password
+              value: {{sonarqube_db_passwd}}
+            - name: sonar.jdbc.url
+              value: jdbc:postgresql://sonarqube-postgresql-service:5432/sonarqube
+          volumeMounts:
+            - name: sonarqube-plugins-dir
+              mountPath: /opt/sonarqube/extensions/plugins
+            - name: iiidevops-temp-dir
+              mountPath: /opt/java/openjdk/lib/security
+      volumes:
+        - name: iiidevops-common-ca
+          nfs:
+            server: {{nfs_ip}}
+            path: /{{nfs_dir}}/deploy-config/self-signed-ca
+        - name: iiidevops-temp-dir
+          emptyDir: { }
+        - name: sonarqube-plugins-dir
+          nfs:
+            server: {{nfs_ip}}
+            path: /{{nfs_dir}}/sonarqube-plugins

@@ -1,0 +1,5 @@
+ingress:
+  enabled: true
+  tls: true
+  hostname: <DOMAIN_NAME>
+  selfSigned: true

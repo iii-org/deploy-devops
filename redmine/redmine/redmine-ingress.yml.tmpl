@@ -8,11 +8,11 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "100m"
 spec:
   rules:
-  - host: "{{redmine_domain_name}}"
-    http:
-      paths:
-      - backend:
-          serviceName: redmine-service
-          servicePort: 3000
-        path: "/"
-        pathType: "ImplementationSpecific"
+    - host: "{{redmine_domain_name}}"
+      http:
+        paths:
+          - backend:
+              serviceName: redmine-service
+              servicePort: 3000
+            path: "/"
+            pathType: "ImplementationSpecific"

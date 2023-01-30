@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: iiidevops-keycloak-tls # Certificate 的名字
+spec:
+  secretName: iiidevops-keycloak-tls # 產生的 Secret 的名字
+  duration: 8760h # 1 Year
+  renewBefore: 2208h # 9 months
+  dnsNames:
+    - iiidevops-keycloak.default
+    - iiidevops-keycloak.default.svc
+    - iiidevops-keycloak.default.svc.cluster
+    - iiidevops-keycloak.default.svc.cluster.local
+  ipAddresses:
+    - <KEYCLOAK_IP>
+  issuerRef:
+    name: iiidevops-ca-issuer
+    kind: ClusterIssuer

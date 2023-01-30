@@ -10,21 +10,21 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
 spec:
   rules:
-  - host: "{{gitlab_domain_name}}"
-    http:
-      paths:
-      - path: "/"
-        pathType: "ImplementationSpecific"
-        backend:
-          serviceName: gitlab-service
-          servicePort: 80
-      - path: "/api/v3"
-        pathType: "ImplementationSpecific"
-        backend:
-          serviceName: gitlab-service
-          servicePort: 30080
-      - path: "/api/v4"
-        pathType: "ImplementationSpecific"
-        backend:
-          serviceName: gitlab-service
-          servicePort: 30080
+    - host: "{{gitlab_domain_name}}"
+      http:
+        paths:
+          - path: "/"
+            pathType: "ImplementationSpecific"
+            backend:
+              serviceName: gitlab-service
+              servicePort: 80
+          - path: "/api/v3"
+            pathType: "ImplementationSpecific"
+            backend:
+              serviceName: gitlab-service
+              servicePort: 30080
+          - path: "/api/v4"
+            pathType: "ImplementationSpecific"
+            backend:
+              serviceName: gitlab-service
+              servicePort: 30080

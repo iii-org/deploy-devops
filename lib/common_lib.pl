@@ -47,7 +47,7 @@ sub get_service_status {
 		$v_port = ($gitlab_domain_name_tls ne '')?32081:32080;
 		$v_http = ($gitlab_domain_name_tls ne '')?'https':'http';
 		$v_cmd = ($gitlab_domain_name_tls ne '')?'curl -k':'curl';
-		$v_cmd .= " -q --max-time 5 -I $v_http://localhost:$v_port/users/sign_in";
+		$v_cmd .= " -q --max-time 5 -I $v_http://localhost:$v_port/users/sign_in?auto_sign_in=false";
 		#HTTP/1.1 200 OK , HTTP/2 200
 		$v_chk_key = ($gitlab_domain_name_tls ne '')?'HTTP/2 200':'HTTP/1.1 200';
 		$v_cmd_msg = `$v_cmd 2>&1`;
@@ -86,6 +86,17 @@ sub get_service_status {
 		$v_cmd_msg = `$v_cmd 2>&1`;
 		#log_print("-----\n$v_cmd_msg-----\n");
 		$v_status = !(index($v_cmd_msg, $v_chk_key)<0);
+	}
+	elsif ($p_service eq 'keycloak') {
+		$v_domain_name = get_domain_name('keycloak');
+		$v_http = ($keycloak_domain_name_tls ne '') ? 'https' : 'https';
+		$v_cmd = ($keycloak_domain_name_tls ne '') ? 'curl -k' : 'curl';
+        # curl -s -q --max-time 5 -w '%{http_code}' -o /dev/null -I $domain
+		$v_cmd .= " -s -k -q --max-time 5 -w '%{http_code}' -o /dev/null $v_http://$v_domain_name";
+		# 200
+		$v_chk_key = '200';
+		$v_cmd_msg = `$v_cmd 2>&1`;
+		$v_status = ($v_cmd_msg eq $v_chk_key);
 	}
 	elsif ($p_service eq 'iiidevops') {
 		$v_domain_name = get_domain_name('iiidevops');
@@ -146,6 +157,9 @@ sub get_domain_name {
 		elsif ($p_service eq 'sonarqube') {
 			$v_domain_name = $sonarqube_domain_name;
 		}
+		elsif ($p_service eq 'keycloak') {
+			$v_domain_name = $keycloak_domain_name;
+		}
 		elsif ($p_service eq 'iiidevops') {
 			$v_domain_name = $iiidevops_domain_name;
 		}
@@ -166,6 +180,9 @@ sub get_domain_name {
 		}
 		elsif ($p_service eq 'sonarqube') {
 			$v_domain_name = $sonarqube_ip.':31910';
+		}
+		elsif ($p_service eq 'keycloak') {
+			$v_domain_name = $keycloak_ip . ':32110';
 		}
 		elsif ($p_service eq 'iiidevops') {
 			$v_domain_name = $iiidevops_ip.':30775';

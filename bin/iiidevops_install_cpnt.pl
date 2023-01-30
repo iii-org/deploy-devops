@@ -29,17 +29,6 @@ if (!get_service_status('rancher')) {
 }
 log_print("Rancher is working well!\n\n");
 
-# Redmine
-$cmd = "$home/deploy-devops/redmine/install_redmine.pl";
-log_print("\nDeploy Redmine..");
-system($cmd);
-# Check Redmine service is working
-if (!get_service_status('redmine')) {
-	log_print("Redmine is not working!\n");
-	exit;
-}
-log_print("Redmine is working well!\n\n");
-
 # Harbor
 $cmd = "$home/deploy-devops/harbor/install_harbor.pl";
 log_print("\nDeploy Harbor..");
@@ -50,6 +39,33 @@ if (!get_service_status('harbor')) {
 	exit;
 }
 log_print("Harbor is working well!\n\n");
+
+# Keycloak
+log_print("\nDeploying keycloak...\n");
+system("chmod +x $home/deploy-devops/keycloak/install_keycloak.sh");
+system("$home/deploy-devops/keycloak/install_keycloak.sh");
+$last_code = "$?";
+if ($last_code != 0) {
+    log_print("Deploy keycloak failed! Exit code: $last_code\n");
+    exit;
+}
+# Check Keycloak service is working
+if (!get_service_status('keycloak')) {
+	log_print("Keycloak is not working!\n");
+	exit;
+}
+log_print("Keycloak is working well!\n\n");
+
+# Redmine
+$cmd = "$home/deploy-devops/redmine/install_redmine.pl";
+log_print("\nDeploy Redmine..");
+system($cmd);
+# Check Redmine service is working
+if (!get_service_status('redmine')) {
+	log_print("Redmine is not working!\n");
+	exit;
+}
+log_print("Redmine is working well!\n\n");
 
 # Sonarqube
 $cmd = "$home/deploy-devops/sonarqube/install_sonarqube.pl";
@@ -102,6 +118,7 @@ log_print("GitLab - http://".get_domain_name('gitlab')."/\n");
 log_print("Redmine - http://".get_domain_name('redmine')."/\n");
 log_print("Harbor - https://".get_domain_name('harbor')."/\n");
 log_print("Sonarqube - http://".get_domain_name('sonarqube')."/\n");
+log_print("Keycloak - https://".get_domain_name('keycloak')."/\n");
 log_print("\nPlease Read https://github.com/iii-org/deploy-devops/blob/master/README.md Step 4. to continue.\n\n");
 
 exit;

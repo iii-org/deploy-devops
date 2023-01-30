@@ -1,0 +1,21 @@
+fullnameOverride: iiidevops-keycloak
+auth:
+  adminPassword: <ADMIN_PASSWORD>
+  adminUser: <ADMIN_USER>
+global:
+  storageClass: iiidevops-nfs-storage
+postgresql:
+  auth:
+    password: <DB_PASSWORD>
+service:
+  type: NodePort
+  http:
+    enabled: false
+  nodePorts:
+#    http: "32110"
+    https: "32110"
+production: true
+tls:
+  enabled: true
+  usePem: true
+  existingSecret: iiidevops-keycloak-tls

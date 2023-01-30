@@ -324,4 +324,35 @@ if (!defined($ARGV[0]) || $ARGV[0] eq 'iiidevops_domain_name') {
 	}
 }
 
+# 2.3i \$ask_keycloak_domain_name = '{{ask_keycloak_domain_name}}';
+if (!defined($ARGV[0]) || $ARGV[0] eq 'keycloak_domain_name') {
+	if (!defined($ARGV[1])) {
+		$ask_keycloak_domain_name = (defined($ask_keycloak_domain_name) && $ask_keycloak_domain_name ne '{{ask_keycloak_domain_name}}' && $ask_keycloak_domain_name ne '') ? $ask_keycloak_domain_name : '';
+
+		$should_change = 'y';
+		if ($ask_keycloak_domain_name ne '') {
+		    $should_change = prompt_for_input("Q2.3i Do you want to change Keycloak domain name? (y/N)\n -> $ask_keycloak_domain_name");
+		}
+
+		while (lc($should_change) eq 'y') {
+			$ask_keycloak_domain_name = prompt_for_input("Q2.3i Please enter the Keycloak domain name: ");
+			last if ($ask_keycloak_domain_name ne '');
+			print("A2.3i The Keycloak domain name is empty, please re-enter!\n");
+		}
+	}
+	else {
+		$ask_keycloak_domain_name = $ARGV[1];
+		print("A2.3i Set Keycloak domain name OK!\n\n");
+	}
+
+	if ($ask_keycloak_domain_name ne '') {
+		if (-e $p_config_tmpl_ans) {
+			$tmp = $ask_keycloak_domain_name;
+			require($p_config_tmpl_ans);
+			$ask_keycloak_domain_name = $tmp;
+		}
+		write_ans();
+	}
+}
+
 1;

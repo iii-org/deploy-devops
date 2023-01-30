@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>PMGov - RP iframe</title>
+  <script type="text/javascript">
+    var stat = "unchanged";
+    var client_id = "<%= @oic_session.client_config['client_id'] %>";
+    var check_interval = 5*1000;
+    var source_origin = window.location.origin;
+    var target_origin = new URL("<%= @oic_session.client_config['openid_connect_server_url'] %>").origin;
+    var session_state = "<%= @oic_session.session_state %>";
+    var mes = client_id + " " + session_state;
+    var reauthorize_url = "<%= oic_local_logout_url %>";
+    var timer = setInterval(checkSession(), check_interval);
+
+    function checkSession() {
+      var opiframe = window.parent.document.getElementById("opiframe").contentWindow;
+      opiframe.postMessage( mes, target_origin);
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+    function receiveMessage(e) {
+      if (e.origin !== target_origin) { return alert('Wrong target origin: ' + target_origin); }
+      stat = e.data;
+
+      if (stat == "changed") {
+        window.parent.location.href = reauthorize_url;
+      }
+    }
+  </script>
+</head>
+<body></body>
+</html>

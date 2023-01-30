@@ -94,6 +94,8 @@ if (!-e $tmpl_file) {
 }
 $template = `cat $tmpl_file`;
 $template =~ s/{{sonarqube_db_passwd}}/$sonarqube_db_passwd/g;
+$template =~ s/{{nfs_ip}}/$nfs_ip/g;
+$template =~ s/{{nfs_dir}}/$nfs_dir/g;
 #log_print("-----\n$template\n-----\n\n");
 open(FH, '>', $yaml_file) or die $!;
 print FH $template;
@@ -269,6 +271,27 @@ sub initial_sonarqube {
 		exit(1);
 	}
 	log_print("update admin password OK!\n");
+
+	log_print("Setting up OIDC for SonarQube...\n");
+
+    call_sonarqube_api("POST", "settings/set?key=sonar.core.serverBaseURL&value=$url$the_url");
+
+	# OIDC (keycloak) setting
+    call_sonarqube_api("POST", "settings/set?key=sonar.plugins.risk.consent&value=ACCEPTED");
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.enabled&value=true");
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.autoLogin&value=true");
+
+    $kc_url = "https://" . get_domain_name('keycloak');
+    $keycloak_url = url_encode($kc_url . "/realms/IIIdevops");
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.issuerUri&value=$keycloak_url");
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.clientId.secured&value=sonarqube");
+
+    $keycloak_secret = `python3 $Bin/../keycloak/get_token.py $keycloak_admin $keycloak_admin_passwd $kc_url sonarqube`;
+    $keycloak_secret =~ s/\R//g;
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.clientSecret.secured&value=$keycloak_secret");
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.allowUsersToSignUp&value=true");
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.groupsSync&value=true");
+    call_sonarqube_api("POST", "settings/set?key=sonar.auth.oidc.loginButtonText&value=IIIdevops%20Login");
 
 	return;
 }

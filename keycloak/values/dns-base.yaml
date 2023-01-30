@@ -1,0 +1,14 @@
+auth:
+  adminPassword: <ADMIN_PASSWORD>
+  adminUser: <ADMIN_USER>
+global:
+  storageClass: iiidevops-nfs-storage
+postgresql:
+  auth:
+    password: <DB_PASSWORD>
+production: true
+proxy: edge
+service:
+  nodePorts:
+    http: "32110"
+  type: NodePort

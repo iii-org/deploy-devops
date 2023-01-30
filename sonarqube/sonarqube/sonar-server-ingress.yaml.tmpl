@@ -7,11 +7,11 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
   rules:
-  - host: "{{sonarqube_domain_name}}"
-    http:
-      paths:
-      - backend:
-          serviceName: sonarqube-server-service
-          servicePort: 9000
-        path: "/"
-        pathType: "ImplementationSpecific"
+    - host: "{{sonarqube_domain_name}}"
+      http:
+        paths:
+          - backend:
+              serviceName: sonarqube-server-service
+              servicePort: 9000
+            path: "/"
+            pathType: "ImplementationSpecific"

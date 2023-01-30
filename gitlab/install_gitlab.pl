@@ -94,7 +94,7 @@ else {
 	$ingress_tmpl_file = 'gitlab-ingress.yml.tmpl';
 }
 $yaml_path = "$Bin/../gitlab/";
-$yaml_file = $yaml_path.'gitlab-deployment.yml';
+$yaml_file = $yaml_path.'gitlab-deployment-keycloak.yml';
 $tmpl_file = $yaml_file.'.tmpl';
 if (!-e $tmpl_file) {
 	log_print("The template file [$tmpl_file] does not exist!\n");

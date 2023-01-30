@@ -11,25 +11,25 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   tls:
-  - hosts:
-    - "{{gitlab_domain_name}}"
-    secretName: {{gitlab_domain_name_tls}}
+    - hosts:
+        - "{{gitlab_domain_name}}"
+      secretName: {{gitlab_domain_name_tls}}
   rules:
-  - host: "{{gitlab_domain_name}}"
-    http:
-      paths:
-      - path: "/"
-        pathType: "ImplementationSpecific"
-        backend:
-          serviceName: gitlab-service
-          servicePort: 443
-      - path: "/api/v3"
-        pathType: "ImplementationSpecific"
-        backend:
-          serviceName: gitlab-service
-          servicePort: 30443
-      - path: "/api/v4"
-        pathType: "ImplementationSpecific"
-        backend:
-          serviceName: gitlab-service
-          servicePort: 30443
+    - host: "{{gitlab_domain_name}}"
+      http:
+        paths:
+          - path: "/"
+            pathType: "ImplementationSpecific"
+            backend:
+              serviceName: gitlab-service
+              servicePort: 443
+          - path: "/api/v3"
+            pathType: "ImplementationSpecific"
+            backend:
+              serviceName: gitlab-service
+              servicePort: 30443
+          - path: "/api/v4"
+            pathType: "ImplementationSpecific"
+            backend:
+              serviceName: gitlab-service
+              servicePort: 30443
