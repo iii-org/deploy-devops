@@ -182,6 +182,21 @@ def create_default_harbor(access_token: str, base_url: str):
         "authenticationFlowBindingOverrides": {},
         "fullScopeAllowed": True,
         "nodeReRegistrationTimeout": -1,
+        "protocolMappers": [
+            {
+                "name": "Groups",
+                "protocol": "openid-connect",
+                "protocolMapper": "oidc-group-membership-mapper",
+                "consentRequired": False,
+                "config": {
+                    "full.path": "false",
+                    "id.token.claim": "true",
+                    "access.token.claim": "false",
+                    "claim.name": "groups",
+                    "userinfo.token.claim": "true",
+                },
+            }
+        ],
         "defaultClientScopes": ["web-origins", "acr", "profile", "roles", "email"],
         "optionalClientScopes": [
             "address",

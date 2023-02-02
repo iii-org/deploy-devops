@@ -76,6 +76,7 @@ def set_harbor(hb_url: str, hb_password: str):
         "oidc_endpoint": f"{KEYCLOAK_URL}/realms/IIIdevops",
         "oidc_client_id": "harbor",
         "oidc_client_secret": get_harbor_secret(),
+        "oidc_groups_claim": "groups",
         "oidc_scope": "openid,profile,email,offline_access",
         "oidc_verify_cert": False,
         "oidc_auto_onboard": True,
