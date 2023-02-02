@@ -53,6 +53,37 @@ if (index($cmd_msg, 'namespace/account created')<0 && index($cmd_msg, 'namespace
 }
 log_print("Create namespace on kubernetes cluster OK!\n");
 
+# Create Storage Class on kubernetes cluster
+$yaml_path = "$Bin/../kubernetes/storageclass/";
+$yaml_file = $yaml_path.'nfs-client-provisioner-pv.yaml';
+$tmpl_file = $yaml_file.'.tmpl';
+if (!-e $tmpl_file) {
+	log_print("The template file [$tmpl_file] does not exist!\n");
+	exit;
+}
+$template = `cat $tmpl_file`;
+$template =~ s/{{nfs_ip}}/$nfs_ip/g;
+$template =~ s/{{nfs_dir}}/$nfs_dir/g;
+
+open(FH, '>', $yaml_file) or die $!;
+print FH $template;
+close(FH);
+
+log_print("Deploy K8s Volumes..\n");
+$cmd =<<END;
+kubectl apply -f $yaml_path/nfs-client-provisioner-serviceaccount.yaml;
+kubectl apply -f $yaml_path/nfs-client-provisioner-runner-clusterrole.yaml;
+kubectl apply -f $yaml_path/run-nfs-client-provisioner-clusterrolebinding.yaml;
+kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-role.yaml;
+kubectl apply -f $yaml_path/leader-locking-nfs-client-provisioner-rolebinding.yaml;
+kubectl apply -f $yaml_path/iiidevops-nfs-storage-storageclass.yaml;
+kubectl apply -f $yaml_path/deploy-local-storageclass.yaml;
+kubectl apply -f $yaml_file
+
+END
+$cmd_msg = `$cmd`;
+log_print("-----\n$cmd_msg-----\n");
+
 exit;
 
 sub install_k8s {

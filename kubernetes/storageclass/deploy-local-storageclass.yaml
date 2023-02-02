@@ -1,0 +1,8 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: deploy-local-sc
+provisioner: iiidevops-nfs-provisioner
+parameters:
+  pathPattern: "deploy-local/${.PVC.namespace}/${.PVC.name}"
+  onDelete: retain
