@@ -359,6 +359,62 @@ def create_default_redmine(access_token: str, base_url: str):
     )
 
 
+def create_default_iiidevops(access_token: str, base_url: str):
+    iiidevops_settings = {
+        "clientId": "iiidevops",
+        "name": "IIIdevops API",
+        "description": "IIIdevops API",
+        "surrogateAuthRequired": False,
+        "enabled": True,
+        "alwaysDisplayInConsole": False,
+        "clientAuthenticatorType": "client-secret",
+        "rootUrl": f"{base_url}",
+        "adminUrl": "",
+        "baseUrl": "",
+        "redirectUris": [],
+        "webOrigins": [],
+        "notBefore": 0,
+        "bearerOnly": False,
+        "consentRequired": False,
+        "standardFlowEnabled": True,
+        "implicitFlowEnabled": False,
+        "directAccessGrantsEnabled": True,
+        "serviceAccountsEnabled": False,
+        "publicClient": False,
+        "frontchannelLogout": True,
+        "protocol": "openid-connect",
+        "attributes": {
+            "oidc.ciba.grant.enabled": "false",
+            "oauth2.device.authorization.grant.enabled": "false",
+            "backchannel.logout.session.required": "true",
+            "backchannel.logout.revoke.offline.tokens": "false",
+            "request.uris": "",
+            "consent.screen.text": "",
+            "frontchannel.logout.url": "",
+            "backchannel.logout.url": "",
+            "login_theme": "",
+            "display.on.consent.screen": False,
+        },
+        "authenticationFlowBindingOverrides": {},
+        "fullScopeAllowed": True,
+        "nodeReRegistrationTimeout": -1,
+        "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "email"],
+        "optionalClientScopes": [
+            "address",
+            "phone",
+            "offline_access",
+            "microprofile-jwt",
+        ],
+        "access": {"view": True, "configure": True, "manage": True},
+        "authorizationServicesEnabled": False,
+    }
+
+    create_client(
+        access_token,
+        iiidevops_settings,
+    )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create client in keycloak")
     parser.add_argument("account", type=str, help="admin account of keycloak")
@@ -368,7 +424,7 @@ if __name__ == "__main__":
         "option",
         type=str,
         help="what client to create",
-        choices=["gitlab", "harbor", "sonarqube", "redmine"],
+        choices=["gitlab", "harbor", "sonarqube", "redmine", "iiidevops"],
     )
     parser.add_argument("base_url", type=str, help="service base url")
 
@@ -387,3 +443,5 @@ if __name__ == "__main__":
         create_default_sonarqube(token, args.base_url)
     elif args.option.lower() == "redmine":
         create_default_redmine(token, args.base_url)
+    elif args.option.lower() == "iiidevops":
+        create_default_iiidevops(token, args.base_url)

@@ -26,12 +26,14 @@ export redmine_ip
 export harbor_ip
 export sonarqube_ip
 export keycloak_ip
+export iiidevops_ip
 export rancher_domain_name
 export gitlab_domain_name
 export redmine_domain_name
 export harbor_domain_name
 export sonarqube_domain_name
 export keycloak_domain_name
+export iiidevops_domain_name
 export REALM="IIIdevops"
 export WAIT_ALIVE_TIMEOUT=300
 
@@ -94,6 +96,7 @@ function generate_url() {
   local hb_url # Harbor
   local sq_url # SonarQube
   local kc_url # Keycloak
+  local ui_url # IIIDEVOPS
 
   if [[ "${deploy_mode}" == "IP" ]]; then
     rc_url="${rancher_ip}:31443"
@@ -102,6 +105,7 @@ function generate_url() {
     hb_url="${harbor_ip}:32443"
     sq_url="${sonarqube_ip}:31910"
     kc_url="${keycloak_ip}:32110"
+    ui_url="${iiidevops_ip}:30775"
   else
     rc_url="$rancher_domain_name"
     gl_url="$gitlab_domain_name"
@@ -109,6 +113,7 @@ function generate_url() {
     hb_url="$harbor_domain_name"
     sq_url="$sonarqube_domain_name"
     kc_url="$keycloak_domain_name"
+    ui_url="$iiidevops_domain_name"
   fi
 
   if [[ -z "$gitlab_domain_name_tls" ]]; then
@@ -129,6 +134,12 @@ function generate_url() {
     sq_url="https://$sq_url"
   fi
 
+  if [[ -z "$iiidevops_domain_name_tls" ]]; then
+    ui_url="http://$ui_url"
+  else
+    ui_url="https://$ui_url"
+  fi
+
   export RANCHER_URL="https://$rc_url"
   export GITLAB_URL="$gl_url"
   export REDMINE_URL="$rm_url"
@@ -136,6 +147,7 @@ function generate_url() {
   export SONARQUBE_URL="$sq_url"
   export KEYCLOAK_URL="https://$kc_url"
   export KEYCLOAK_RESTFUL_URL="https://$kc_url/admin/realms"
+  export IIIDEVOPS_URL="$ui_url"
 }
 
 function check_alive() {
@@ -359,7 +371,6 @@ function main() {
     log "Starting setting initial data..."
     configureKeycloak
     log "----------------------------------------"
-#    perl "$BASEDIR"/create_client.pl "$KEYCLOAK_URL"
     log "Current base: $KEYCLOAK_URL/admin/realms"
     set -x
     python3 "$BASEDIR"/create_client.py "$keycloak_admin" "$keycloak_admin_passwd" "$KEYCLOAK_URL" \
@@ -370,6 +381,8 @@ function main() {
       sonarqube "$SONARQUBE_URL"
     python3 "$BASEDIR"/create_client.py "$keycloak_admin" "$keycloak_admin_passwd" "$KEYCLOAK_URL" \
       redmine "$REDMINE_URL"
+    python3 "$BASEDIR"/create_client.py "$keycloak_admin" "$keycloak_admin_passwd" "$KEYCLOAK_URL" \
+      iiidevops "$IIIDEVOPS_URL"
     set +x
     log "[DONE] Clients initialized success!"
     log "----------------------------------------"

@@ -888,6 +888,7 @@ sub convert {
 	$env_template =~ s/{{ask_redmine_domain_name_tls}}/$ask_redmine_domain_name_tls/g;
 	$env_template =~ s/{{ask_sonarqube_domain_name_tls}}/$ask_sonarqube_domain_name_tls/g;
 	$env_template =~ s/{{ask_ingress_domain_name_tls}}/$ask_ingress_domain_name_tls/g;
+    $env_template =~ s/{{ask_iiidevops_domain_name_tls}}/$ask_iiidevops_domain_name_tls/g;
 	$env_template =~ s/{{ask_keycloak_domain_name_tls}}/$ask_keycloak_domain_name_tls/g;
 
 	$env_template =~ s/{{ask_gitlab_root_password}}/$ask_gitlab_root_password/g;
