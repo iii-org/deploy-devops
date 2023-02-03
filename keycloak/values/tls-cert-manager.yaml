@@ -4,4 +4,7 @@ ingress:
   hostname: <DOMAIN_NAME>
   annotations:
     cert-manager.io/cluster-issuer: <CERT-ISSUER>
+    cert-manager.io/common-name: <DOMAIN_NAME>
+    cert-manager.io/duration: 8760h
+    cert-manager.io/renew-before: 2208h
     nginx.ingress.kubernetes.io/proxy-buffer-size: 512k

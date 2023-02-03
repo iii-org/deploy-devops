@@ -247,8 +247,17 @@ function generateYAML() {
       exit 1
     fi
 
+    if [[ -z $DOMAIN_NAME ]]; then
+      log "ERROR: DOMAIN_NAME is empty, please check environment variable"
+      help
+      exit 1
+    fi
+
     if [[ -z $SECRET ]]; then
-      _ingress="$(cat "$BASEDIR/values/tls-self-signed.yaml")"
+      _ingress="$(cat "$BASEDIR/values/tls-cert-manager.yaml")"
+      _ingress="${_ingress//<CERT-ISSUER>/iiidevops-ca-issuer}"
+      # self-signed certificate is not allowed to other service, so we use cert-manager instead
+      # _ingress="$(cat "$BASEDIR/values/tls-self-signed.yaml")"
     else
       _ingress="$(cat "$BASEDIR/values/tls-secret.yaml")"
       _ingress="${_ingress//<SECRET>/$SECRET}"
@@ -352,7 +361,6 @@ function main() {
 
   if [[ "$UPDATE" == 1 ]]; then
     log "Adding keycloak..."
-    #    perl "$BASEDIR"/helper.pl
   else
     log "Deploying keycloak..."
     log "Deploy mode: ${deploy_mode}"
@@ -395,12 +403,12 @@ function main() {
       --firstname 系統管理員 --lastname 系統管理員 \
       --password "$gitlab_root_passwd" \
       --groups sonar-administrators
-    # IIIdevops admin
-    python3 "$BASEDIR"/create_user.py "$keycloak_admin" "$keycloak_admin_passwd" "$KEYCLOAK_URL" \
-      --username "$admin_init_login" --email "$admin_init_email" \
-      --firstname 系統管理員 --lastname 系統管理員 \
-      --password "$admin_init_password" \
-      --groups sonar-administrators
+    # IIIdevops admin, will create in API startup
+    # python3 "$BASEDIR"/create_user.py "$keycloak_admin" "$keycloak_admin_passwd" "$KEYCLOAK_URL" \
+    #   --username "$admin_init_login" --email "$admin_init_email" \
+    #   --firstname 系統管理員 --lastname 系統管理員 \
+    #   --password "$admin_init_password" \
+    #   --groups sonar-administrators
     set +x
     log "[DONE] Users initialized success!"
     log "----------------------------------------"
@@ -467,6 +475,10 @@ while [[ "$#" -gt 0 ]]; do
   esac
   shift
 done
+
+if [[ -z "$DOMAIN_NAME" ]]; then
+  DOMAIN_NAME="$keycloak_domain_name"
+fi
 
 mkdir -p "$nfs_dir"/deploy-config/keycloak
 KEYCLOAK_BASEDIR="$nfs_dir/deploy-config/keycloak"
