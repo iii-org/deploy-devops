@@ -26104,8 +26104,6 @@ spec:
       - args:
         - --v=2
         - --leader-election-namespace=kube-system
-        - --dns01-recursive-nameservers-only
-        - --dns01-recursive-nameservers=kube-dns.kube-system.svc.cluster.local:53
         env:
         - name: POD_NAMESPACE
           valueFrom:
@@ -26151,6 +26149,8 @@ spec:
         - --v=2
         - --cluster-resource-namespace=$(POD_NAMESPACE)
         - --leader-election-namespace=kube-system
+        - --dns01-recursive-nameservers-only
+        - --dns01-recursive-nameservers=kube-dns.kube-system.svc.cluster.local:53
         env:
         - name: POD_NAMESPACE
           valueFrom:
