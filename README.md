@@ -25,7 +25,7 @@
 
 > * 需要使用 **rekuser** 來進行整體安裝程序 
 > > ```bash
-> > sudo useradd -s /bin/bash -d /home/rkeuser/ -m -G sudo rkeuser
+> > sudo useradd -s /bin/bash -m -G sudo rkeuser
 > > sudo passwd rkeuser
 > > su - rkeuser
 > > 

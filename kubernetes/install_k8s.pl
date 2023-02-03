@@ -102,11 +102,15 @@ sub install_k8s {
 
 	# Gen K8s ssh key
 	if (!-e "$nfs_dir/deploy-config/id_rsa") {
-		$cmd = "sudo -u rkeuser ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa -q -N '';mkdir -p ~rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/;chown -R rkeuser:rkeuser ~rkeuser/.ssh/";
-		system($cmd);
+        system("sudo -u rkeuser ssh-keygen -t rsa -C '$admin_init_email' -f $nfs_dir/deploy-config/id_rsa -q -N ''");
 	}
-	$cmd = "mkdir -p /home/rkeuser/.ssh/;chown -R rkeuser:rkeuser /home/rkeuser/.ssh/;cp -a $nfs_dir/deploy-config/id_rsa* /home/rkeuser/.ssh/;";
-	$cmd .= "cp $nfs_dir/deploy-config/id_rsa.pub /home/rkeuser/.ssh/authorized_keys;chmod 600 /home/rkeuser/.ssh/authorized_keys;";
+	$cmd =<<END;
+mkdir -p ~rkeuser/.ssh/
+cp -a $nfs_dir/deploy-config/id_rsa* ~rkeuser/.ssh/
+chown -R rkeuser:rkeuser ~rkeuser/.ssh/
+cat $nfs_dir/deploy-config/id_rsa.pub >> ~rkeuser/.ssh/authorized_keys
+chmod 600 ~rkeuser/.ssh/authorized_keys
+END
 	system($cmd);
 
 	# Trust first node & Check rkeuser permission
