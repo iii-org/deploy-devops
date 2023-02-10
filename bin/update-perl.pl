@@ -19,13 +19,19 @@ if ($cmd_msg ne 'rkeuser') {
 $home_path = '/home/rkeuser';
 $nfs_dir = '/iiidevopsNFS';
 
+# Fix branch v2 : deploy-devops-2 issue
+$fixed_ins_repo = $ins_repo;
+if ($fixed_ins_repo =~ /^v\d/) {
+	$fixed_ins_repo =~ s/^.//;
+}
+
 # Install iiidevops Deploy Scripts
 $cmd = <<END;
 cd $home_path;
 wget -O $ins_repo.zip https://github.com/iii-org/deploy-devops/archive/$ins_repo.zip
 unzip -o $ins_repo.zip;
 rm -rf deploy-devops;
-mv deploy-devops-$ins_repo deploy-devops;
+mv deploy-devops-$fixed_ins_repo deploy-devops;
 find $home_path/deploy-devops -type f -name \"*.pl\" -exec chmod a+x {} \\;
 END
 print("Install iiidevops Deploy Scripts..\n");
